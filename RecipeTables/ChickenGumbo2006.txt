@@ -1,0 +1,14 @@
+Recipe	Year	Amount	Unit	Ingredient
+Chicken Gumbo	2006	3	lb	chicken, whole, raw with skin
+Chicken Gumbo	2006	0.5	cup	flour, all purpose, self rising, enriched
+Chicken Gumbo	2006	3	Tbs	oil, canola
+Chicken Gumbo	2006	0.5	cup	oil, canola
+Chicken Gumbo	2006	0.5	cup	flour, all purpose, self rising, enriched
+Chicken Gumbo	2006	1	cup	okra, cooked, drained, sliced
+Chicken Gumbo	2006	0.5	cup	celery, fresh, diced
+Chicken Gumbo	2006	0.5	cup	onion, yellow, fresh, chopped
+Chicken Gumbo	2006	0.5	cup	bell pepper, green, fresh, chopped
+Chicken Gumbo	2006	8	cup	stock, chicken, prepared from recipe
+Chicken Gumbo	2006	12	oz	sausage, pork, cajun style andouille
+Chicken Gumbo	2006	0.5	cup	scallions, fresh, tops & bulb, chopped
+Chicken Gumbo	2006	5	cup	rice, white, cooked, long grain, unenriched

@@ -1,0 +1,177 @@
+---
+title: "Processing Recipes"
+output: html_document
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+```
+git clone https://github.com/PeterClaussenSDSU/JoyOfCooking2018.git
+```
+
+
+```{r}
+path.to.recipes <- "~/github/JoyOfCooking2018/recipe.tables"
+recipe.files <- list.files(path = path.to.recipes, pattern = '*.tab')
+expected.columns <- c("Amount","Measure","Ingredient")
+added.columns <- c("NDB_No","Year","Recipe")
+```
+
+I'm going to create a list to hold the various recipes. We'll start by using file name as the index.
+
+```{r}
+recipe.list <- vector("list", length(recipe.files))
+names(recipe.list) <- recipe.files
+```
+
+Utility function for reading files
+```{r}
+# returns true if the list of names has the minimum required headers
+minimum.headers <- function(names) {
+  for(name in expected.columns) {
+    if(!(name %in% names)) {
+      #found a missing identifier
+      return(FALSE)
+    }
+  }
+  #all were found
+  return(TRUE)
+}
+```
+
+For each recipe, first try to read table
+
+```{r}
+
+check.files <- c()
+
+for(recipe in recipe.files) {
+  file.name <- paste(path.to.recipes,'/',recipe,sep='')
+  current <- NULL
+  #read the first line
+  connection <- file(file.name)
+  first.line <- readLines(connection,n=1)
+  #print(first.line)
+  close(connection)
+  #if the first line can be split by tabs, then use tabs as delimiter
+  
+  first.tokens <- strsplit(first.line,split='\t')[[1]]
+  first.tokens <-gsub('\"','', first.tokens)
+  if(minimum.headers(first.tokens)) {
+    #read as tab-delimited 
+    recipe.list[[recipe]] <- read.table(file.name,
+                                        sep='\t',
+                                        stringsAsFactors = FALSE,
+                                        header=TRUE)
+  } else {
+    #second guess is spaces, there should be no spaces in the 
+    #expected table columns
+    first.tokens <- strsplit(first.line,split=' ')[[1]]
+    first.tokens <-gsub('\"','', first.tokens)
+    if(minimum.headers(first.tokens)) {
+      recipe.list[[recipe]] <- read.table(file.name,
+                                          header=TRUE,
+                                          stringsAsFactors = FALSE)
+    } else {
+      check.files <- c(check.files,recipe)
+    }
+  }
+
+}
+```
+
+What recipes to we need to look at in more detail?
+
+```{r}
+check.files
+```
+
+Visually inspecting some files, common differences are
+Ingredients instead of Ingredient
+NBD instead of NBD_No
+
+Some recipes lack an NBD_No. We can reject these out of hand, or we can attempt to link to the FOOD_DES data base.
+
+# Combining Recipes
+
+```{r}
+join.names <- c(expected.columns, added.columns)
+join.frame <-data.frame(matrix(vector(), nrow=0, ncol=length(join.names),
+                dimnames=list(c(), join.names)),
+                stringsAsFactors=F)
+test.frame <- join.frame
+```
+
+
+## Year and Recipe Name
+
+Determine how many recipes have Year and Recipe as columns. We might assume that these have the correct information. If not, we parse the file name and add Year and Recipe to the table.
+
+```{r}
+#place holder for file name processing function
+parse.filename <- function(name) {
+  return(list(Year=0,Recipe="Name"))
+}
+```
+
+## Typos in column names
+
+There are some simple inconsistencies in the column names that prevent merging. One simple one to correct is NBD vs NDB
+```{r}
+for(idx in 1:length(recipe.files)) {
+  file.name <- recipe.files[idx]
+  tbl <- recipe.list[[file.name]]
+  if('NBD_No' %in% names(tbl)) {
+    nbd.idx <- which(names(tbl)=='NBD_No')
+    names(tbl)[nbd.idx] <- added.columns[1]
+    recipe.list[[file.name]] <- tbl
+  }
+}
+```
+
+
+```{r}
+
+for(idx in 1:length(recipe.files)) {
+  file.name <- recipe.files[idx]
+  tbl <- recipe.list[[file.name]]
+  if(length(names(tbl)) == 3) {
+    #We tested against Ingredient,Amount and Measure, so append
+    #an empty NBD_No. We will attempt to look up thos later.
+    #if we sort the data by ingredient, and multiple recipes have the 
+    #same incredients, we may be able to save some searches.
+    tbl$NBD_No <- NA
+  }
+  if(length(names(tbl)) == 4) {
+    # we assume, for now, that the table is missing Year and Recipe,
+    # so parse the file name for this information.
+    ids <- parse.filename(file.name)
+    tbl$Year <- ids$Year
+    tbl$Recipe <- ids$Recipe
+  }
+  test.tbl <- NULL
+  tryCatch(test.tbl <- rbind(test.frame, tbl[,join.names]),
+           error=function(e) {
+             print(file.name)
+             print(e)
+           })
+  #if we can bind to the empty table, we can merge this table with
+  #the rest
+  if(!is.null(test.tbl)) {
+    join.frame <- rbind(join.frame,tbl[,join.names])
+  } else {
+   # print(file.name)
+    print(summary(tbl))
+  }
+}
+```
+
+```{r}
+summary(join.frame)
+print(join.frame)
+```
