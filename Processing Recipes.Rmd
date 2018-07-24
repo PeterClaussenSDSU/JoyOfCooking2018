@@ -8,28 +8,51 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## R Markdown
-
+The most recent version of this file and data can be found at
 ```
 git clone https://github.com/PeterClaussenSDSU/JoyOfCooking2018.git
 ```
 
+# List Recipes
+
+The first step to create a recipe database is to process individual recipe files. The files structure was chosed to allow a group of individuals to contribute, and allow individual recipes to be added to the whole, independent of any coordinating files or tables. These files will be stored in:
+```{r}
+path.to.recipes <- "~/github/JoyOfCooking2018/RecipeTables"
+```
+
+
+We'll make no assumptions about file types. The expected suffix is `.tab`, but we won't assume that all files conform. If we can guarantee all files conform to a specific format, we might use
+```{r,eval=FALSE}
+recipe.files <- list.files(path = path.to.recipes, pattern = '*.tab')
+```
+
+Instead, we'll attempt to read all files in the table directory.
 
 ```{r}
-path.to.recipes <- "~/github/JoyOfCooking2018/recipe.tables"
-recipe.files <- list.files(path = path.to.recipes, pattern = '*.tab')
+recipe.files <- list.files(path = path.to.recipes)
+length(recipe.files)
+```
+
+The original specification was for three data columns, and two were to be added by processing file names. A fourth data column was later added, but we won't assume all files conform.
+
+```{r}
 expected.columns <- c("Amount","Measure","Ingredient")
 added.columns <- c("NDB_No","Year","Recipe")
 ```
 
-I'm going to create a list to hold the various recipes. We'll start by using file name as the index.
+For processing, we'll have have a single organizing structures - a list of tables that have been read from file. We'll use file name for indexes.
 
 ```{r}
 recipe.list <- vector("list", length(recipe.files))
 names(recipe.list) <- recipe.files
 ```
 
-Utility function for reading files
+## Utility functions
+
+### Minimum headers
+
+Does a list of names include the minimum required header names?
+
 ```{r}
 # returns true if the list of names has the minimum required headers
 minimum.headers <- function(names) {
@@ -44,11 +67,30 @@ minimum.headers <- function(names) {
 }
 ```
 
-For each recipe, first try to read table
+**To do** A complementary function may be implemented to use partial matching and return the list of names, in the order they match the input names. This returned list can be used to map columns in data to the expected column order. This function may return an empty list if matches are not made.
+
+### Parse File Name
+
+Later, we'll need parse the file name into a recipe name and a date. This is a placeholder for that function.
 
 ```{r}
+#place holder for file name processing function
+parse.filename <- function(name) {
+  return(list(Year=0,Recipe=name))
+}
+```
 
-check.files <- c()
+# Read Files
+
+We'll try to read each file by first guessing the delimiter. For the time being, I'm assuming either tab-delimited or space-delimited text. 
+
+We'll assume the first row is a header row, and that it contains only single words, so we can use `strsplit` to token the row into names. If that doesn't work, we'll try with spaces. 
+
+For the files that don't have conforming first lines, we print the file name and header line for further inspection.
+
+```{r}
+conforming.files <- 0
+nonconforming.files <- c()
 
 for(recipe in recipe.files) {
   file.name <- paste(path.to.recipes,'/',recipe,sep='')
@@ -56,11 +98,13 @@ for(recipe in recipe.files) {
   #read the first line
   connection <- file(file.name)
   first.line <- readLines(connection,n=1)
-  #print(first.line)
-  close(connection)
-  #if the first line can be split by tabs, then use tabs as delimiter
+  close(connection) #R won't be happy if we don't close the file
   
+  #if the first line can be split by tabs, then use tabs as delimiter
   first.tokens <- strsplit(first.line,split='\t')[[1]]
+  #some files will be written with quoted text. 
+  #The various `read` functions will strip the quotes, 
+  #but here we have to do this manually.
   first.tokens <-gsub('\"','', first.tokens)
   if(minimum.headers(first.tokens)) {
     #read as tab-delimited 
@@ -68,36 +112,32 @@ for(recipe in recipe.files) {
                                         sep='\t',
                                         stringsAsFactors = FALSE,
                                         header=TRUE)
+    conforming.files <- conforming.files+1
   } else {
-    #second guess is spaces, there should be no spaces in the 
-    #expected table columns
+    #second guess is spaces.
     first.tokens <- strsplit(first.line,split=' ')[[1]]
     first.tokens <-gsub('\"','', first.tokens)
     if(minimum.headers(first.tokens)) {
       recipe.list[[recipe]] <- read.table(file.name,
                                           header=TRUE,
                                           stringsAsFactors = FALSE)
+      conforming.files <- conforming.files+1
     } else {
-      check.files <- c(check.files,recipe)
+      #save a list for later
+      nonconforming.files <- c(nonconforming.files,recipe)
+      print(recipe)
+      print(first.line)
     }
   }
-
 }
+conforming.files
 ```
 
-What recipes to we need to look at in more detail?
-
-```{r}
-check.files
-```
-
-Visually inspecting some files, common differences are
-Ingredients instead of Ingredient
-NBD instead of NBD_No
-
-Some recipes lack an NBD_No. We can reject these out of hand, or we can attempt to link to the FOOD_DES data base.
+**To do** Determine how to partially match data columns to read non-conforming files.
 
 # Combining Recipes
+
+Our final table will have 6 columns. We'll create a enpty data frame to build from, and keep an empty copy to test the join for each individual recipe table.
 
 ```{r}
 join.names <- c(expected.columns, added.columns)
@@ -108,20 +148,10 @@ test.frame <- join.frame
 ```
 
 
-## Year and Recipe Name
+## Fix column names.
 
-Determine how many recipes have Year and Recipe as columns. We might assume that these have the correct information. If not, we parse the file name and add Year and Recipe to the table.
+There are some simple inconsistencies in the column names that prevent merging. One simple one to correct is NBD vs NDB.
 
-```{r}
-#place holder for file name processing function
-parse.filename <- function(name) {
-  return(list(Year=0,Recipe="Name"))
-}
-```
-
-## Typos in column names
-
-There are some simple inconsistencies in the column names that prevent merging. One simple one to correct is NBD vs NDB
 ```{r}
 for(idx in 1:length(recipe.files)) {
   file.name <- recipe.files[idx]
@@ -134,44 +164,61 @@ for(idx in 1:length(recipe.files)) {
 }
 ```
 
+**To do** Partial matches for other mispellings.
+
+
+Some recipes already have `Year` and `Recipe` columns. If we assume these have correct information, we can join directly. If not, we parse the file name and add `Year` and `Recipe` columns, using the previously defined utility function.
+
+
+Some may not have `NDB_No`. We can add a dummy variable and attempt to match to Ingredients later.
+
 
 ```{r}
+conforming.tables <- 0
+nonconforming.tables <- c()
 
 for(idx in 1:length(recipe.files)) {
   file.name <- recipe.files[idx]
-  tbl <- recipe.list[[file.name]]
-  if(length(names(tbl)) == 3) {
-    #We tested against Ingredient,Amount and Measure, so append
-    #an empty NBD_No. We will attempt to look up thos later.
-    #if we sort the data by ingredient, and multiple recipes have the 
-    #same incredients, we may be able to save some searches.
-    tbl$NBD_No <- NA
-  }
-  if(length(names(tbl)) == 4) {
-    # we assume, for now, that the table is missing Year and Recipe,
-    # so parse the file name for this information.
-    ids <- parse.filename(file.name)
-    tbl$Year <- ids$Year
-    tbl$Recipe <- ids$Recipe
-  }
-  test.tbl <- NULL
-  tryCatch(test.tbl <- rbind(test.frame, tbl[,join.names]),
-           error=function(e) {
-             print(file.name)
-             print(e)
+  if(!(file.name %in% nonconforming.files)) {
+    tbl <- recipe.list[[file.name]]
+    if(length(names(tbl)) == 3) {
+      #We tested against Ingredient,Amount and Measure, so append
+      #an empty NBD_No. We will attempt to look up thos later.
+      #if we sort the data by ingredient, and multiple recipes have the 
+      #same incredients, we may be able to save some searches.
+      tbl$NBD_No <- NA
+    }
+    if(length(names(tbl)) == 4) {
+      # we assume, for now, that the table is missing Year and Recipe,
+      # so parse the file name for this information.
+      ids <- parse.filename(file.name)
+      tbl$Year <- ids$Year
+      tbl$Recipe <- ids$Recipe
+    }
+    test.tbl <- NULL
+    #put the join in a try block. This will allow us to
+    #process all files without having to stop and fix errors.
+    tryCatch(test.tbl <- rbind(test.frame, tbl[,join.names]),
+             error=function(e) {
+               print(file.name)
+               print(e)
            })
-  #if we can bind to the empty table, we can merge this table with
-  #the rest
-  if(!is.null(test.tbl)) {
-    join.frame <- rbind(join.frame,tbl[,join.names])
-  } else {
-   # print(file.name)
-    print(summary(tbl))
+    #if we can bind to the empty table, we can merge this table with
+    #the rest
+    if(!is.null(test.tbl)) {
+      join.frame <- rbind(join.frame,tbl[,join.names])
+      conforming.tables <- conforming.tables + 1
+    } else {
+      nonconforming.tables <- c(nonconforming.tables,file.name)
+    }
   }
 }
+conforming.tables
 ```
 
 ```{r}
 summary(join.frame)
-print(join.frame)
 ```
+
+**To do** 
+Iterate over non-conforming tables, determine which can be fixed programmatically.
