@@ -1,10 +1,6 @@
-"Amount" "Measure" "Ingredient" "NDB_No"
-"1" 1.5 "cup" "Wheat flour, white, all-purpose, enriched, bleached" 20081
-"2" 1 "cup" "Sugars, granulated" 19335
-"3" 1.5 "tsp" "Leavening agents, baking powder, double-acting, straight phosphate" 18370
-"4" 0.5 "tsp" "Salt, table" 2047
-"5" 2 "large" "Egg, whole, raw, fresh" 1123
-"6" 0.5 "cup" "Milk, whole, 3.25% milkfat, without added vitamin A and vitamin D" 1211
-"7" 1 "tsp" "Vanilla extract" 2050
-"8" 0.5 "cup" "Butter, salted" 1001
-"9" 1 "cup" "Marmalade, orange" 19303
+"Amount" "Measure" "Ingredient"
+1.5 "cup" "flour, all purpose, self rising, enriched"
+1 "cup" "sugar, white, granulated"
+2 "lrg" "egg, raw"
+0.5 "cup" "milk, whole, 3.25%"
+0.5 "cup" "butter, salted"

@@ -1,9 +1,7 @@
-"Amount" "Measure" "Ingredient" "NDB_No"
-"1" 0.5 "cup" "Sugars, granulated" 19335
-"2" 0.25 "cup" "Butter, salted" 1001
-"3" 1 "large" "Egg, whole, raw, fresh" 1123
-"4" 1 "tsp" "Vanilla extract" 2050
-"5" 1.5 "cup" "Wheat flour, white, bread, enriched" 20083
-"6" 2 "tsp" "Leavening agents, baking powder, double-acting, straight phosphate" 18370
-"7" 0.25 "tsp" "Salt, table" 2047
-"8" 0.5 "cup" "Milk, whole, 3.25% milkfat, without added vitamin A and vitamin D" 1211
+"Amount" "Measure" "Ingredient"
+0.5 "cup" "sugar, white, granulated"
+0.25 "cup" "butter, salted"
+1 "lrg" "egg, raw"
+1 "tsp" "extract, vanilla"
+1.5 "cup" "flour, bread, white, enriched"
+0.5 "cup" "milk, whole, 3.25%"

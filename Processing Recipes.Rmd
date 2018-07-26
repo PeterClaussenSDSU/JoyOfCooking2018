@@ -186,7 +186,7 @@ for(idx in 1:length(recipe.files)) {
       #an empty NBD_No. We will attempt to look up thos later.
       #if we sort the data by ingredient, and multiple recipes have the 
       #same incredients, we may be able to save some searches.
-      tbl$NBD_No <- NA
+      tbl$NDB_No <- NA
     }
     if(length(names(tbl)) == 4) {
       # we assume, for now, that the table is missing Year and Recipe,
@@ -201,7 +201,7 @@ for(idx in 1:length(recipe.files)) {
     tryCatch(test.tbl <- rbind(test.frame, tbl[,join.names]),
              error=function(e) {
                print(file.name)
-               print(e)
+               print(head(tbl))
            })
     #if we can bind to the empty table, we can merge this table with
     #the rest
