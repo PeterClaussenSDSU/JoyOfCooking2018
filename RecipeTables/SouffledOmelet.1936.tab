@@ -1,6 +1,6 @@
-"Amount" "Measure" "Ingredient" "NDB_No"
-2 "lrg" "Egg, whole, raw, fresh" 1123
-2 "ea" "Egg, whole, raw, fresh" 1123
-0.25 "cup" "Sugars, powdered" 19336
-0.5 "tsp" "Vanilla extract" 2050
-0.5 "tsp" "Butter, salted" 1001
+"Amount"	"Measure"	"Ingredient"
+"1"	2	"lrg"	"egg, raw"
+"2"	2	"ea"	"egg white, raw, large"
+"3"	0.25	"cup"	"sugar, powdered, unsifted"
+"4"	0.5	"tsp"	"extract, vanilla"
+"5"	0.5	"tsp"	"butted, salted"

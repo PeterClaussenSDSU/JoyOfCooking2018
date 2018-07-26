@@ -1,5 +1,5 @@
-"Amount"	"Measure"	"Ingredient"	"NBD_No"
-2	"cup"	"Milk, whole, 3.25% milkfat, with added vitamin D"	1077
-0.25	"cup"	"Sugars, granulated"	19335
-3	"ea"	"Egg, yolk, raw, fresh"	1125
-0.5	"tsp"	"Vanilla extract"	2050
+"Amount"	"Measure"	"Ingredient"
+2	"cup"	"milk, whole, 3.25%"
+0.25	"cup"	"sugar, white, granulated, granulated"
+3	"ea"	"egg yolk, raw, large"
+0.5	"tsp"	"extract, vanilla"

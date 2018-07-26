@@ -1,5 +1,5 @@
-"Amount"	"Measure"	"Ingredient"	"NBD_No"
-0.5	"cup"	"Cream, fluid, heavy whipping"	1053
-1	"cup"	"Soup, stock, chicken, home-prepared"	6172
-4	"lrg"	"Egg, whole, raw, fresh"	1123
-1.5	"cup"	"Broccoli, frozen, chopped, cooked, boiled, drained, without salt"	11093
+"Amount"	"Measure"	"Ingredient"
+0.5	"cup"	"cream, whipping, heavy"
+1	"cup"	"stock, chicken, prepared from recipe"
+4	"lrg"	"egg, raw"
+1.5	"cup"	"broccoli, cooked, drained, chopped"
