@@ -1,8 +1,8 @@
-"Amount"	"Measure"	"Ingredient"	"NBD_No"
-"1"	5	"lrg"	"egg, raw"	1123
-"2"	1	"lb"	"asparagus spears, canned, 5\" long, drained"	11015
-"3"	4	"Tbs"	"butter, salted"	1001
-"4"	4	"Tbs"	"flour, all purpose, self rising, enriched"	20082
-"5"	2	"cup"	"creaming, whipping, heavy"	1053
-"6"	0.5	"cup"	"bread crumbs, plain, dry, grated"	18079
-"7"	2	"Tbs"	"butter, salted"	1001
+"Amount" "Measure" "Ingredient" "NDB_No"
+5 "lrg" "egg, raw" 1123
+1 "lb" "asparagus spears, canned, 5\" long, drained" 11015
+4 "Tbs" "butter, salted" 1001
+4 "Tbs" "flour, all purpose, self rising, enriched" 20082
+2 "cup" "creaming, whipping, heavy" 1053
+0.5 "cup" "bread crumbs, plain, dry, grated" 18079
+2 "Tbs" "butter, salted" 1001

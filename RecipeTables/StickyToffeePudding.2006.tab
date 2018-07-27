@@ -1,7 +1,9 @@
-"Amount" "Measure" "Ingredient"
-"1" 1.5 "cup, chopped" "dates, california, chopped"
-"2" 2 "cup" "flour, all purpose, self rising, enriched"
-"3" 1.25 "cup packed" "sugar, brown, packed"
-"4" 6 "tbsp" "butter, salted"
-"5" 3 "large" "egg, raw"
-"6" 1.5 "tsp" "extract, vanilla"
+"Amount" "Measure" "Ingredient" "NDB_No"
+1 "cup" "pecans, chopped" 12142
+0.25 "cup" "walntus, black, dried, chopped" 12154
+1 "cup" "dates, california, chopped" 9087
+1 "cup" "sugar, white, granulated, granulated" 19335
+3 "lrg" "egg, raw" 1123
+1 "tsp" "extract, vanilla" 2050
+2 "Tbs" "milk, whole, 3.25%" 1077
+0.5 "Tbs" "flour, bread, white, enriched" 20083

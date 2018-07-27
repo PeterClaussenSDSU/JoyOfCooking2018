@@ -1,0 +1,5 @@
+"Amount"	"Measure"	"Ingredient"
+"1"	1	"lb"	"Crustaceans, crab, blue, canned"
+"2"	0.5	"cup"	"mayonnaise, regular"
+"3"	2	"tbs"	"Lemon juice, raw"
+"4"	2	"tbs"	"Capers, canned"

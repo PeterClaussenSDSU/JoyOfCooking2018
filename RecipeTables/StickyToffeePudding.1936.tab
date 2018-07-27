@@ -1,9 +1,9 @@
-"Amount" "Measure" "Ingredient"
-"1" 1 "cup, chopped" "pecans, chopped"
-"2" 0.25 "cup, chopped" "walnuts, black, dried, chopped"
-"3" 1 "cup, chopped" "dates, california, chopped"
-"4" 1 "cup" "sugar, white, granulated, granulated"
-"5" 3 "large" "egg, raw"
-"6" 1 "tsp" "extract, vanilla"
-"7" 2 "tbsp" "milk, whole, 3.25%"
-"8" 0.03125 "cup" "flour, bread, white, enriched"
+"Amount" "Measure" "Ingredient" "NDB_No"
+1 "cup" "pecans, chopped" 12142
+0.25 "cup" "walntus, black, dried, chopped" 12154
+1 "cup" "dates, california, chopped" 9087
+1 "cup" "sugar, white, granulated, granulated" 19335
+3 "lrg" "egg, raw" 1123
+1 "tsp" "extract, vanilla" 2050
+2 "Tbs" "milk, whole, 3.25%" 1077
+0.5 "Tbs" "flour, bread, white, enriched" 20083

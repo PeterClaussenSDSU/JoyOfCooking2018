@@ -1,0 +1,7 @@
+"Amount"	"Measure"	"Ingredient"
+"1"	5	"lrg"	"Egg,whole,raw,fresh"
+"2"	1	"lb"	"Asparagus,canned,drained solids"
+"3"	6	"Tbs"	"Butter,salted"
+"4"	4	"Tbs"	"Wheat flour,white, all-purpose,self-rising,enriched"
+"5"	2	"cup"	"Cream, fluid,heavy whipping"
+"6"	0.5	"cup"	"Bread,crumbs,dry,grated, plain"
