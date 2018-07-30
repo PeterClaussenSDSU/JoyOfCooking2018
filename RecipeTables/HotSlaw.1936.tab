@@ -1,6 +1,6 @@
-"Amount"	"Unit"	"Ingredient"	"NDB_No"
-"1"	3	"cup"	"Cabbage, raw"	11109
-"2"	3	"tbsp"	"Vinegar, distilled"	2053
-"3"	1	"tbsp"	"Sugars, granulated"	19335
-"4"	2	"tbsp"	"Butter, salted"	1001
-"5"	1	"pieces"	"Apples, raw, with skin (Includes foods for USDA's Food Distribution Program)"	9003
+"Recipes" "Year" "Amount" "Measure" "NDB_No" "Ingredient"
+"Hot Slaw" 1936 3 "cup" 11109 "Cabbage, raw"
+"Hot Slaw" 1936 3 "Tbs" 2053 "Vinegar, distilled"
+"Hot Slaw" 1936 1 "Tbs" 19335 "Sugars, granulated"
+"Hot Slaw" 1936 2 "Tbs" 1001 "Butter, salted"
+"Hot Slaw" 1936 1 "ea" 9014 "Apples, frozen, unsweetened, unheated (Includes foods for USDA's Food Distribution Program)"

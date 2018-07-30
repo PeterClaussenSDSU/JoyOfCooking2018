@@ -1,8 +1,0 @@
-Recipe	Year	Amount	Unit	Ingredient
-Chocolate Bavarian Cream	2006	3	Tbs	milk, whole, 3.25%
-Chocolate Bavarian Cream	2006	1.5	cup	milk, whole, 3.25%
-Chocolate Bavarian Cream	2006	2.25	tsp	gelatin, dry, unsweetened
-Chocolate Bavarian Cream	2006	4	oz	chocolate, dark, 45-59% cacao solids
-Chocolate Bavarian Cream	2006	0.25	cup	sugar, white, granulated, granulated
-Chocolate Bavarian Cream	2006	1	tsp	extract, vanilla
-Chocolate Bavarian Cream	2006	1	cup	cream, whipping, heavy

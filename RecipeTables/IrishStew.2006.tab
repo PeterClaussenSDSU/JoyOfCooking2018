@@ -1,6 +1,7 @@
-"Amount"	"Unit"	"Ingredient"	"NDB_NO"
-"1"	2	"Tbs"	"Lamb, composite of trimmed retail cuts, separable lean only, trimmed to 1/4\" fat, choice, raw"	17003
-"2"	3	"lb"	"Oil, canola"	4582
-"3"	6	"ea"	"Potatoes, red, flesh and skin, raw"	11355
-"4"	3	"cup"	"Soup, stock, chicken, home-prepared"	6172
-"5"	4	"ea"	"Carrots, raw"	11124
+"Recipe" "NDB_No" "Year" "Amount" "Measure" "Ingredient"
+"1" "Irish Stew" 4582 "2006" 2 "Tbs" "Oil, canola"
+"2" "Irish Stew" 11286 "2006" 2 "ea" "Onions, yellow, sauteed"
+"3" "Irish Stew" 17003 "2006" 3 "lb" "Lamb, composite of trimmed retail cuts, separable lean only, trimmed to 1/4\" fat, choice, raw"
+"4" "Irish Stew" 11365 "2006" 6 "ea" "Potatoes, boiled, cooked in skin, flesh, without salt"
+"5" "Irish Stew" 6172 "2006" 3 "cup" "Soup, stock, chicken, home-prepared"
+"6" "Irish Stew" 11373 "2006" 4 "ea" "Potatoes, au gratin, home-prepared from recipe using butter"
