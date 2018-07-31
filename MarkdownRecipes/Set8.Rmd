@@ -1,0 +1,309 @@
+---
+title: "Joy Of Cooking Midterm Project Prep"
+author: "Set 8"
+date: "7/19/2018"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+# Part 1 - Assign Recipes
+
+I really did not understand what these first few parts were for in this Rmd file.  I did not download all of the recipes because I did not think that we need to for this part of the project since I could not find anything about this document in the Midterm Project Overview.  Also, my two took a while to download and I do not have enough time to download all 100+ pdfs. I did use this file though becasue it read in the different table that were provided on D2L from online.  Even though I did not know what this first section was for I left it here and it read in my 3 pdfs.
+
+First, generate a list of all files in the Recipes folder.
+```{r,eval=FALSE}
+recipes <- list.files(path = "Recipes", pattern = '*.pdf')
+```
+
+Make this reproducible.
+```{r,eval=FALSE}
+set.seed(10010)
+```
+
+Create two randomly sampled list of recipe files and cycle this list through 80 rows
+
+```{r,eval=FALSE}
+recipe.pairs <- matrix(c(sample(recipes),sample(recipes)),ncol=2,nrow=80)
+```
+
+Are there any pairs across rows?
+
+```{r,eval=FALSE}
+sum(recipe.pairs[,1]==recipe.pairs[,2])
+```
+
+Write to a table
+
+```{r,eval=FALSE}
+write.csv(recipe.pairs, file="Recipe.Table.csv",row.names = FALSE)
+```
+
+Read the table in and print:
+
+```{r,eval=FALSE}
+Recipe.Table <- read.csv("Recipe.Table.csv",header=FALSE,skip=1)
+print(Recipe.Table)
+```
+
+# Part 2 - Check Nutrient Data.
+
+We will be using the USDA food nutrient database, found at https://www.ars.usda.gov/northeast-area/beltsville-md-bhnrc/beltsville-human-nutrition-research-center/nutrient-data-laboratory/docs/usda-national-nutrient-database-for-standard-reference/
+
+Run this to make sure your system can read the required nutrient database tables.
+
+I download these files from D2L and changed the path in this code to match what I had.  Then I just ran this code.  
+```{r}
+weight.dat <- read.table("WEIGHT.txt",header=FALSE,sep="^",quote="~")
+names(weight.dat) <- c("NDB_No","Seq","Amount","Msre_Desc","Gm_Wgt","Num_Data_Pts","Std_Dev")
+head(weight.dat)
+summary(weight.dat)
+```
+
+```{r}
+food_des.dat <- read.table("FOOD_DES.txt",header=FALSE,sep="^",quote="~")
+names(food_des.dat) <- c("NDB_No","FdGrp_Cd","Long_Desc","Shrt_Desc",
+"ComName","ManufacName","Survey","Ref_desc","Refuse","SciName",
+"N_Factor","Pro_Factor","Fat_Factor","CHO_Factor")
+dim(food_des.dat)
+head(food_des.dat)
+summary(food_des.dat)
+```
+
+```{r}
+nut_data.dat <- read.table("NUT_DATA.txt",header=FALSE,sep="^",quote="~")
+names(nut_data.dat) <- c("NDB_No","Nutr_No","Nutr_Val","Num_Data_Pts","Std_Error",
+"Src_Cd","Deriv_Cd","Ref_NDB_No","Add_Nutr_Mark","Num_Studies",
+"Min","Max","DF","Low_EB","Up_EB","Stat_cmt","AddMod_Date")
+head(nut_data.dat)
+summary(nut_data.dat)
+```
+
+Here I created the data tables for Summer Squash using grep to find a match in the food_des data table. To find the correct match I started with generic words like (S|s)quash because I did not know if it was capatilzed or not.  Then I looked at the results to find the best match and see how it was written in the food_des table.  I just kept changing the text in the grep function so you can not see all of my tries, but I wanted to document how I got to the end result here. I used a mask for grep so that I could use the index to get the description and the NDB_No for each ingredient.  I had to use as.character  for the description because it was original a factor.  Then I used as.integer to make sure that it was a number I was getting from NDB_No.  
+
+For the table I entered the amount and units manually because that is how I thought we were suppose to do it from the instruction and I did not know how else we would do it.  I got the Ingredient and NDB_No using grep since that is what the intrustuctions said to do. The descripitions were hard to determine which was the best, but I just started with the most generic word in the ingredient to get an idea of what was in the food_des table.  Then I was start looking for other description words for the ingredient matched until I came down to one.   
+
+```{r SauteedSummerSquash}
+SummerSquashMask <- grep("(S|s)quash, summer, all varieties, raw" , food_des.dat$Long_Desc)
+SummerSquash <- as.character(food_des.dat$Long_Desc[SummerSquashMask])
+SummerSquashNDB_No <- as.integer(food_des.dat$NDB_No[SummerSquashMask])
+#print(SummerSquashNBD_No)
+#class(SummerSquash)
+
+SaltedButterMask <- grep("(B|b)utter, salted", food_des.dat$Long_Desc)
+SaltedButter <- as.character(food_des.dat$Long_Desc[SaltedButterMask])
+SaltedButterNDB_No <- as.integer(food_des.dat$NDB_No[SaltedButterMask])
+#print(SaltedButter)
+#print(SaltedButterNBD_No)
+
+YellowOnionMask <- grep("(O|o)nions, sweet", food_des.dat$Long_Desc)
+YellowOnion <- as.character(food_des.dat$Long_Desc[YellowOnionMask])
+YellowOnionNDB_No <- as.integer(food_des.dat$NDB_No[YellowOnionMask])
+
+SauteedSummerSquash1936.dat <- data.frame(
+  Amount = c(2.00,0.25,1.00),
+  Measure = c("cup", "cup", "cup"),
+  Ingredient = c(SummerSquash, SaltedButter, YellowOnion),
+  NBD_No = c(SummerSquashNDB_No,SaltedButterNDB_No,YellowOnionNDB_No)
+)
+
+SauteedSummerSquash1936.dat
+
+SauteedSummerSquash2006.dat <- data.frame(
+  Amount = c(3.00,3.00,1.00),
+  Measure = c("cup", "Tbs", "cup"),
+  Ingredient = c(SummerSquash, SaltedButter, YellowOnion),
+  NBD_No = c(SummerSquashNDB_No,SaltedButterNDB_No,YellowOnionNDB_No)
+)
+SauteedSummerSquash2006.dat
+```
+
+Here I did the same thing to get the data tables as I did for the summer squash. the pdf had demi-glace as an ingredient, but I could not find the ingredient in the food_des table and so I just excluded it from the table.  I included the grep that I used to try and find a match for it.  
+
+```{r Chow Mein}
+PorkChopMask <- grep("^(P|p)ork, fresh, loin, center loin \\(chops\\), boneless, separable lean only, raw", food_des.dat$Long_Desc)
+PorkChop <- as.character(food_des.dat$Long_Desc[PorkChopMask])
+PorkChopNDB_No <- as.integer(food_des.dat$NDB_No[PorkChopMask])
+#print(PorkChop)
+
+ChickenStockMask <- grep("(S|s)tock, chicken",food_des.dat$Long_Desc)
+ChickenStock <- as.character(food_des.dat$Long_Desc[ChickenStockMask])
+ChickenStockNDB_No <- as.integer(food_des.dat$NDB_No[ChickenStockMask])
+
+ChickenThighMask <- grep("Chicken, broiler or fryers, breast, skinless, boneless, meat only, cooked, braised",food_des.dat$Long_Desc)
+ChickenThigh<- as.character(food_des.dat$Long_Desc[ChickenThighMask])
+ChickenThighNDB_No <- as.integer(food_des.dat$NDB_No[ChickenThighMask])
+
+CeleryMask <- grep("(C|c)elery, raw", food_des.dat$Long_Desc)
+Celery <- as.character(food_des.dat$Long_Desc[CeleryMask])
+CeleryNDB_No <- as.integer(food_des.dat$NDB_No[CeleryMask])
+
+MushroomsMask <-grep("(M|m)ushrooms, canned",food_des.dat$Long_Desc)
+Mushrooms <- as.character(food_des.dat$Long_Desc[MushroomsMask])
+MushroomsNDB_No <- as.integer(food_des.dat$NDB_No[MushroomsMask])
+
+FlourMask <- grep("(F|f)lour, white, all-purpose, self-rising, enriched", food_des.dat$Long_Desc)
+Flour <- as.character(food_des.dat$Long_Desc[FlourMask])
+FlourNDB_No <- as.integer(food_des.dat$NDB_No[FlourMask])
+
+OilMask <- grep('(O|o)il, canola',food_des.dat$Long_Desc)
+Oil <- as.character(food_des.dat$Long_Desc[OilMask])
+OilNDB_No <- as.integer(food_des.dat$NDB_No[OilMask])
+
+GreenOnionMask <- grep("Onions, spring or scallions",food_des.dat$Long_Desc)
+GreenOnion <-  as.character(food_des.dat$Long_Desc[GreenOnionMask])
+GreenOnionNDB_No <- as.integer(food_des.dat$NDB_No[GreenOnionMask])
+
+PorkHamMask <- grep("(P|p)ork, cured, ham, whole, separable lean only, roasted", food_des.dat$Long_Desc)
+PorkHam <- as.character(food_des.dat$Long_Desc[PorkHamMask])
+PorkHamNDB_No <- as.integer(food_des.dat$NDB_No[PorkHamMask])
+
+GreenPepperMask <- grep("(P|p)eppers, sweet, green, r",food_des.dat$Long_Desc)
+GreenPepper <- as.character(food_des.dat$Long_Desc[GreenPepperMask])
+GreenPepperNDB_No <- as.integer(food_des.dat$NDB_No[GreenPepperMask])
+
+MushroomsPortMask <- grep("(M|m)ushrooms, portabella, r",food_des.dat$Long_Desc)
+MushroomsPort <- as.character(food_des.dat$Long_Desc[MushroomsPortMask])
+MushroomsPortNDB_No <- as.integer(food_des.dat$NDB_No[MushroomsPortMask])
+
+SproutsMask <- grep("(M|m)ung beans, mature seeds, sprouted, r",food_des.dat$Long_Desc)
+Sprouts <- as.character(food_des.dat$Long_Desc[SproutsMask])
+SproutsNDB_No <- as.integer(food_des.dat$NDB_No[SproutsMask])
+
+# DemiGlaceMask <- grep("(D|d)emi",food_des.dat$Long_Desc)
+# DemiGlace <- as.character(food_des.dat$Long_Desc[DemiGlaceMask])
+# DemiGlaceNDB_No <- 0
+
+CannedBeefMask <- grep("(C|c)onsomme, canned, con",food_des.dat$Long_Desc)
+CannedBeef <- as.character(food_des.dat$Long_Desc[CannedBeefMask])
+CannedBeefNDB_No <- as.integer(food_des.dat$NDB_No[CannedBeefMask])
+
+SoySauceMask <- grep("(S|s)oy sauce made from soy and wheat \\(shoyu\\)$", food_des.dat$Long_Desc)
+SoySauce <- as.character(food_des.dat$Long_Desc[SoySauceMask])
+SoySauceNDB_No <- as.integer(food_des.dat$NDB_No[SoySauceMask])
+
+SherryMask <- grep("(A|a)lcoholic beverage, wine, dessert, d",food_des.dat$Long_Desc)
+Sherry <- as.character(food_des.dat$Long_Desc[SherryMask])
+SherryNDB_No <- as.integer(food_des.dat$NDB_No[SherryMask])
+
+ChowMein1936.dat <- data.frame(
+  Amount = c(0.50, 3.00,2.00,2.50,3.00,0.75,0.75,2.50),
+  Measure = c("lb", "Tbs", "Tbs", "cup", "ea", "cup", "cup", "Tbs"),
+  Ingredient = c(PorkChop,SaltedButter,YellowOnion,ChickenStock,ChickenThigh,Celery,Mushrooms,Flour),
+  NDB_No = c(PorkChopNDB_No,SaltedButterNDB_No, YellowOnionNDB_No,ChickenStockNDB_No,ChickenThighNDB_No,CeleryNDB_No,MushroomsNDB_No,FlourNDB_No)
+)
+ChowMein1936.dat
+
+ChowMein2006.dat <- data.frame(
+  Amount = c(2.00,0.50,0.50,2.00,1.00,1.00,1.00,1.00,1.00,3.00),
+  Measure = c("Tbs","cup","cup","cup","ea","cup","cup","cup","Tbs","Tbs"),
+  Ingredient = c(Oil,Celery,GreenOnion,PorkHam,GreenPepper,MushroomsPort,Sprouts, CannedBeef,SoySauce,Sherry),
+  NDB_No = c(OilNDB_No,CeleryNDB_No,GreenOnionNDB_No, PorkHamNDB_No, GreenPepperNDB_No, MushroomsPortNDB_No, SproutsNDB_No, CannedBeefNDB_No, SoySauceNDB_No, SherryNDB_No)
+)
+ChowMein2006.dat
+```
+
+Here I wrote the data table as tab files with the recipe name and year in the file name using the convention we agreed on.  
+
+```{r Writing Tables}
+write.table(SauteedSummerSquash1936.dat, file="SauteedSummerSquash.1936.tab", sep ="\t", row.names = FALSE)
+
+write.table(SauteedSummerSquash2006.dat, file="SauteedSummerSquash.2006.tab", sep ="\t", row.names = FALSE)
+
+write.table(ChowMein1936.dat, file="ChowMein.1936.tab", sep ="\t", row.names = FALSE)
+
+write.table(ChowMein2006.dat, file="ChowMein.2006.tab", sep ="\t", row.names = FALSE)
+
+```
+
+Here I read in the tab files that I just created and read in the Beef Stroganoff tables.  I added a column for the NDB_No for the beef ingredients.  I just put all zeroes in the column because I did not know which NDB_No I should use and I thought that for the final I would add them if the class came to a consensus as to what we should use.  Next, I row combined the tables with rbind to make sure they would merge correctly and they did! 
+
+```{r Reading and Merging Tab Files}
+SauteedSummerSquash.1936.Table <- read.delim("SauteedSummerSquash.1936.tab",header=FALSE,skip=1)
+#print(SauteedSummerSquash.1936.Table)
+
+SauteedSummerSquash.2006.Table <- read.delim("SauteedSummerSquash.2006.tab",header=FALSE,skip=1)
+
+ChowMein.1936.Table <- read.delim("ChowMein.1936.tab",header=FALSE,skip=1)
+
+ChowMein.2006.Table <- read.delim("ChowMein.2006.tab",header=FALSE,skip=1)
+
+BeefStroganoff.1997.Table <- read.table("BeefStroganoff.1997.tab",header=FALSE,skip=1)
+BeefStroganoff.1997.Table$V4 <- c(0,0,0)
+
+BeefStroganoff.2006.Table <- read.table("BeefStroganoff.2006.tab",header=FALSE,skip=1)
+BeefStroganoff.2006.Table$V4 <- c(0,0,0,0,0,0,0,0)
+
+CombinedTables <- rbind(BeefStroganoff.1997.Table, BeefStroganoff.2006.Table, SauteedSummerSquash.1936.Table, SauteedSummerSquash.2006.Table, ChowMein.1936.Table, ChowMein.2006.Table)
+print(CombinedTables)
+```
+
+Here I merged the years for each recipe by the ingredients to check the data.  For the Chow Mein only one ingredient was the same and it checks out.  For the squash it had three that were the same.  One of the Measured changed from cup to Tbs and that is decrepency in the plots for those ones.  Otherwise the others check out.  
+
+I did these plots because that is what the project overview suggested to do.  
+
+```{r Proofing Data}
+ChowMeinMerged <- merge(ChowMein1936.dat,ChowMein2006.dat, by = "Ingredient")
+print(ChowMeinMerged)
+SauteedSummerSquashMerged <- merge(SauteedSummerSquash1936.dat,SauteedSummerSquash2006.dat, by = "Ingredient")
+print(SauteedSummerSquashMerged)
+
+plot(ChowMeinMerged$Measure.x, ChowMeinMerged$Measure.y)
+plot(SauteedSummerSquashMerged$Measure.x, SauteedSummerSquashMerged$Measure.y)
+
+plot(ChowMeinMerged$Amount.x, ChowMeinMerged$Amount.y)
+plot(SauteedSummerSquashMerged$Amount.x, SauteedSummerSquashMerged$Amount.y)
+```
+
+For this section I understood that we needed to add our recipes to the recipes.csv file and I created the tables with the name, year, min and max servings so that they were the same as what was in the csv file for beef stroganoff.  Then I read in the recipes.csv file and row combined the tables with rbind.  Then I wrote the table back to the recipes.csv file.  This is what I understood for this step of the process from the Overview.  
+
+```{r Writing to Recipes.csv}
+ChowMein1936Servings.dat <- data.frame(
+  Recipe = "ChowMein",
+  Year = 1936,
+  MinServings = 10 ,
+  MaxServings = 10
+)
+ChowMein2006Servings.dat <- data.frame(
+  Recipe = "ChowMein",
+  Year = 2006,
+  MinServings = 4 ,
+  MaxServings = 4
+)
+
+SauteedSummerSquash1936Servings.dat <- data.frame(
+  Recipe = "SauteedSummerSquash",
+  Year = 1936,
+  MinServings = 4 ,
+  MaxServings = 4
+)
+
+SauteedSummerSquash2006Servings.dat <- data.frame(
+  Recipe = "SauteedSummerSquash",
+  Year = 2006,
+  MinServings = 4 ,
+  MaxServings = 4
+)
+
+
+Recipe.Table <- read.csv("Recipes.csv",header=TRUE)
+print(Recipe.Table)
+
+
+CombinedServings <- rbind(ChowMein2006Servings.dat,ChowMein1936Servings.dat,SauteedSummerSquash2006Servings.dat,SauteedSummerSquash1936Servings.dat,Recipe.Table)
+print(CombinedServings)
+
+write.table(CombinedServings, file="Recipes.csv",row.names = FALSE, sep = ",")
+```
+
+I went throughh all five steps that were laid out in the Midterm Project Overview file on D2L since that was the best place I could find on what exactly to do for this project.  I tried to document my choices and code the best I could.  I mostly tried to use things that we had learned and not anythign extra at this point.  I am not sure what all we are supposed to upload for the D2L dropbox, but I am going to download all of the files that I produced from this code.  
+
+
+
+
+
+
+
+
+
+

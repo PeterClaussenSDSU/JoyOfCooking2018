@@ -1,0 +1,545 @@
+---
+title: "Joy Of Cooking Midterm Project Prep"
+author: "Set 38"
+date: "7/21/2018"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+# Part 1 - Assign Recipes
+
+First, generate a list of all files in the Recipes folder.
+```{r}
+
+
+######################################################
+############# Fruit and Berry Cobbler ################
+#############     1936      ##########################
+######################################################
+
+# A data frame is assigned to FruitandBerryCobbler_1936
+FruitandBerryCobbler_1936 <- data.frame(
+# Amount, Measure and Ingredients are defined here as per my Recipe in the PDF
+  Amount = c(3.00,0.67,1.00,1.00,0.50,2.00,6.00,4.00), 
+  Measure = c("cup","cup", "Tbs", "cup", "Tbs", "Tbs","Tbs","Tbs"),
+  Ingredient = c("peaches,fresh,sliced", "sugar,white,granulated,granulated","flour,all purpose,self rising,enriched", "flour,cake,white,unsifted,enriched", "sugar,white,granulated,granulated", "butter,salted", "cream, whipping, heavy", "butter, salted"))
+```
+###Comment: 
+As per the requirement I have assigned a data frame to my First Recipe of Year 1936 FruitandBerryCobbler_1936 and then I have declared the Amount, Measure, Ingredient here. It creates table for my recipe, with columns amount, Unit and Ingredient.  
+
+```{r}
+######################################################
+############# Fruit and Berry Cobbler ################
+#############     2006      ##########################
+######################################################
+
+# A data frame is assigned to FruitandBerryCobbler_2006
+FruitandBerryCobbler_2006 <- data.frame(
+# Amount, Measure and Ingredients are defined as per my recipe in the PDF  
+  Amount = c(1.75, 0.50, 2.00, 1.75, 4.00, 0.75, 1.00, 2.00),
+  Measure = c("lb","cup","Tbs","cup", "Tbs", "cup", "Tbs", "tsp"),
+  Ingredient = c("peaches,fresh,sliced", "sugar,white,granulated","starch,corn","flour, allpurpose, self rising, enriched", "butter,salted", "milk,whole,3.25%", "butter, salted", "sugar, white, granulated, granulated"))
+```
+###Comment: 
+As per the requirement I have assigned a data frame to my First Recipe of Year 2006 FruitandBerryCobbler_2006 and then I have declared the Amount, Measure, Ingredient here. It creates table for my recipe, with columns amount, Unit and Ingredient. 
+
+```{r}
+######################################################
+############# Tapioca Custard ########################
+#############     1936      ##########################
+######################################################
+
+#  A data frame is assigned to Tapioca Custard_2006
+TapiocaCustard_1936 <- data.frame(
+# Amount, Measure and Ingredients are defined as per my recipe in the PDF 
+  Amount = c(0.33,0.50,2.00,4.00,1.00),
+  Measure = c("cup","cup","Irg","cup","tsp"),
+  Ingredient = c("tapioca,quick cooking,dry", "sugar,white,granulated,granulated","egg,raw","milk,whole,3.25%","extract,vanilla"))
+```
+###Comment: 
+As per the requirement I have assigned a data frame to my First Recipe of Year 1936 FruitandBerryCobbler_1936 and then I have declared the Amount, Measure, Ingredient here. It creates table for my recipe, with columns amount, Unit and Ingredient. 
+
+```{r}
+######################################################
+############# Tapioca Custard ########################
+#############     2006      ##########################
+######################################################
+#  A data frame is assigned to Tapioca Custard_2006
+TapiocaCustard_2006 <- data.frame(
+  # Amount, Measure and Ingredients are defined as per my recipe in the PDF 
+  Amount = c(2.50,0.33,3.00,1.00),
+  Measure = c("cup","cup","Tbs","tsp"),
+  Ingredient = c("milk,whole,3.25%", "sugar,white,granulated,granulated", "tapioca, quickcooking, dry", "extract, vanilla"))
+```
+###Comment: 
+As per the requirement I have assigned a data frame to my First Recipe of Year 1936 FruitandBerryCobbler_1936 and then I have declared the Amount, Measure, Ingredient here. It creates table for my recipe, with columns amount, Unit and Ingredient. 
+
+```{r}
+#############################################################################
+####### 2. Writing each individual recipe to a tab delimited file ###########
+#############################################################################
+
+# write.table using .tab for recipe FruitandBerryCobbler_1936
+write.table(FruitandBerryCobbler_1936,"FruitandBerryCobbler_1936.tab",row.names = FALSE)
+# write.table using .tab for recipe FruitandBerryCobbler_2006
+write.table(FruitandBerryCobbler_2006,"FruitandBerryCobbler_2006.tab",row.names = FALSE)
+# write.table using .tab for recipe TapiocaCustard_1936
+write.table(TapiocaCustard_1936,"TapiocaCustard_1936.tab",row.names = FALSE)
+# write.table using .tab for recipe TapiocaCustard_2006
+write.table(TapiocaCustard_2006, "TapiocaCustard_2006.tab",row.names = FALSE)
+```
+###Comment: 
+According to the requirement I have written write.table for FruitandBerryCobbler_1936, FruitandBerryCobbler_2006, TapiocaCustard_1936 and TapiocaCustard_2006. Finally Made sure that the name of the tab file is comprimised of the recipe file name and the year of the recipe. 
+
+```{r}
+#############################################################################
+####### 3. Read  and merge the tables  ######################################
+#############################################################################
+
+# read.table for the year 1997 of recipe BeefStroganoff
+BeefStroganoff.1997 = read.table("BeefStroganoff.1997.tab",header = TRUE,stringsAsFactors = FALSE) 
+# read.table for the year 2006 of recipe BeefStroganoff
+BeefStroganoff.2006 = read.table("BeefStroganoff.2006.tab",header = TRUE,stringsAsFactors = FALSE)
+# combining both the recipes FruitandBerryCobbler and TapiocaCustard of Year 1936) 
+Rec1936 = rbind(FruitandBerryCobbler_1936,TapiocaCustard_1936)
+Rec2006 = rbind(TapiocaCustard_2006,TapiocaCustard_2006)
+# Merging all four of them (1936 and 1997) to BeefStroganoff_1936_1997 and (2006) to BeefStroganoff_2006
+MergwithBSO_1936_1997 = rbind(Rec1936,BeefStroganoff.1997)
+MergwithBSO_2006 = rbind(Rec2006,BeefStroganoff.2006) 
+
+```
+###Comment:
+According to the requirement I have read in each tab file and merged the tables with the example BeefStroganoff tables. Here in the above code read.table is used for BeefStroganoff.1997, BeefStroganoff.2006 and rbind has been done for both the recipes of years 1936 and 2006 and assigned to Rec1936 and Rec2006 respectively. 
+Merge is used for all four BeefStrongoff.1997, BeefStrongoff.2006, Rec1936, Rec2006.
+
+```{r}
+#############################################################################
+####### 4. data to check for errors  ########################################
+#############################################################################
+
+# Fruit and Berry Cobbler and TapiocaCustard merged by ingredient
+FruitandBerryCobblerIng <- merge(FruitandBerryCobbler_1936,FruitandBerryCobbler_2006, by = "Ingredient")
+TapiocaCustardIng <- merge(TapiocaCustard_1936,TapiocaCustard_2006, by = "Ingredient")
+#Measure.x and Measure.y is plotted and checked where the measures are not plotted
+plot(FruitandBerryCobblerIng$Measure.x,FruitandBerryCobblerIng$Measure.y, col = "blue")
+plot(TapiocaCustardIng$Measure.x,TapiocaCustardIng$Measure.y, col = "orange")
+#A contingency table comparing Measure.x and Measure.y to look for mismatches in measures between is created.
+table(FruitandBerryCobblerIng$Measure.x,FruitandBerryCobblerIng$Measure.y)
+table(TapiocaCustardIng$Measure.x,TapiocaCustardIng$Measure.y)
+# Amount.x and Amount.y to look for unexpected changes in values
+plot(FruitandBerryCobblerIng$Amount.x,FruitandBerryCobblerIng$Amount.y,col = "blue")
+plot(TapiocaCustardIng$Amount.x,TapiocaCustardIng$Amount.y,col = "orange")
+
+```
+###Comment: 
+Here in the above code Fruit and Berry Cobbler and Tapioca Custard are merged by ingredient and Measure.x and Measure.y is plotted and checked where the measures are not plotted.Followed by a contingency table comparing Measure.x and Measure.y to look for mismatches in measure between is created. Finally Amount.x and Amount.y to look for unxpected changes in values. 
+
+You can see the plots above according to the requirement. 
+```{r}
+######################################################################################
+
+food_des.dat <- read.table("FOOD_DES.txt",header=FALSE,sep="^",quote="~")
+names(food_des.dat) <- c("NDB_No","FdGrp_Cd","Long_Desc","Shrt_Desc",
+"ComName","ManufacName","Survey","Ref_desc","Refuse","SciName",
+"N_Factor","Pro_Factor","Fat_Factor","CHO_Factor")
+
+
+######################################################################################
+
+###Fruit and Berry Cobbler_1936 
+# Original Ingredients peaches,fresh,sliced
+# Matched "Peaches, frozen, sliced, sweetened "
+# Matched Appropriate or most suitable in the FOOD_DES
+# Partially Matched.
+FBC_1936_1 <- food_des.dat[grep('^peaches[[:punct:]].frozen[[:punct:]].sliced',food_des.dat$Long_Desc,ignore.case = TRUE,fixed = FALSE), c(1,3)]
+
+# Original ingredients are "sugar,white,granulated,granulated"
+# Matched  "Sugars, granulated "
+# It is Partially Matched.
+FBC_1936_2 <- food_des.dat[grep('^sugars[[:punct:]].granulated',food_des.dat$Long_Desc,ignore.case = TRUE,fixed = FALSE), c(1,3)]
+
+# Original ingredients are "flour,all purpose,self rising,enriched"
+# Matched "Wheat flour, white, all-purpose, self-rising, enriched"
+# Matched Appropriate or most suitable in the FOOD_DES
+# It is Partially Matched.
+FBC_1936_3 <- food_des.dat[grep('^wheat.flour[[:punct:]].white[[:punct:]].all-purpose[[:punct:]].self-rising',food_des.dat$Long_Desc,ignore.case = TRUE,fixed = FALSE), c(1,3)]
+
+# Original ingredients are "flour,cake,white,unsifted,enriched"
+# Matched "Wheat flour, white, cake, enriched"
+# Partially Matched.
+
+FBC_1936_4 <- food_des.dat[grep('^wheat.flour[[:punct:]].white[[:punct:]].cake', food_des.dat$Long_Desc,ignore.case = TRUE,fixed = FALSE), c(1,3)]
+
+# Original ingredients are "sugar,white,granulated,granulated"
+# Matched "sugar,white,granulated,granulated"
+# Partially Matched.
+
+FBC_1936_5 <- food_des.dat[grep('^sugars[[:punct:]].granulated',food_des.dat$Long_Desc,ignore.case = TRUE,fixed = FALSE), c(1,3)]
+
+# Original ingredients are "butter,salted"
+# Matched ingredient "Butter, salted"
+# Matched Exactly in the FOOD_DES
+FBC_1936_6 <- food_des.dat[grep('^butter[[:punct:]].salted',food_des.dat$Long_Desc,ignore.case = TRUE,fixed = FALSE), c(1,3)]
+
+# Original ingredients are "cream, whipping, heavy"
+# Matched ingredient are "Cream, fluid, heavy whipping"
+# Matched Exactly in the FOOD_DES
+FBC_1936_7 <- food_des.dat[grep('^cream[[:punct:]].fluid[[:punct:]].heavy.whipping',food_des.dat$Long_Desc,ignore.case = TRUE,fixed = FALSE), c(1,3)]
+
+# Original ingredients are "butter,salted"
+# Matched ingredient "Butter, salted"
+# Matched Exactly in the FOOD_DES
+
+FBC_1936_8 <- food_des.dat[grep('^butter[[:punct:]].salted',food_des.dat$Long_Desc,ignore.case = TRUE,fixed = FALSE), c(1,3)]
+
+# Combining all of them with rbind
+FABC_1936 <- rbind(FBC_1936_1,FBC_1936_2,FBC_1936_3,FBC_1936_4,FBC_1936_5,FBC_1936_6,FBC_1936_7,FBC_1936_8)
+
+###Fruit and Berry Cobbler_2006
+
+# Original Ingredients "peaches,fresh,sliced"
+# Matched "Peaches, frozen, sliced, sweetened"
+# Matched Appropriate or most suitable in the FOOD_DES
+# Partially Matched.
+FBC_2006_1 <- food_des.dat[grep('^peaches[[:punct:]].frozen[[:punct:]].sliced',food_des.dat$Long_Desc,ignore.case = TRUE,fixed = FALSE), c(1,3)]
+
+# Original Ingredients "sugar,white,granulated"
+# Matched "Sugars, granulated"
+# Matched Appropriate or most suitable in the FOOD_DES
+# Partially Matched.
+FBC_2006_2 <- food_des.dat[grep('^sugars[[:punct:]].granulated',food_des.dat$Long_Desc,ignore.case = TRUE,fixed = FALSE), c(1,3)]
+
+# Original Ingredients "starch,corn"
+# Matched "Cornstarch"
+# Matched Appropriate or most suitable in the FOOD_DES
+# Partially Matched.
+FBC_2006_3 <- food_des.dat[grep('^Cornstarch',food_des.dat$Long_Desc,ignore.case = TRUE,fixed = FALSE), c(1,3)]
+
+# Original Ingredients "flour, allpurpose, self rising, enriched"
+# Matched "Wheat flour, white, all-purpose, self-rising, enriched"
+# Matched Appropriate or most suitable in the FOOD_DES
+# Partially Matched.
+FBC_2006_4 <- food_des.dat[grep('^wheat.flour[[:punct:]].white[[:punct:]].all-purpose[[:punct:]].self-rising',food_des.dat$Long_Desc,ignore.case = TRUE,fixed = FALSE), c(1,3)]
+
+# Original Ingredients "butter,salted"
+# Matched "Butter, salted"
+# Matched Exactly in the FOOD_DES
+FBC_2006_5 <- food_des.dat[grep('^butter[[:punct:]].salted',food_des.dat$Long_Desc,ignore.case = TRUE,fixed = FALSE), c(1,3)]
+
+# Original Ingredients ""milk,whole,3.25%
+# Matched "Milk, whole, 3.25% milkfat, without added vitamin A and vitamin D"
+# Matched Appropriate or most suitable in the FOOD_DES
+# Partially Matched.
+FBC_2006_6 <- food_des.dat[grep('^milk[[:punct:]].whole[[:punct:]].3.25% milkfat[[:punct:]].without added vitamin A and vitamin D',food_des.dat$Long_Desc,ignore.case = TRUE,fixed = FALSE), c(1,3)]
+
+# Original Ingredients "butter,salted"
+# Matched "Butter, salted"
+# Matched Exactly in the FOOD_DES
+FBC_2006_7 <- food_des.dat[grep('^butter[[:punct:]].salted',food_des.dat$Long_Desc,ignore.case = TRUE,fixed = FALSE), c(1,3)]
+
+# Original Ingredients "sugar,white,granulated,granulated"
+# Matched "Sugars, granulated"
+# Matched Appropriate or most suitable in the FOOD_DES
+# Partially Matched.
+FBC_2006_8 <- food_des.dat[grep('^sugars[[:punct:]].granulated',food_des.dat$Long_Desc,ignore.case = TRUE,fixed = FALSE), c(1,3)]
+
+# Combining all of them with rbind
+FABC_2006 <- rbind(FBC_2006_1,FBC_2006_2,FBC_2006_3,FBC_2006_4,FBC_2006_5,FBC_1936_6,FBC_1936_7,FBC_1936_8)
+
+###Tapioca Custard_1936
+
+# Original Ingredients "tapioca,quick cooking,dry"
+# Matched "Puddings, tapioca, dry mix"
+# Matched Appropriate or most suitable in the FOOD_DES
+# Partially Matched.
+TC_1936_1 <- food_des.dat[grep('^Puddings[[:punct:]].tapioca[[:punct:]].dry mix$',food_des.dat$Long_Desc,ignore.case = TRUE,fixed = FALSE), c(1,3)]
+
+# Original Ingredients "sugar,white,granulated,granulated"
+# Matched "Sugars, granulated"
+# Matched Appropriate or most suitable in the FOOD_DES
+# Partially Matched.
+TC_1936_2 <- food_des.dat[grep('^sugars[[:punct:]].granulated',food_des.dat$Long_Desc,ignore.case = TRUE,fixed = FALSE), c(1,3)]
+
+# Original Ingredients "egg,raw"
+# Matched "Egg, whole, raw, fresh"
+# Matched Appropriate or most suitable in the FOOD_DES
+# Partially Matched.
+TC_1936_3 <- food_des.dat[grep('^egg[[:punct:]].whole[[:punct:]].raw[[:punct:]].fresh',food_des.dat$Long_Desc,ignore.case = TRUE,fixed = FALSE), c(1,3)]
+
+# Original Ingredients "milk,whole,3.25%"
+# Matched "Milk, whole, 3.25% milkfat, without added vitamin A and vitamin D"
+# Matched Appropriate or most suitable in the FOOD_DES
+# Partially Matched.
+TC_1936_4 <- food_des.dat[grep('^milk[[:punct:]].whole[[:punct:]].3.25% milkfat[[:punct:]].without added vitamin A and vitamin D',food_des.dat$Long_Desc,ignore.case = TRUE,fixed = FALSE), c(1,3)]
+
+# Original Ingredients "extract,vanilla"
+# Matched "Vanilla extract"
+# Matched Appropriate or most suitable in the FOOD_DES
+# Partially Matched.
+TC_1936_5 <- food_des.dat[grep('Vanilla extract$',food_des.dat$Long_Desc,ignore.case = TRUE,fixed = FALSE), c(1,3)]
+
+# Combining all of them with rbind
+TPC_1936 <- rbind(TC_1936_1,TC_1936_2,TC_1936_3,TC_1936_4,TC_1936_5)
+
+###Tapioca Custard_2006
+
+# Original Ingredients "milk,whole,3.25%"
+# Matched "Milk, whole, 3.25% milkfat, without added vitamin A and vitamin D"
+# Matched Appropriate or most suitable in the FOOD_DES
+# Partially Matched.
+TC_2006_1 <- food_des.dat[grep('^milk[[:punct:]].whole[[:punct:]].3.25% milkfat[[:punct:]].without added vitamin A and vitamin D',food_des.dat$Long_Desc,ignore.case = TRUE,fixed = FALSE), c(1,3)]
+
+# Original Ingredients "sugar,white,granulated,granulated"
+# Matched "Sugars, granulated"
+# Matched Appropriate or most suitable in the FOOD_DES
+# Partially Matched.
+TC_2006_2 <-food_des.dat[grep('^sugars[[:punct:]].granulated',food_des.dat$Long_Desc,ignore.case = TRUE,fixed = FALSE), c(1,3)]
+
+# Original Ingredients "tapioca, quickcooking, dry"
+# Matched "Puddings, tapioca, dry mix"
+# Matched Appropriate or most suitable in the FOOD_DES
+# Partially Matched.
+TC_2006_3 <-food_des.dat[grep('^Puddings[[:punct:]].tapioca[[:punct:]].dry mix$',food_des.dat$Long_Desc,ignore.case = TRUE,fixed = FALSE), c(1,3)]
+
+# Original Ingredients "extract, vanilla"
+# Matched "Vanilla extract"
+# Matched Appropriate or most suitable in the FOOD_DES
+# Partially Matched.
+TC_2006_4 <-food_des.dat[grep('Vanilla extract$',food_des.dat$Long_Desc,ignore.case = TRUE,fixed = FALSE), c(1,3)]
+
+# Combining all of them with rbind
+TPC_2006 <- rbind(TC_2006_1,TC_2006_2,TC_2006_3,TC_2006_4)
+
+# BeefStroganoff year 1997
+
+# Original Ingredients "beef roast, tenderloin, raw, 0" trim" 
+# Matched "Beef, loin, tenderloin roast, boneless, separable lean only, trimmed to 0" fat, select, raw"
+# It is Partially Matched 
+BS_97_1 <- food_des.dat[grep('^beef[[:punct:]].loin[[:punct:]].tenderloin.roast[[:punct:]].boneless[[:punct:]].separable.lean.only[[:punct:]].trimmed.to.0".fat[[:punct:]].select',food_des.dat$Long_Desc, ignore.case = TRUE, fixed = FALSE),c(1,3)]
+
+# Original Ingredients "butter,salad" 
+# Matched "Butter, salted"
+# It is Matched Exactly in the FOOD_DES 
+BS_97_2 <- food_des.dat[grep('^butter[[:punct:]].salted',food_des.dat$Long_Desc,ignore.case = TRUE,fixed = FALSE), c(1,3)]
+
+# Original Ingredients "flour,all purpose,self rising,enriched" 
+# Matched "Wheat flour, white, all-purpose, self-rising, enriched"
+# It is Matched Appropriate or most suitable in the FOOD_DES  
+# It is Partially Matched 
+BS_97_3 <- food_des.dat[grep('^wheat.flour[[:punct:]].white[[:punct:]].all-purpose[[:punct:]].self-rising',food_des.dat$Long_Desc,ignore.case = TRUE,fixed = FALSE), c(1,3)]
+
+# Original Ingredients "stock, beef, prepared from recipe" 
+# Matched "Soup, stock, beef, home-prepared"
+# It is Matched Appropriate or most suitable in the FOOD_DES  
+# It is Partially Matched 
+BS_97_4 <- food_des.dat[grep("^soup[[:punct:]].stock[[:punct:]].beef", food_des.dat$Long_Desc, ignore.case = TRUE),c(1,3)]
+
+
+# Original Ingredients "sour cream, cultured" 
+# Matched "Cream, sour, cultured"
+# It is Matched Appropriate or most suitable in the FOOD_DES  
+# It is Partially Matched 
+BS_97_5 <- food_des.dat[grep("^cream[[:punct:]].sour[[:punct:]].cultured",food_des.dat$Long_Desc, ignore.case = TRUE,  fixed = FALSE),c(1,3)]
+
+# Original Ingredients "mustard, dijon" 
+# Matched "Mustard, prepared, yellow"
+# It is Matched Appropriate or most suitable in the FOOD_DES  
+# It is Partially Matched 
+BS_97_6 <- food_des.dat[grep("^mustard[[:punct:]]|.(D|d)ijon",food_des.dat$Long_Desc, ignore.case = TRUE, fixed = FALSE),c(1,3)]
+
+BSO_1997 <- rbind(BS_97_1,BS_97_2,BS_97_3,BS_97_4,BS_97_5,BS_97_6)
+
+
+# BeefStroganoff year 2006
+
+# Original Ingredients "beef roast, tenderloin, raw, 0" trim" 
+# Matched "Beef, loin, tenderloin roast, boneless, separable lean only, trimmed to 0" fat, select, raw"
+# It is Matched Appropriate or most suitable in the FOOD_DES  
+# It is Partially Matched 
+BS_06_1 <- food_des.dat[grep('^beef[[:punct:]].loin[[:punct:]].tenderloin.roast[[:punct:]].boneless[[:punct:]].separable.lean.only[[:punct:]].trimmed.to.0".fat[[:punct:]].select',food_des.dat$Long_Desc, ignore.case = TRUE, fixed = FALSE),c(1,3)]
+
+# Original Ingredients "oil, canola" 
+# Matched "Oil, canola"
+# It is Matched Exactly in the FOOD_DES  
+BS_06_2 <-food_des.dat[grep("^oil[[:punct:]].canola", food_des.dat$Long_Desc, ignore.case = TRUE),c(1,3)]
+
+
+# Original Ingredients "butter,salad" 
+# Matched "Butter, salted"
+# It is Matched Exactly in the FOOD_DES  
+BS_06_3 <-food_des.dat[grep('^butter[[:punct:]].salted',food_des.dat$Long_Desc,ignore.case = TRUE,fixed = FALSE), c(1,3)]
+
+# Original Ingredients "onion, yellow, fresh, medium, 2 1/2\" 
+# Matched "Onions, yellow, sauteed"
+# It is Matched Appropriate or most suitable in the FOOD_DES  
+# It is Partially Matched 
+BS_06_4 <-food_des.dat[grep("^onions[[:punct:]].yellow", food_des.dat$Long_Desc, ignore.case = TRUE),c(1,3)]
+
+
+# Original Ingredients "mushrooms, fresh" 
+# Matched "Mushrooms, white, raw"
+# It is Matched Appropriate or most suitable in the FOOD_DES  
+# It is Partially Matched 
+BS_06_5 <-food_des.dat[grep("^mushrooms[[:punct:]].white[[:punct:]].raw", food_des.dat$Long_Desc, ignore.case = TRUE),c(1,3)]
+
+# Original Ingredients "stock, beef, prepared from recipe" 
+# Matched "Soup, stock, beef, home-prepared"
+# It is Matched Appropriate or most suitable in the FOOD_DES  
+# It is Partially Matched 
+BS_06_6 <-food_des.dat[grep("^soup[[:punct:]].stock[[:punct:]].beef", food_des.dat$Long_Desc, ignore.case = TRUE),c(1,3)]
+
+# Original Ingredients "sour cream, cultured" 
+# Matched "Cream, sour, cultured"
+# It is Matched Appropriate or most suitable in the FOOD_DES  
+# It is Partially Matched 
+BS_06_7 <-food_des.dat[grep("^cream[[:punct:]].sour[[:punct:]].cultured",food_des.dat$Long_Desc, ignore.case = TRUE,  fixed = FALSE),c(1,3)]
+
+# Original Ingredients "mustard, dijon" 
+# Matched "Mustard, prepared, yellow"
+# It is Matched Appropriate or most suitable in the FOOD_DES  
+# It is Partially Matched 
+BS_06_8 <-food_des.dat[grep("^mustard[[:punct:]]|.(D|d)ijon",food_des.dat$Long_Desc, ignore.case = TRUE, fixed = FALSE),c(1,3)]
+
+BSO_2006 <- rbind(BS_06_1,BS_06_2,BS_06_3,BS_06_4,BS_06_5,BS_06_6,BS_06_7,BS_06_8)
+
+
+
+# An empty column c() is assigned to FruitandBerryCobbler_1936
+FruitandBerryCobbler_1936$Ingredient <- c()
+# FABC_1936 which is rbinded with all of FruitandBerryCobbler of Year 1936 is assigned
+FruitandBerryCobbler_1936$Ingredient <- FABC_1936$Long_Desc
+# A new variable NDB_NO is assigned here
+FruitandBerryCobbler_1936$NDB_NO <- FABC_1936$NDB_NO
+
+# An empty column c() is assigned to FruitandBerryCobbler_1936
+FruitandBerryCobbler_2006$Ingredient <- c()
+# FABC_2006 which is rbinded with all of FruitandBerryCobbler of Year 2006 is assigned
+FruitandBerryCobbler_2006$Ingredient <- FABC_2006$Long_Desc
+# A new variable NDB_NO is assigned here
+FruitandBerryCobbler_2006$NDB_NO <- FABC_2006$NDB_NO
+
+#Print FruitandBerryCobbler_1936
+FruitandBerryCobbler_1936
+#Print FruitandBerryCobbler_2006
+FruitandBerryCobbler_2006
+
+# An empty column c() is assigned to TapiocaCustard_1936
+TapiocaCustard_1936$Ingredient <- c()
+# TPC_1936 which is rbinded with all of FruitandBerryCobbler of Year 1936 is assigned
+TapiocaCustard_1936$Ingredient <- TPC_1936$Long_Desc
+# A new variable NDB_NO is assigned here
+TapiocaCustard_1936$NDB_NO <- TPC_1936$NDB_NO
+
+# An empty column c() is assigned to TapiocaCustard_2006
+TapiocaCustard_2006$Ingredient <- c()
+# TPC_2006 which is rbinded with all of FruitandBerryCobbler of Year 2006 is assigned
+TapiocaCustard_2006$Ingredient <- TPC_2006$Long_Desc
+# A new variable NDB_NO is assigned here
+TapiocaCustard_2006$NDB_NO <- TPC_2006$NDB_NO
+
+# Print TapiocaCustard_1936
+TapiocaCustard_1936
+# Print TapiocaCustard_2006
+TapiocaCustard_2006
+
+# An empty column c() is assigned to BeefStroganoff.1997
+BeefStroganoff.1997$Ingredient <- c()
+# BSO_1997 which is rbinded with all of FruitandBerryCobbler of Year 1997 is assigned
+BeefStroganoff.1997$Ingredient <- BSO_1997$Long_Desc
+# A new variable NDB_NO is assigned here
+BeefStroganoff.1997$NDB_NO <- BSO_1997$NDB_NO
+
+# An empty column c() is assigned to BeefStroganoff.2006
+BeefStroganoff.2006$Ingredient <- c()
+# BSO_1997 which is rbinded with all of FruitandBerryCobbler of Year 1997 is assigned
+BeefStroganoff.2006$Ingredient <- BSO_2006$Long_Desc
+# A new variable NDB_NO is assigned here
+BeefStroganoff.2006$NDB_NO <- BSO_2006$NDB_NO
+
+# Print BeefStroganoff.1997
+BeefStroganoff.1997
+# Print BeefStroganoff.2006
+BeefStroganoff.2006
+
+
+
+All <- rbind(FruitandBerryCobbler_1936,FruitandBerryCobbler_2006,TapiocaCustard_1936,TapiocaCustard_2006,BeefStroganoff.1997,BeefStroganoff.2006)
+All
+
+# creates tab file
+write.table(FruitandBerryCobbler_1936,"FruitandBerryCobbler_1936.tab", sep="\t", row.names = FALSE)
+# creates tab file
+write.table(FruitandBerryCobbler_2006,"FruitandBerryCobbler_2006.tab", sep="\t", row.names = FALSE)
+# creates tab file
+write.table(TapiocaCustard_1936,"TapiocaCustard_1936.tab", sep="\t", row.names = FALSE)
+# creates tab file
+write.table(TapiocaCustard_2006,"TapiocaCustard_2006.tab", sep="\t", row.names = FALSE)
+
+```
+
+
+
+```{r}
+########################################################################################################
+####### 5.Read the Recipes.csv, append rows for your recipes and write the table back to Recipes.csv.###   ########################################################################################################
+########################################################################################################
+
+
+Recipe <- data.frame(
+  Recipe=c("Fruit and Berry Cobbler","Fruit and Berry Cobbler","Tapioca Custard","Tapioca Custard"),
+  # Years are written here and Minimum and Maximum Servings are matched from the PDF
+  Year=c(1936,2006,1936,2006),
+  MinServings=c(6,8,8,6),
+  MaxServings=c(6,8,8,6))
+# Recipe is printed here
+print(Recipe)
+
+# Recipes.csv file is read here 
+BeefStroganoffRecipe <- read.csv("Recipes.csv",header=TRUE)
+# BeefStroganoff_Recipe is printed here
+print(BeefStroganoffRecipe)
+# Combining BeefStroganoff_Recipe and Recipe
+Combination <- rbind(BeefStroganoffRecipe,Recipe)
+# creates csv file
+write.csv(Combination, file="Recipes.csv",row.names = FALSE)
+# reads csv file
+Recipe.Table <- read.csv("Recipes.csv",header=TRUE)
+# Recipe.Table is printed here
+print(Recipe.Table)
+
+
+```
+###Comment: 
+Here we have created a data frame and did the Minimum and Maximum Servings of Fruit and Berry Cobbler and Tapioca Custard. Recipe is printed. Recipes.csv file is read and assigned to BeefStronganoff_Recipe and printed. Combine Recipe and BeefStroganoff_Recipe using rbind and then create csv file, read it and print the Recipe.Table. 
+
+# Part 2 - Check Nutrient Data.
+
+We will be using the USDA food nutrient database, found at https://www.ars.usda.gov/northeast-area/beltsville-md-bhnrc/beltsville-human-nutrition-research-center/nutrient-data-laboratory/docs/usda-national-nutrient-database-for-standard-reference/
+
+Run this to make sure your system can read the required nutrient database tables.
+```{r}
+weight.dat <- read.table("WEIGHT.txt",header=FALSE,sep="^",quote="~")
+names(weight.dat) <- c("NDB_No","Seq","Amount","Msre_Desc","Gm_Wgt","Num_Data_Pts","Std_Dev")
+head(weight.dat)
+summary(weight.dat)
+```
+
+```{r}
+food_des.dat <- read.table("FOOD_DES.txt",header=FALSE,sep="^",quote="~")
+names(food_des.dat) <- c("NDB_No","FdGrp_Cd","Long_Desc","Shrt_Desc",
+"ComName","ManufacName","Survey","Ref_desc","Refuse","SciName",
+"N_Factor","Pro_Factor","Fat_Factor","CHO_Factor")
+dim(food_des.dat)
+head(food_des.dat)
+summary(food_des.dat)
+```
+
+```{r}
+nut_data.dat <- read.table("NUT_DATA.txt",header=FALSE,sep="^",quote="~")
+names(nut_data.dat) <- c("NDB_No","Nutr_No","Nutr_Val","Num_Data_Pts","Std_Error",
+"Src_Cd","Deriv_Cd","Ref_NDB_No","Add_Nutr_Mark","Num_Studies",
+"Min","Max","DF","Low_EB","Up_EB","Stat_cmt","AddMod_Date")
+head(nut_data.dat)
+summary(nut_data.dat)
+```

@@ -1,0 +1,483 @@
+---
+title: "Mid-term Project"
+author: "Set 2"
+date: "July 18, 2018"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Prep
+
+## Renaming Ingredients
+
+Many of the ingredients don't have names that exist in `FOOD_DES.txt`, so I'm defining a function here that will convert any of those ingredient names into the proper one.
+
+```{r}
+
+# replaceIngredient - takes as input a dataset from Joy of Cooking,
+# a name of one of the Joy of Cooking ingredients,
+# and the name of the corresponding FOOD_DES ingredient.
+# Replaces the Joy of Cooking ingredient with the FOOD_DES ingredient,
+# and returns the result.
+replaceIngredient <- function(joyOfCookingData, joyOfCookingIngredient, foodDesIngredient) {
+  joyOfCookingData$Ingredient <- ifelse(
+    tolower(joyOfCookingData$Ingredient) == tolower(joyOfCookingIngredient),
+    foodDesIngredient,
+    joyOfCookingData$Ingredient)
+  return(joyOfCookingData)
+}
+
+# replaceIngredients - takes as input a dataset from Joy of Cooking
+# and outputs the same dataset, but with
+# ingredient names changed to correspond to what is in FOOD_DES.txt
+replaceIngredients <- function(joyOfCookingData) {
+  # Fix the names of ingredients so that we can cross-reference them.
+  
+  joyOfCookingData <- replaceIngredient(joyOfCookingData,
+                                        "celery, fresh, diced",
+                                        "celery, raw")
+  joyOfCookingData <- replaceIngredient(joyOfCookingData,
+                                        "flour, all purpose, self rising, enriched",
+                                        "wheat flour, white, all-purpose, self-rising, enriched")
+  joyOfCookingData <- replaceIngredient(joyOfCookingData,
+                                        "cream, whipping, heavy",
+                                        "cream, fluid, heavy whipping")
+  joyOfCookingData <- replaceIngredient(joyOfCookingData,
+                                        "bread crumbs, plain, dry, grated",
+                                        "bread, white, commercially prepared (includes soft bread crumbs)")
+  joyOfCookingData <- replaceIngredient(joyOfCookingData,
+                                        "beef flank steak, raw, choice, 0\" trim, urmis 2399",
+                                        "beef, flank, steak, separable lean and fat, trimmed to 0\" fat, choice, raw")
+  joyOfCookingData <- replaceIngredient(joyOfCookingData,
+                                        "egg, raw",
+                                        "egg, whole, raw, fresh")
+  joyOfCookingData <- replaceIngredient(joyOfCookingData,
+                                        "juice, tomato, canned, unsalted",
+                                        "tomato juice, canned, without salt added")
+  joyOfCookingData <- replaceIngredient(joyOfCookingData,
+                                        "onion, yellow, fresh, chopped",
+                                        "onions, sweet, raw")
+  joyOfCookingData <- replaceIngredient(joyOfCookingData,
+                                        "milk, whole, 3.25%",
+                                        "milk, whole, 3.25% milkfat, without added vitamin a and vitamin d")
+  joyOfCookingData <- replaceIngredient(joyOfCookingData,
+                                        "potato, baked, large, 3\" to 4 1/4\"",
+                                        "potatoes, white, flesh and skin, baked")
+  
+  return(joyOfCookingData)
+}
+
+```
+
+## Merging in NDB_No
+
+We'll need to add an `NDB_No` column to each recipe data frame. Here's the code to do it:
+
+```{r}
+
+# Read the FOOD_DES.txt table and set column names
+food_des <- read.table("FOOD_DES.txt", sep="^", quote="~")
+colnames(food_des) <- c("NDB_No", "FdGrp_Cd", "Long_Desc", "Shrt_Desc", "ComName",
+                        "ManufacName", "Survey", "Ref_desc", "Refuse", "SciName",
+                        "N_Factor", "Pro_Factor", "Fat_Factor", "CHO_Factor")
+write.csv(food_des, file = "FOOD_DES.csv")
+head(food_des)
+
+# addNDB_No - a function that, given recipe data, will add an NDB_No column to it.
+addNDB_No <- function(recipeData) {
+# Make the ingredient names be all lower case, as I don't want to reject a match
+  # just because of case
+  recipeData$Ingredient <- tolower(recipeData$Ingredient)
+  food_des$Long_Desc <- tolower(food_des$Long_Desc)
+  
+  recipeData <- merge(recipeData, food_des, by.x="Ingredient", by.y="Long_Desc",
+                               all.x = TRUE, all.y = FALSE)
+
+  # Discard all columns except the ones we're interested in
+  recipeData <- recipeData[,c("Amount", "Unit", "Ingredient", "NDB_No")]
+  
+  return(recipeData)
+}
+
+```
+
+# Create Recipe Tables
+
+This part is where I create recipes as data frames in the required format and export these to a file.
+
+## Flank Steak with Dressing - 1936
+
+Here, we'll need to create the data frame and `.tab` file for the Flank Steak with Dressing recipe from 1936.
+
+```{r}
+
+# Create the data frame
+Amount <- c(1, .25, 0.06161167, 1, 3, 1, 3, 0.12322334, 1)
+Unit <- c("steak", "cup", "onion", "cup, crumbs", "Tbsp", "large", "Tbsp","cup", "cup")
+Ingredient <- c("beef flank steak, raw, choice, 0\" trim, URMIS 2399",
+                "butter, salted",
+                "onion, yellow, fresh, chopped",
+                "bread crumbs, plain, dry, grated",
+                "celery, fresh, diced",
+                "egg, raw",
+                "oil, canola",
+                "flour, all purpose, self rising, enriched",
+                "juice, tomato, canned, unsalted")
+flankSteakWithDressing1936 <- data.frame(Amount=Amount,
+                                         Unit=Unit,
+                                         Ingredient=Ingredient,
+                                         stringsAsFactors = FALSE)
+
+# Rename columns so that we can merge in the NDB_No column
+flankSteakWithDressing1936 <- replaceIngredients(flankSteakWithDressing1936)
+# Merge in the NDB_No column
+flankSteakWithDressing1936 <- addNDB_No(flankSteakWithDressing1936)
+
+# Print the result, to document our code
+print(flankSteakWithDressing1936)
+
+# Write the data to a file.
+write.table(flankSteakWithDressing1936, file = "FlankSteakWithDressing.1936.tab", sep = " ")
+
+```
+
+Notes:
+
+1. I converted `Tbs` to `Tbsp`
+2. I changed `Tbsp` of onions to actual, based on this link: https://www.reference.com/food/much-minced-onion-equals-one-onion-9008e05cc4dd86cd. I assumed each onion produces 2 cups of minced onions.
+3. I changed `lrg` to `large`
+4. I changed `cup` to `cup, crumbs`
+5. I changed `ea` to `steak`
+
+## Flank Steak with Dressing - 2006
+
+Here, we'll need to create the data frame and `.tab` file for the Flank Steak with Dressing recipe from 2006.
+
+```{r}
+
+# Create the data frame
+Amount <- c(1, .25, 0.06161167, 1, 3, 1, 3, 0.12322334, 1)
+Unit <- c("steak", "cup", "onion", "cup, crumbs", "Tbsp", "large", "Tbsp","cup", "cup")
+Ingredient <- c("beef flank steak, raw, choice, 0\" trim, URMIS 2399",
+                "butter, salted",
+                "onion, yellow, fresh, chopped",
+                "bread crumbs, plain, dry, grated",
+                "celery, fresh, diced",
+                "egg, raw",
+                "oil, canola",
+                "flour, all purpose, self rising, enriched",
+                "juice, tomato, canned, unsalted")
+flankSteakWithDressing2006 <- data.frame(Amount=Amount,
+                                         Unit=Unit,
+                                         Ingredient=Ingredient,
+                                         stringsAsFactors = FALSE)
+
+# Rename columns so that we can merge in the NDB_No column
+flankSteakWithDressing2006 <- replaceIngredients(flankSteakWithDressing2006)
+# Merge in the NDB_No column
+flankSteakWithDressing2006 <- addNDB_No(flankSteakWithDressing2006)
+
+
+# Print the result, to document our code
+print(flankSteakWithDressing2006)
+
+# Write the data to a file.
+write.table(flankSteakWithDressing2006, file = "FlankSteakWithDressing.2006.tab", sep = " ")
+
+```
+
+Notes:
+
+1. I converted `Tbs` to `Tbsp`
+2. I changed `Tbsp` of onions to actual, based on this link: https://www.reference.com/food/much-minced-onion-equals-one-onion-9008e05cc4dd86cd. I assumed each onion produces 2 cups of minced onions.
+3. I changed `lrg` to `large`
+4. I changed `cup` to `cup, crumbs`
+5. I changed `ea` to `steak`
+
+## Check Flank Steak with Dressing for Errors
+
+There are a couple checks we can do to make sure the Flank Steak with Dressing recipe doesn't have errors:
+
+```{r}
+
+# Make sure there aren't any NAs in the data frames.
+
+if (any(is.na(flankSteakWithDressing2006))) {
+  print("Warning: there are NAs in the 2006 data frame.")
+}
+if (any(is.na(flankSteakWithDressing1936))) {
+  print("Warning: there are NAs in the 1936 data frame.")
+}
+
+# Merge the two data frames to get some extra checks
+merged <- merge(flankSteakWithDressing1936, flankSteakWithDressing2006, by="Ingredient", suffixes=c("1936", "2006"))
+print(merged)
+
+# Plot the amounts, to see if they are linear
+plot(merged$Amount1936, merged$Amount2006)
+
+```
+
+The scales look the same, so that looks good.
+
+## Twice-Baked Potatoes - 1936
+
+Here, we'll need to create the data frame and `.tab` file for the Twice-Baked Potatoes recipe from 1936.
+
+```{r}
+
+# Create the data frame
+Amount = c(6,6,3,3)
+Unit <- c("potato large (3\" to 4-1/4\" dia)", "Tbsp", "oz", "Tbsp")
+Ingredient <- c("potato, baked, large, 3\" to 4 1/4\"",
+                "butter, salted", "cheese, blue", "cream, whipping, heavy")
+twiceBakedPotatoes1936 <- data.frame(Amount=Amount,
+                                     Unit=Unit,
+                                     Ingredient=Ingredient,
+                                     stringsAsFactors = FALSE)
+
+# Rename columns so that we can merge in the NDB_No column
+twiceBakedPotatoes1936 <- replaceIngredients(twiceBakedPotatoes1936)
+# Merge in the NDB_No column
+twiceBakedPotatoes1936 <- addNDB_No(twiceBakedPotatoes1936)
+
+
+# Print out the result, to document our code
+print(twiceBakedPotatoes1936)
+
+# Write the data to a file.
+write.table(twiceBakedPotatoes1936, file = "TwiceBakedPotatoes.1936.tab", sep = " ")
+
+```
+
+Notes:
+
+1. I converted `Tbs` to `Tbsp`
+2. I converted `ea` to `potato large (3" to 4-1/4" dia)`
+
+## Twice-Baked Potatoes - 2006
+
+Here, we'll need to create the data frame and `.tab` file for the Twice-Baked Potatoes recipe from 2006.
+
+```{r}
+
+# Create the data frame
+Amount = c(6,3,3,0.5)
+Unit <- c("potato large (3\" to 4-1/4\" dia)", "Tbsp", "Tbsp", "cup")
+Ingredient <- c("potato, baked, large, 3\" to 4 1/4\"", "butter, salted",
+                "milk, whole, 3.25%", "cheese, parmesan, grated")
+twiceBakedPotatoes2006 <- data.frame(Amount=Amount,
+                                     Unit=Unit,
+                                     Ingredient=Ingredient,
+                                     stringsAsFactors = FALSE)
+
+# Rename columns so that we can merge in the NDB_No column
+twiceBakedPotatoes2006 <- replaceIngredients(twiceBakedPotatoes2006)
+# Merge in the NDB_No column
+twiceBakedPotatoes2006 <- addNDB_No(twiceBakedPotatoes2006)
+
+
+# Print out the result, to document our code
+print(twiceBakedPotatoes2006)
+
+# Write the data to a file.
+write.table(twiceBakedPotatoes2006, file = "TwiceBakedPotatoes.2006.tab", sep = " ")
+
+```
+
+Notes:
+
+1. I converted `Tbs` to `Tbsp`
+2. I converted `ea` to `potato large (3" to 4-1/4" dia)`
+
+## Check Twice-Baked Potatoes for Errors
+
+There are a couple checks we can do to make sure the Twice-Baked Potatoes recipe doesn't have errors:
+
+```{r}
+
+# Make sure there aren't any NAs in the data frames.
+
+if (any(is.na(twiceBakedPotatoes2006))) {
+  print("Warning: there are NAs in the 2006 data frame.")
+}
+if (any(is.na(twiceBakedPotatoes1936))) {
+  print("Warning: there are NAs in the 1936 data frame.")
+}
+
+# Merge the two data frames to get some extra checks
+merged <- merge(twiceBakedPotatoes1936, twiceBakedPotatoes2006, by="Ingredient", suffixes=c("1936", "2006"))
+print(merged)
+
+# Plot the amounts, to see if they are linear
+plot(merged$Amount1936, merged$Amount2006)
+
+```
+
+This plot looks weird but this is actually correct:
+
+- The ingredients changed (the type of cheese changed, and cream was replaced with milk). This means that of the four ingredients, only two end up in the merged data, which means only two points are plotted.
+- Of the ingredients that didn't change in type of ingredient, only butter changed in amount (6 Tblsp to 3 Tblsp).
+
+# rbind Recipes
+
+Here's where I append the recipe data frames together to produce a single big data frame of all the recipes. Note that to do this properly, I will have to add columns for recipe and year.
+
+```{r}
+
+# loadRecipeFile - takes a file name as input and returns the recipe data frame
+loadRecipeFile <- function(file) {
+  # Split by the period character to extract recipe name and year  
+  fileNameParts <- strsplit(file, ".", fixed = TRUE)[[1]]
+  recipe <- fileNameParts[1]
+  year <- as.numeric(fileNameParts[2])
+
+  # Read the tab file
+  result <- read.table(file, header = TRUE)
+  
+  # The beef stroganoff recipe doesn't include an NDB_No column,
+  # so we'll hack one in with NAs. That way, rbind won't complain.
+  if (is.null(result$NDB_No)) {
+    result$NDB_No <- NA
+  }
+  
+  # Change the Measure column to Unit column.
+  # Workaround for the format in beef stroganoff.
+  if (!is.null(result$Measure)) {
+    result$Unit <- result$Measure
+    result$Measure <- NULL
+  }
+  
+  # Set the columns on the resulting data frame
+  result$Recipe <- recipe
+  result$Year <- year
+  
+  return(result)
+}
+
+# loadRecipeFiles - takes a character vector of file names and returns a
+# single data frame of all the files' contents
+loadRecipeFiles <- function(files) {
+  # Use lapply to convert the list of files into a list of data frames
+  # loaded from the files
+  listOfRecipeDataFrames <- lapply(files, loadRecipeFile)
+  
+  # Merge the list of data frames
+  mergedData <- do.call(rbind, listOfRecipeDataFrames)
+  
+  return(mergedData)
+}
+
+# Get a list of .tab files
+files <- list.files(pattern=".+\\.tab$")
+print(files)
+
+# Load the files
+mergedData <- loadRecipeFiles(files)
+print(mergedData)
+
+```
+
+# Cross-Reference Ingredients and Units
+
+We'll need to merge (a.k.a. join) the recipe data set with the tables in `FOOD_DES.txt` and `WEIGHT.txt`. First, let's merge with `FOOD_DES.txt`:
+
+```{r}
+
+# Read the FOOD_DES.txt table and set column names
+food_des <- read.table("FOOD_DES.txt", sep="^", quote="~")
+colnames(food_des) <- c("NDB_No", "FdGrp_Cd", "Long_Desc", "Shrt_Desc", "ComName",
+                        "ManufacName", "Survey", "Ref_desc", "Refuse", "SciName",
+                        "N_Factor", "Pro_Factor", "Fat_Factor", "CHO_Factor")
+write.csv(food_des, file = "FOOD_DES.csv")
+head(food_des)
+
+# Load just the recipes we're generating, because we don't want to load the example recipe,
+# because its ingredient names have not been changed to match FOOD_DES.txt.
+
+mergedData <- loadRecipeFiles(c(
+  "FlankSteakWithDressing.1936.tab", "FlankSteakWithDressing.2006.tab",
+  "TwiceBakedPotatoes.1936.tab", "TwiceBakedPotatoes.2006.tab"))
+
+# Make the ingredient names be all lower case, as I don't want to reject a match
+# just because of case
+mergedData$Ingredient <- tolower(mergedData$Ingredient)
+food_des$Long_Desc <- tolower(food_des$Long_Desc)
+
+crossReferencedData <- merge(mergedData, food_des, by="NDB_No",
+                             all.x = TRUE, all.y = FALSE)
+print(crossReferencedData)
+
+```
+
+Time to check the merge. If there are any `NAs` in the columns that were merged in from food_des, then that means that not all the ingredients had names that matched `FOOD_DES.txt`.
+
+```{r}
+
+if (any(is.na(crossReferencedData$Shrt_Desc))) {
+  print("Bad news: there are ingredients in the recipe that are missing in FOOD_DES.txt")
+} else {
+  print("Good news: the ingredients in the recipe are all found in FOOD_DES.txt")
+}
+
+```
+
+Time to merge in `WEIGHT.txt`:
+
+```{r}
+
+# Read the WEIGHT.txt table and set columns
+weight <- read.table("WEIGHT.txt", sep="^", quote="~")
+colnames(weight) <- c("NDB_No", "Seq", "Amount", "Unit", "Gm_Wgt", "Num_Data_Pts", "Std_Dev")
+head(weight)
+
+weight$Unit <- tolower(weight$Unit)
+crossReferencedData$Unit <- tolower(crossReferencedData$Unit)
+
+crossReferencedData <- merge(crossReferencedData, weight, by=c("NDB_No", "Unit"),
+                             all.x = TRUE, all.y = FALSE)
+print(crossReferencedData)
+
+```
+
+Let's check the `WEIGHT.txt` merge too. If there are any `NAs` in `Gm_Wgt`, then we know that the merge wasn't wholly successful:
+
+```{r}
+
+if (any(is.na(crossReferencedData$Gm_Wgt))) {
+  print("Bad news: there are units in the recipe that are missing in WEIGHT.txt")
+} else {
+  print("Good news: the units in the recipe are all found in WEIGHT.txt")
+}
+
+```
+
+# Add Recipes to Recipes.csv
+
+Here, I'll add my recipes to `Recipes.csv`:
+
+```{r}
+
+# Load the recipes
+recipes.csv <- read.csv("Recipes.csv")
+# Create a data frame of my recipes
+myRecipes <- data.frame(Recipe=c("Twice-Baked Potatoes", "Twice-Baked Potatoes",
+                                 "Flank Steak with Dressing", "Flank Steak with Dressing"),
+                        Year=c(1936, 2006, 1936, 2006),
+                        MinServings=c(6, 6, 4, 4),
+                        MaxServings=c(6, 6, 6, 6))
+print(myRecipes)
+
+# Append my recipes onto the end of recipes.csv
+recipes.csv <- rbind(recipes.csv, myRecipes)
+
+# Write out the file. Note row.names = FALSE. This is so that we don't get
+# an extra column of numbers that indicate the row numbers. We don't need that
+# since it wasn't in the original Recipes.csv file.
+write.csv(recipes.csv, file = "Recipes.csv", row.names = FALSE)
+
+```
+

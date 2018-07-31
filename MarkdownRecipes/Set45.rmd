@@ -1,0 +1,219 @@
+---
+title: "Midterm Project"
+author: "Set 45"
+date: "7/21/2018"
+output: word_document
+---
+
+*Here I read in the 'FOOD_DES' and 'WEIGHT' txt files. I then used different variations of the grepl function to compare my ingredients to those of the 'Food_Des' and 'Weight' to make the appropriate selections for 'Amount', 'Measure' and 'Ingredient', as well as to acquire the 'NDB_No'.*
+
+```{r}
+Food_Des <- read.table("FOOD_DES.txt", header = FALSE, sep = "^", quote = "~")
+names(Food_Des) <- c("NDB_No", "FdGrp_Cd", "Long_Desc", "Shrt_Desc", "ComName", "ManufacName", "Survey", "Ref_desc", "Refuse", "SciName", "N_Factor", "Pro_Factor", "Fat_Factor", "CHO_Factor")
+
+Weight <- read.table("WEIGHT.txt", header = FALSE, sep = "^", quote = "~")
+names(Weight) <- c("NDB_No", "Seq", "Amount", "Msre_Desc", "Gm_Wgt", "Num_Data_pts", "Std_Dev")
+
+Food_Des[grepl('Egg, whole, raw, fresh', Food_Des$Long_Desc),]
+```
+
+##Part 1 of Midterm Project Overview: Create data tables for each recipe with 'Amount', 'Measure', 'Ingredient', and 'NDB_No':
+
+*I created 4 data sets for the recipes with the original assigned values for: 'Amount', 'Measure', and 'Ingredient'. I then manually used the 'Food_Des' table to compare and update the ingredients in my recipes to match the most similar version in the table (decisions regarding this step are outlined at the end of this file). Next, I added a column for the 'NDB_No' and added that to my data tables. Finally, I used grepl and went through each of the 4 recipes re-checking the 'NDB_No' to ensure the corresponding ingredient was matched. There were multiple changes due to differences between the original recipe and the scanned copy of the recipe. There were also some decisions that had to be made regarding ingredients, amounts, or measurements. All of these are noted at the end of this file for anyone is interested / has questions.*
+
+*Lastly, I printed each of the 4 tables to ensure they were completed correctly.*
+
+```{r }
+MushroomTimbales1936 <- data.frame(
+  Amount=c(1.50, 4.00, 2.00),
+  Measure=c("cup", "large", "cup diced"),
+  Ingredient=c("Milk, whole, 3.25% milkfat, with added vitamin D", "Egg, whole, raw, fresh", "Mushrooms, portabella, raw"),
+  NDB_No=c(1077, 1123, 11265)
+)
+
+MushroomTimbales2006 <- data.frame(
+  Amount=c(1.50, 4.00, 2.00),
+  Measure=c("cup", "large", "cup diced"),
+  Ingredient=c("Milk, whole, 3.25% milkfat, with added vitamin D", "Egg, whole, raw, fresh", "Mushrooms, portabella, raw"),
+  NDB_No=c(1077, 1123, 11265)
+)
+
+LimaBeansandMushrooms1936 <- data.frame(
+  Amount=c(2.00, 3.00, 1.00, 0.50, 0.13, 0.25, 0.25, 0.50, 0.25, 0.50, 2.00),
+  Measure=c("cup", "cup, pieces or slices", "tbsp", "tbsp", "cup", "cup", "cup, fluid (yields 2 cups whipped)", "cup", "cup, fluid (yields 2 cups whipped)", "cup", "tbsp"),
+  Ingredient=c("Lima beans, immature seeds, cooked, boiled, drained, without salt", "Mushrooms, white, raw", "Butter, salted", "Butter, salted", "Wheat flour, white, all-purpose, self-rising, enriched", "Milk, whole, 3.25% milkfat, with added vitamin D", "Cream, fluid, heavy whipping", "Soup, stock, chicken, home-prepared", "Cream, fluid, heavy whipping", "Bread, crumbs, dry, grated, plain", "Butter, salted"),
+  NDB_No=c(11032, 11260, 1001, 1001, 20082, 1077, 1053, 6172, 1053, 18079, 1001)
+)
+
+LimaBeansandMushrooms2006 <- data.frame(
+  Amount=c(2.00, 3.00, 1.00, 0.50, 1.00, 0.06, 0.50, 0.25, 0.25, 0.50, 2.00),
+  Measure=c("cup", "cup, pieces or slices", "tbsp", "tbsp","tbsp", "cup", "cup", "cup", "cup, fluid (yields 2 cups whipped)", "cup", "tbsp"),
+  Ingredient=c("Lima beans, immature seeds, cooked, boiled, drained, without salt", "Mushrooms, white, raw", "Butter, salted" , "Oil, canola", "Butter, salted", "Wheat flour, white, all-purpose, self-rising, enriched", "Soup, stock, chicken, home-prepared", "Milk, whole, 3.25% milkfat, with added vitamin D", "Cream, fluid, heavy whipping", "Bread, crumbs, dry, grated, plain", "Butter, salted"),
+  NDB_No=c(11032, 11260, 1001, 4582, 1001, 20082, 6172, 1077, 1053, 18079, 1001)
+)
+
+MushroomTimbales1936
+MushroomTimbales2006
+LimaBeansandMushrooms1936
+LimaBeansandMushrooms2006
+```
+
+##Part 2 of Midterm Project Overview: Write each recipe to tab file with correct naming convention:
+
+*I wrote the tab files for the 4 recipes following the same naming convention as the 'BeefStroganoff.2006' file. I set row.names=FALSE to remove the lead indexing column. I used sep=' \t' to get my output to look identical to the BeefStroganoff tab file examples. Without the space before the '\', there was no space between my quotation marks in the tab file.*
+
+```{r}
+write.table(MushroomTimbales1936, "MushroomTimbales.1936.tab", row.names=FALSE, sep=' \t')
+write.table(MushroomTimbales2006, "MushroomTimbales.2006.tab", row.names=FALSE, sep=' \t')
+write.table(LimaBeansandMushrooms1936, "LimaBeansandMushrooms.1936.tab", row.names=FALSE, sep=' \t')
+write.table(LimaBeansandMushrooms2006, "LimaBeansandMushrooms.2006.tab", row.names=FALSE, sep=' \t')
+```
+
+##Part 3 of Midterm Project Overview: Read in tab files and merge with Beef Stroganoff tables:
+
+*I read back in the .tab files. This time I used header=TRUE to keep the table header and sep='\t' to prevent extra spacing in the tables.*
+
+```{r}
+MushroomTimbales1936 <- read.table("MushroomTimbales.1936.tab", header = TRUE, sep = "\t")
+MushroomTimbales2006 <- read.table("MushroomTimbales.2006.tab", header = TRUE, sep = "\t")
+LimaBeansandMushrooms1936 <- read.table("LimaBeansandMushrooms.1936.tab", header = TRUE, sep = "\t")
+LimaBeansandMushrooms2006 <- read.table("LimaBeansandMushrooms.2006.tab", header = TRUE, sep = "\t")
+
+MushroomTimbales1936
+MushroomTimbales2006
+LimaBeansandMushrooms1936
+LimaBeansandMushrooms2006
+```
+
+*I read in the Beef Stroganoff tables. Next, I used the substr() function to produce 'Recipe' and 'Year' values for each table. I removed the 'X.' and 'X' columns that had came over and fixed the 'Amount' column header as it downloaded with a '.' at the end.*
+
+```{r}
+BeefStroganoff1997 <- read.table("BeefStroganoff.1997.tab",header=TRUE, sep = "")
+BeefStroganoff1997$X. <- NULL
+BeefStroganoff1997$X <- NULL
+colnames(BeefStroganoff1997)[1]<- "Amount"
+
+BeefStroganoff2006 <- read.table("BeefStroganoff.2006.tab",header=TRUE, sep = "")
+BeefStroganoff2006$X. <- NULL
+BeefStroganoff2006$X <- NULL
+
+BeefStroganoff1997
+BeefStroganoff2006
+```
+
+*I made recipe changes detailed at the end of this rmd file, added the 'NDB_No' column to correspond with the 'Food_Des' and 'Weight' tables, and printed both recipes to ensure they matched the assignment format.*
+
+```{r}
+BeefStroganoff1997$Ingredient <- c("Beef, loin, tenderloin roast, boneless, separable lean and fat, trimmed to 0\" fat, all grades, raw", "Butter, salted", "Wheat flour, white, all-purpose, self-rising, enriched", "Soup, stock, beef, home-prepared", "Cream, sour, cultured", "Mustard, prepared, yellow")
+BeefStroganoff1997$Amount <- c(1.00, 3.50, 0.06, 1.00, 3.00, 1.00)
+BeefStroganoff1997$Measure <- c("roast", "tbsp", "cup", "cup", "tbsp", "tsp or 1 packet")
+BS97.NDB_No=c(23336, 1001, 20082, 6170, 1056, 2046)
+BeefStroganoff1997$NDB_No <- BS97.NDB_No
+
+BeefStroganoff2006$Ingredient <- c("Beef, loin, tenderloin roast, boneless, separable lean and fat, trimmed to 0\" fat, all grades, raw", "Oil, canola", "Butter, salted", "Onions, raw", "Mushrooms, white, raw", "Soup, stock, beef, home-prepared", "Cream, sour, cultured", "Mustard, prepared, yellow")
+BeefStroganoff2006$Amount <- c(1.00, 2.00, 3.00, 1.00, 6.50, 1.00, 3.00, 3.00)
+BeefStroganoff2006$Measure <- c("roast", "tbsp", "tbsp", "medium (2-1/2\" dia)", "cup, pieces or slices", "cup", "cup", "tsp or 1 packet")
+BS06.NDB_No=c(23336, 4582, 1001, 11282, 11260, 6170, 1056, 2046)
+BeefStroganoff2006$NDB_No <- BS06.NDB_No
+
+BeefStroganoff1997
+BeefStroganoff2006
+```
+
+*I merged the 6 recipe tables together using rbind and named it 'Merged.Recipes.dat'. I printed the merged table to ensure it had been done successfully. Finally, I used the write.table() function to save the completed tab file.*
+
+```{r}
+Merged.Recipes.dat <- rbind(BeefStroganoff1997, BeefStroganoff2006, MushroomTimbales1936, MushroomTimbales2006, LimaBeansandMushrooms1936, LimaBeansandMushrooms2006)
+Merged.Recipes.dat
+
+write.table(Merged.Recipes.dat, "Merged.Recipes.tab", row.names=FALSE, sep=' \t')
+```
+
+##Part 4 of Midterm Project Overview: Proof data to check for errors:
+
+*At the end of this file there is information regarding changes / decisions I made to ensure that any differences between the scanned files and original recipe table were corrected.*
+
+*First, I plotted the amounts of each recipe with 1936 as my x and 2006 as my y to see where the amounts differed between years. I then manually checked the non-matching amounts to ensure they had been entered correctly.*
+
+*I did 2 quick plots comparing my 'Amount' and 'Ingredient', from both years, as an added check to ensure I hadn't keyed in anything improperly and to confirm any 'big' changes. There were no changes in the 'Mushroom Timbales' recipe between the 1936 and 2006 recipes. For the differences in the 'Lima Beans and Mushrooms' recipes, I manually confirmed the unmatched/different ingredients.*
+
+*I also did a contingency table showing 'Measure' & 'Ingredient' to confirm I hadn't keyed any measure in wrong (tps vs tsp, TBS vs tbsp, etc) and to confirm my ingredients were using the correct measures per the 'Weight' table.*
+
+*Lastly, I performed another check for errors by merging the 'Merged.Recipes.dat' table with the 'Weight' table by 'NDB_No' to ensure consistency 'Amount' and 'Measure' values as well as another re-check against the 'Weight' table. Used the colnames() function to drop a '.' at the end of 'Amount'.*
+
+```{r}
+plot(x=MushroomTimbales1936$Amount, y=MushroomTimbales2006$Amount, xlab = "MushroomTimbales 1936 Amount", ylab = "MushroomTimbales 2006 Amount")
+plot(x=LimaBeansandMushrooms1936$Amount, y=LimaBeansandMushrooms2006$Amount, xlab = "LimaBeansandMushrooms 1936 Amount", ylab = "LimaBeansandMushrooms 2006 Amount")
+
+matplot(cbind(MushroomTimbales1936$Amount, MushroomTimbales2006$Amount), cbind(MushroomTimbales1936$Ingredient, MushroomTimbales2006$Ingredient), xlab = "Amount", ylab = "Ingredient #")
+
+matplot(cbind(LimaBeansandMushrooms1936$Amount, LimaBeansandMushrooms2006$Amount), cbind(LimaBeansandMushrooms1936$Ingredient, LimaBeansandMushrooms2006$Ingredient), xlab = "Amount", ylab = "Ingredient #")
+
+with(MushroomTimbales1936, table(MushroomTimbales1936$Measure, MushroomTimbales1936$Ingredient))
+with(MushroomTimbales2006, table(MushroomTimbales2006$Measure, MushroomTimbales2006$Ingredient))
+with(LimaBeansandMushrooms1936, table(LimaBeansandMushrooms1936$Measure, LimaBeansandMushrooms1936$Ingredient))
+with(LimaBeansandMushrooms2006, table(LimaBeansandMushrooms2006$Measure, LimaBeansandMushrooms2006$Ingredient))
+
+MergedRecipes.weight <- merge(x = Merged.Recipes.dat, y = Weight, by.x='NDB_No', by.y = 'NDB_No')
+colnames(MergedRecipes.weight)[2] <- 'Amount'
+MergedRecipes.weight
+```
+
+##Part 5 of Midterm Project Overview: Read Recipes.csv, merge data tables and write back to Recipes.csv:
+
+*I read the Recipes.csv file in and added the rows for my recipes using the rbind function to combine the 3 data tables. I added the !duplicated() function because it kept duplicating my recipes in the Recipes.csv file whenever I would run this section of code. I then wrote the finished table back to Recipes.csv and saved it on my local drive.*
+
+```{r}
+Recipes <- read.table("Recipes.csv", header = TRUE, sep = ',')
+
+MushroomTimbales <- data.frame(
+  Recipe=c("Mushroom Timbales"),
+  Year=c(1936, 2006),
+  MinServings=c(6, 5),
+  MaxServings=c(6)
+)
+
+LimaBeansandMushrooms <- data.frame(
+  Recipe=c("Lima Beans and Mushrooms"),
+  Year=c(1936,2006),
+  MinServings=c(6),
+  MaxServings=c(6)
+)
+
+Recipes <- rbind(Recipes, MushroomTimbales, LimaBeansandMushrooms)
+Recipes <- Recipes[!duplicated(Recipes),]
+write.table(Recipes, "Recipes.csv", row.names=FALSE, sep=',')
+Recipes
+```
+
+**Recipe Notes / Changes**
+
+*I made multiple changes to the 'Amount', 'Measure', and 'Ingredient' values to match the 'Food_Des' & 'Weight' tablea. Most were pretty straight forward (Tbs to tbsp, lrg to large, etc). There were some in which I had to make determinations for the most accurate amount, which will be detailed below.*
+
+**MusroomTimabales1936:*** No changes due to scanned pages referencing multiple types of vegetable 'Timbales' recipes with various serving amounts and ingredients matching.*
+
+**MushroomTimbales2006:*** Changed 'MinServings' to 5 as the scanned recipe says '5-6' servings.*
+
+**LimaBeansandMushrooms1936:**
+*For lima beans in the Lima Beans and Mushrooms recipes, I went with the 'immature seed' variety over the 'mature seed' variety. I googled the difference and, apparently, the type people eat that are shelled and still green are immature.*
+*The recipe calls for 0.50 lb of "Mushrooms, white, raw". The 'Weight' table doesn't list pounds. It does list "cup, pieces or slices" with a weight value of 70 grams. Since there are approximately 220 grams in 0.50 pounds, I changed the 'Amount' and 'Measure' to be '3.00' and 'cup, pieces or slices' respectively.*
+*The 1st listing for 'Butter, salted' was changed from '1.5 tbsp' to '1 tbsp' since that is what the scanned recipe calls for.* 
+*The 2nd listing for 'Butter, salted' was changed from '1 tbsp' to '0.50 tbsp' because this value comes from the 'Lima Beans' recipe scan which is part of this recipe. The 'Lima Beans' scanned recipe is for 1 Quart (4 Cups) of Lima Beans, whereas the 'Lima Beans and Mushrooms' recipe only calls for 2 cups of 'Lima Beans' recipe.*
+*The flour was converted from '2 tbsp' to '0.13 cup' since 'tbsp' is not an option for 'Wheat flour, white, all-purpose, self-rising, enriched'.*
+*The '0.25 cup' of 'Milk' and '0.25 cup' of 'Cream' were not changed because the recipe calls for '1/2 cup top milk'. Evidentally, 'top milk' is milk mixed with cream.* 
+*I added '0.25 cup' of 'Cream, fluid, heavy whipping' to the original recipe because the 'Lima Beans' recipe (which, again, is halved in the Lima Beans and Mushrooms recipe) includes '1/2 cup cream'.*
+*Breadcrumbs and the 3rd listing for 'Butter, salted' were unchanged, but it is worth noting the recipe does not give an amount for either of these ingredients.*
+
+**LimaBeansandMushrooms2006**
+*For lima beans in the Lima Beans and Mushrooms recipes, I went with the 'immature seed' variety over the 'mature seed' variety. I googled the difference and, apparently, the type people eat that are shelled and still green are immature.*
+*The flour, which was changed from '1 tbsp' to '.06 cup'.*
+*The 'Sauteed Mushrooms' recipe, which is halved in this recipe, provides the mushrooms, butter, and oil. There is also a reference to an 'Au Gratin' recipe (not shown in the scanned pages), which is defined as "sprinkled with breadcrumbs or grated cheese, and browned". Therefore the Breadcrumbs and 3rd listing of 'Butter, salted' were unchanged.*
+
+**BeefStroganoff1997:**
+*For 'beef roast, tenderloin, raw, 0" ' I chose NDB_No '23336'. This one is a tenderloin roast trimmed to 0" similar to the original recipe. It also encompasses all grades, whereas the other similar ones specify a grade or list a steak. I also used a 'Measure' of '1 Roast' as that was the only option presented.*
+*For 'mustard, dijon', I followed the advice of the Midterm Project Overview and used 'Mustard, prepared, yellow' as Dr. Claussen stated he would.*
+
+**BeefStroganoff2006:**
+*The same 'beef tenderloin' was chosen from the 'Food_Des' table.* 
+*For 'mushrooms, fresh', I used 'Mushrooms, white, raw' because I think these are the most generic of the mushrooms listed in 'Food_Des'. Other options like 'portabella' or 'morel' mushrooms are less general and, I think, less likely to be used by the average consumer.*
+*The recipe also originally called for 1 lb of 'mushrooms', but since that isn't an option, I went with 6.50 cups. I made this decision because there are approximately 453g in a lb. 1 cup is 70g so 70gx6.5=455g*

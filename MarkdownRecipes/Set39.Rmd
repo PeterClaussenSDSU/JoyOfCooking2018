@@ -1,0 +1,734 @@
+---
+title: 'Joy Of Cooking Midterm Project '
+author: "Set 39"
+date: '21 July,2018'
+output:
+  html_document: default
+  pdf_document: default
+---
+
+
+
+
+We will be using the USDA food nutrient database, found at https://www.ars.usda.gov/northeast-area/beltsville-md-bhnrc/beltsville-human-nutrition-research-center/nutrient-data-laboratory/docs/usda-national-nutrient-database-for-standard-reference/
+
+
+```{r}
+weight.dat <- read.table("WEIGHT.txt",header=FALSE,sep="^",quote="~")
+names(weight.dat) <- c("NDB_No","Seq","Amount","Msre_Desc","Gm_Wgt","Num_Data_Pts","Std_Dev")
+head(weight.dat)
+summary(weight.dat)
+```
+
+```{r}
+food_des.dat <- read.table("FOOD_DES.txt",header=FALSE,sep="^",quote="~")
+names(food_des.dat) <- c("NDB_No","FdGrp_Cd","Long_Desc","Shrt_Desc",
+"ComName","ManufacName","Survey","Ref_desc","Refuse","SciName",
+"N_Factor","Pro_Factor","Fat_Factor","CHO_Factor")
+dim(food_des.dat)
+head(food_des.dat)
+summary(food_des.dat)
+```
+
+```{r}
+nut_data.dat <- read.table("NUT_DATA.txt",header=FALSE,sep="^",quote="~")
+names(nut_data.dat) <- c("NDB_No","Nutr_No","Nutr_Val","Num_Data_Pts","Std_Error",
+"Src_Cd","Deriv_Cd","Ref_NDB_No","Add_Nutr_Mark","Num_Studies",
+"Min","Max","DF","Low_EB","Up_EB","Stat_cmt","AddMod_Date")
+head(nut_data.dat)
+summary(nut_data.dat)
+```
+
+
+```{r}
+
+
+############################# STEP 1 ################################
+
+
+### Creating a data frame for the recipe Apple Dumplings 1936   
+### with columns as Amount, Measure, Ingredient.The data frame  
+### is named AppleDumpings1936. I have chosen to include all     
+### the Ingredients from the pdf
+
+AppleDumplings1936 <- data.frame(
+  Amount = c(1.00,2.50,2.00),
+  Measure = c("ea","Tbs","tsp"),
+  Ingredient = c("apple,fresh,medium,3'' ", "sugar,brown,packed","butter,salted"))
+
+print(AppleDumplings1936)
+
+
+### Creating a data frame for the recipe Apple Dumplings 2006   
+### with columns as Amount, Measure, Ingredient.The data frame  
+### is named AppleDumpings2006.  I have chosen to include all    
+### the Ingredients from the pdf                                 
+
+AppleDumplings2006 <- data.frame(
+  
+  Amount = c(6.00,0.50,0.25,1.00),
+  Measure = c("ea","cup","cup","lrg"),
+  Ingredient = c("apple,fresh,small,2 3/4'' ", "sugar,brown,dark","butter,salted","egg,raw"))
+
+print(AppleDumplings2006)
+
+
+### Creating a data frame for the recipe Scalloped Oysters 1936   
+### with columns as Amount, Measure, Ingredient.The data frame    
+### is named ScallopedOysters1936. I have chosen to include all   
+### the Ingredients from the pdf                                   
+
+ScallopedOysters1936 <- data.frame(
+  
+  Amount = c(1.00,6.00,0.50,28.00,0.50),
+  Measure = c("pnt","Tbs","cup","ea","cup"),
+  Ingredient = c("oysters,eastern,in liquid,12 oz can", "cream,whipping,heavy","bread crumbs,plain,dry,grated","crackers,saltine","butter,salted"))
+
+
+print(ScallopedOysters1936)
+
+### Creating a data frame for the recipe Scalloped Oysters 1936   
+### with columns as Amount, Measure, Ingredient.The data frame    
+### is named ScallopedOysters1936. I have chosen to include all   
+### the Ingredients from the pdf                                
+
+ScallopedOysters2006 <- data.frame(
+  
+  Amount = c(1.00,2.00,1.00,0.75,1.00),
+  Measure = c("qt","cup","cup","cup","cup"),
+  Ingredient = c("oysters,eastern,in liquid,12 oz can","crackers,saltine,crushed", "bread crumbs,plain,dry,grated","butter,salted","cream,whipping,heavy"))
+
+
+print(ScallopedOysters2006)
+
+
+```
+
+
+
+```{r}
+
+
+############################# STEP 2 ################################
+
+
+
+
+### Each recipe is written into a tab delimited file using        
+### write.table function with '\t' as seperator.The naming        
+### convention used for the tab delimited file is name of the                             
+### Recipe(Ex:AppleDumplings) followed by Yearname                                  
+
+
+
+write.table(AppleDumplings1936,"AppleDumplings1936.tab",sep="\t", row.names = FALSE)
+
+write.table(AppleDumplings2006,"AppleDumplings2006.tab",sep="\t" ,row.names = FALSE)
+
+write.table(ScallopedOysters1936,"ScallopedOysters1936.tab", sep="\t",row.names = FALSE)
+
+write.table(ScallopedOysters2006,"ScallopedOysters2006.tab",sep="\t",row.names = FALSE)
+
+
+
+```
+
+
+```{r}
+
+############################# STEP 3 ################################
+
+
+### Each tab file generated in the previous is read by using     
+### read.table function Apple Dumplings 1936 and 2006 tab files  
+### are assigned to t1 , t2 respectively. Scalloped Oysters 1936                         
+### and 2006 tab files are assigned to t3,t4 respectively            
+
+t1 <- read.table("AppleDumplings1936.tab", header = TRUE )
+t2 <- read.table("AppleDumplings2006.tab", header = TRUE )
+t3 <- read.table("ScallopedOysters1936.tab", header = TRUE)
+t4 <- read.table("ScallopedOysters2006.tab", header = TRUE)
+
+
+
+
+### The given BeefStroganoff.1997.tab file is read using the  
+### function read.table. The name 'BeefStraganoff1997' is       
+### assigned to the table. The same is repeated with the        
+### BeefStroganoff.2006.tab file                                
+
+BeefStroganoff1997 <- read.table("BeefStroganoff.1997.tab", header = TRUE)
+BeefStroganoff2006 <- read.table("BeefStroganoff.2006.tab", header = TRUE)
+
+
+
+
+### Using rbind function to merge tables t1,t2,t3,t4 with    
+### the BeefStroganoff tables. The merged data is assigned the  
+### name Combined_data. The successfull merge demonstrates that 
+### data can be merged into shared format                       
+
+Combined_data <- rbind(t1,t2,t3,t4,BeefStroganoff1997,BeefStroganoff2006)
+print(Combined_data)
+
+
+
+```
+
+
+```{r}
+
+############################# STEP 4 ################################
+
+### Proofing thhe data to check for errors                       
+
+
+
+### AppleDumplings1936 and AppleDumplins2006 are merged by using
+### merge function. This generates common records from both the 
+### tables (Natural join)
+
+AppleDumplings_merge <- merge(AppleDumplings1936,AppleDumplings2006,by ="Ingredient")
+print(AppleDumplings_merge)
+
+
+
+### ScallopedOysterd1936 and ScallopedOysters2006 are merged by  
+### using merge function. This generates common records from     
+### the tables (Natural join)
+
+ScallopedOysters_merge <- merge(ScallopedOysters1936, ScallopedOysters2006, by ="Ingredient")
+print(ScallopedOysters_merge)
+
+
+
+### Measure1936 vs Measure2006 of Apple Dumplings is plotted to  
+### observe inconsistencies in the units of measurement of       
+### ingredients.                                                 
+plot(AppleDumplings_merge$Measure.x , AppleDumplings_merge$Measure.y)
+
+
+### Measure1936 vs Measure2006 of Scalloped Oysters is plotted   
+### to observe inconsistencies in the units of measurement of    
+### ingredients.                                                 
+plot(ScallopedOysters_merge$Measure.x , ScallopedOysters_merge$Measure.y)
+
+
+### Amount1936 vs Amount2006 of Apple Dumplings is plotted to    
+### observe anomalies in values of amount which can also be due  
+### wrong entry of data
+plot(AppleDumplings_merge$Amount.x , AppleDumplings_merge$Amount.y)
+
+
+
+### Amount1936 vs Amount2006 of Scalloped Oysters is plotted to 
+### observe anomalies in values of amount which can also be due  
+### wrong entry of data
+
+plot(ScallopedOysters_merge$Amount.x , ScallopedOysters_merge$Amount.y)
+
+
+
+### Contigency table for the measures of Apple Dumplings.The table 
+### helps to determine mismatch in measures                        
+table(AppleDumplings_merge$Measure.x , AppleDumplings_merge$Measure.y)
+
+
+
+### Contigency table for the measures of Scalloped Oysters.The     
+### tables helps to determine mismatch in measures                 
+
+table(ScallopedOysters_merge$Measure.x , ScallopedOysters_merge$Measure.y)
+
+
+
+```
+
+###Comments for plots
+
+Apple Dumplings Measures vs Meassures 
+Inconsistencies with the units/measures are observed in Apple Dumplings 1936 and 2006. Different measures are used for the same Ingredients in 1936 and 2006. The contigency table also deemonstrates this inconsistency
+
+Apple Dumplings Amount vs AMount   
+There is no observed anomaly in the amount values of Apple Dumplings. However, since the measures for the same ingredients changed in 1936 and 2006 there is a visual difference
+
+Scalloped Oysters Measures vs Measures 
+Inconsistencies with the units/measure are observed in Scalloped Oysters 1936 and 2006. Different measures are used for the same Ingredients in 1936 and 2006.The contigency
+table also deemonstrates this inconsistency
+
+
+Scalloped Oysters Amount vs AMount   
+There is no observed anomaly in the amount values of Apple Dumplings. However, since the measures for the same ingredients changed in 1936 and 2006 there is a visual difference
+
+
+```{r}
+
+############################# STEP 5 ################################
+
+
+
+### The Recipes.csv is read and assigned the name Recipes        
+
+Recipes <- read.csv("Recipes.csv", header = TRUE, stringsAsFactors = FALSE)
+
+
+### Rows are appended in the Recipes.csv for each Recipe         
+### This is done by using indexes of Recipes                     
+Recipes[nrow(Recipes)+1,] <- c("Apple Dumplings", 1936,1,1) 
+Recipes[nrow(Recipes)+1,] <- c("Apple Dumplings",2006,6,6)
+Recipes[nrow(Recipes)+1,] <- c("Scalloped Oysters",1936,6,6)
+Recipes[nrow(Recipes)+1,] <- c("Scalloped Oysters",2006,6,6)
+
+print(Recipes)
+
+### The updated Recipes table is written back into Recipes.csv  
+write.table(Recipes,"Recipes.csv",sep = ",",row.names = FALSE)
+
+
+```
+
+```{r}
+
+
+
+############################# Performing matches in FOOD_DES ################################
+
+
+### Below are a series of partial or full matchings for the ingredients  
+### of recipes assined to me. They are matched using grep function and   
+### as grep returns index numbers, the corresponding matched NDB_No      
+### along with Long_Desc for the ingredients are extracted from Food_des 
+
+
+
+### Apple Dumplings 1936 Ingredients 
+	  # apple,fresh,medium,3" #		
+	  # sugar,brown,packed		#
+	  # tsp	butter,salted     #
+
+# Matching ' apple,fresh,medium,3" ' in Food_Des           
+# First a search for apples is done                        
+# Then of all the entries I found 'Apples, raw, with skin' 
+# as the apt match
+ad36_1<- food_des.dat[grep("^apples[[:punct:]].",food_des.dat$Long_Desc,ignore.case = TRUE, fixed = FALSE),c(1,3)]
+ad36_1_s <- ad36_1[1,]
+print(ad36_1_s)
+
+# Matching 'sugar,brown,packed' in Food_Des            
+# First a search for sugar is done                  
+# Then of all the entries I found 'sugar turbinado' 
+# as the apt match. The particular record is extracted by index                             
+ad36_2 <- food_des.dat[grep("^sugar[[:punct:]]",food_des.dat$Long_Desc, ignore.case = TRUE, fixed = FALSE),c(1,3)]
+ad36_2_s <- ad36_2[2,]
+print(ad36_2_s)
+
+
+
+# Matching 'Butter, salted' in Food_Des
+# A full match is obtained for 'Butter, salted' in Food_Des
+ad36_3 <- food_des.dat[grep("^butter[[:punct:]].salted",food_des.dat$Long_Desc, ignore.case = TRUE),c(1,3)]
+print(ad36_3)
+
+
+# using rbind the NDB_No's and  Ingredients columns of
+# AppleDumplings1936 are combined into a new table 
+new_AD36 <- rbind(ad36_1_s,ad36_2_s,ad36_3)
+
+
+
+### Apple Dumplings 2006 Ingredients 
+
+              # apple,fresh,small,2 3/4''  #
+              # sugar,brown,dark           #
+              # butter,salted              #
+              # egg,raw                    #
+
+# Matching ' apple,fresh,small,2 3/4" ' in Food_Des        
+# First a search for apples is done                        
+# Then of all the entries I found 'Apples, raw, with skin' 
+# as the apt match. The particular record is extracted by index 
+
+ad06_1<- food_des.dat[grep("^apples[[:punct:]].",food_des.dat$Long_Desc,ignore.case = TRUE, fixed = FALSE),c(1,3)]
+ad06_1_s <- ad06_1[1,]
+print(ad06_1_s)
+
+
+
+# Matching 'sugar,brown,dark' in Food_Des               
+# First a search for sugar is done                  
+# Then of all the entries I found 'sugar turbinado' 
+# as the apt match. The particular record is extracted by index 
+
+ad06_2 <- food_des.dat[grep("^sugar[[:punct:]]",food_des.dat$Long_Desc, ignore.case = TRUE, fixed = FALSE),c(1,3)]
+ad06_2_s <- ad06_2[2,]
+print(ad06_2_s)
+
+
+# Matching 'Butter, salted' in Food_Des  
+# A full match is obtained for 'Butter, salted' in Food_Des
+ad06_3 <- food_des.dat[grep("^butter[[:punct:]].salted",food_des.dat$Long_Desc, ignore.case = TRUE),c(1,3)]
+print(ad06_3)
+
+
+# Matching 'Egg,raw' in Food_Des
+# First a search is done for 'egg'
+# Out of all the entries I found Egg, whole, raw, fresh 
+# as the apt match. The particular record is extracted by index
+ad06_04 <- food_des.dat[grep("^egg[[:punct:]].",food_des.dat$Long_Desc, ignore.case = TRUE, fixed = FALSE ),c(1,3)]
+ad06_04_s <-  ad06_04[1,]
+print(ad06_04_s)
+
+# using rbind the NDB_No's and  Ingredients columns of
+# AppleDumplings2006 are combined into a new table 
+new_AD06 <- rbind(ad06_1_s,ad06_2_s,ad06_3,ad06_04_s)
+
+
+
+
+# Scalloped Oysters 1936 Ingredients#
+
+    # oysters,eastern,in liquid,12 oz can  #
+    #            cream,whipping,heavy      #
+    #     bread crumbs,plain,dry,grated    #
+    #             crackers,saltine         #   
+    #                  butter,salted       #
+
+# Matching 'oysters,eastern,in liquid,12 oz can' in Food_Des
+# First a search is done for 'oyster, eastern'
+# Out of all entries I found 'Mollusks,oyster,eastern,canned' 
+# as the apt match. The particular record is extracted by index
+so36_1 <- food_des.dat[grep("oyster[[:punct:]].eastern",food_des.dat$Long_Desc, ignore.case = TRUE, fixed = FALSE),c(1,3)]
+so36_1_s <- so36_1[4,]
+print(so36_1_s)
+
+
+
+# Matching 'cream,whipping,heavy' in Food_Des
+# First a search is done for 'whipping'
+# Out of all the entries I found 'Cream, fluid, heavy whipping'
+# as an apt match. The particular record is extracted by index
+so36_2 <- food_des.dat[grep("whipping",food_des.dat$Long_Desc, ignore.case = TRUE),c(1,3)]
+so36_2_s <- so36_2[2,]
+print(so36_2_s)
+
+
+# Matching ' bread crumbs,plain,dry,grated' in Food_Des
+# First a search is done for 'bread, crumbs'
+# Out of all the entries I found ' Bread, crumbs, dry, grated, plain'
+# as an apt match. The particular record is extracted by index
+so36_3 <- food_des.dat[grep("bread[[:punct:]].crumbs",food_des.dat$Long_Desc, ignore.case = TRUE, fixed = FALSE),c(1,3)]
+so36_3_s <- so36_3[1,]
+print(so36_3_s)
+
+
+
+# Matching 'crackers,  saltine in Food_Des
+# First a search is done for 'crackers, saltine'
+# Out of all the entries I found 'Crackers, saltines (includes oyster, soda, soup)'
+# as an apt match. The particular record is extracted by index.
+so36_4 <- food_des.dat[grep("^crackers[[:punct:]].saltine",food_des.dat$Long_Desc, ignore.case = TRUE, fixed = FALSE),c(1,3)]
+so36_4_s <- so36_4[1,]
+print(so36_4_s)
+
+
+# Matching 'Butter, salted' in Food_Des
+# A full match is obtained for 'Butter, salted' in Food_Des
+so36_5 <- food_des.dat[grep("^butter[[:punct:]].salted",food_des.dat$Long_Desc, ignore.case = TRUE),c(1,3)]
+print(so36_5)
+
+
+# using rbind the NDB_No's and  Ingredients columns of
+# ScallopedOysters1936 are combined into a new table 
+
+new_so36 <- rbind(so36_1_s,so36_2_s,so36_3_s,so36_4_s,so36_5)
+
+
+
+
+
+#Scalloped Oysters 2006 Ingredients#
+         # oysters,eastern,in liquid,12 oz can  #
+         #  crackers,saltine,crushed            #
+         #   bread crumbs,plain,dry,grated      #
+         #        butter,salted                 #
+         #        cream,whipping,heavy          #
+
+
+
+# Matching 'oysters,eastern,in liquid,12 oz can' in Food_Des
+# First a search is done for 'oyster, eastern'
+# Out of all entries I found 'Mollusks,oyster,eastern,canned' 
+# as the apt match. The particular record is extracted by index
+so06_1 <- food_des.dat[grep("oyster[[:punct:]].eastern",food_des.dat$Long_Desc, ignore.case = TRUE, fixed = FALSE),c(1,3)]
+so06_1_s <- so06_1[4,]
+print(so06_1_s)
+
+
+# Matching 'crackers,  saltine in Food_Des
+# First a search is done for 'crackers, saltine'
+# Out of all the entries I found 'Crackers, saltines (includes oyster, soda, soup)'
+# as an apt match. The particular record is extracted by index.
+so06_2 <- food_des.dat[grep("^crackers[[:punct:]].saltine",food_des.dat$Long_Desc, ignore.case = TRUE),c(1,3)]
+so06_2_s <- so06_2[1,]
+print(so06_2_s)
+
+
+
+# Matching ' bread crumbs,plain,dry,grated' in Food_Des
+# First a search is done for 'bread, crumbs'
+# Out of all the entries I found ' Bread, crumbs, dry, grated, plain'
+# as an apt match. The particular record is extracted by index
+so06_3 <- food_des.dat[grep("bread[[:punct:]].crumbs",food_des.dat$Long_Desc, ignore.case = TRUE, fixed = FALSE),c(1,3)]
+so06_3_s <- so06_3[1,]
+print(so06_3_s)
+
+
+
+# Matching 'Butter, salted' in Food_Des
+# A full match is obtained for 'Butter, salted' in Food_Des
+so06_4 <- food_des.dat[grep("^butter[[:punct:]].salted",food_des.dat$Long_Desc, ignore.case = TRUE),c(1,3)]
+print(so06_4)
+
+
+# Matching 'cream,whipping,heavy' in Food_Des
+# First a search is done for 'whipping'
+# Out of all the entries I found 'Cream, fluid, heavy whipping'
+# as an apt match. The particular record is extracted by index
+so06_5 <- food_des.dat[grep("whipping",food_des.dat$Long_Desc, ignore.case = TRUE),c(1,3)]
+so06_5_s <- so06_5[2,]
+print(so06_5_s)
+
+# using rbind the NDB_No's and  Ingredients columns of
+# ScallopedOysters2006 are combined into a new table 
+new_so06 <- rbind(so06_1_s,so06_2_s,so06_3_s,so06_4,so06_5_s)
+
+
+
+
+# Beef Stroganoff 1997 Ingredients#
+
+
+         # beef roast, tenderloin, raw, 0" trim       #
+         #              butter, salted                #
+         #  flour, all purpose, self rising, enriched #
+         #     stock, beef, prepared from recipe      #
+         #                  sour cream, cultured      #
+         #                        mustard, dijon      #
+
+# Matching 'beef roast, tenderloin, o" trim' in Food_Des
+# First a search is done for 'tenderloin'
+# Out of all the entries I found ' Beef, loin, tenderloin roast, 
+# boneless, separable lean only, trimmed to 0" fat, select, raw'
+# as an apt match. The particular record is extracted by index
+
+bs97_1_1 <-food_des.dat[grep("tenderloin",food_des.dat$Long_Desc,ignore.case = TRUE,fixed = FALSE), c(1,3)]
+bs97_1 <- bs97_1_1[grep("beef",bs97_1_1$Long_Desc,ignore.case = TRUE,fixed = FALSE), ]
+bs97_1_s <- bs97_1[36,] 
+print(bs97_1_s)
+
+
+ 
+# Matching 'Butter, salted' in Food_Des
+# A full match is obtained for 'Butter, salted' in Food_Des
+bs97_2 <- food_des.dat[grep("^butter[[:punct:]].salted",food_des.dat$Long_Desc, ignore.case = TRUE),c(1,3)]
+print(bs97_2)
+
+
+
+# Matching 'flour, all purpose, self rising, enriched' in Food_Des
+# First a search is done for 'all-purpose'
+# Out of all the entries I found ' Wheat flour, white, all-purpose, 
+#self-rising, enriched, as an apt match. 
+# The particular record is extracted by index
+bs97_3 <- food_des.dat[grep("all.purpose",food_des.dat$Long_Desc, ignore.case = TRUE),c(1,3)]
+bs97_3_s <- bs97_3[4,]
+print(bs97_3_s)
+
+
+# Matching ' stock, beef, prepared from recipe' in Food_Des
+# First a search is done for 'stock'
+# Out of all the entries I found 'Soup, stock, beef, home-prepared ', 
+# as an apt match. The particular record is extracted by index
+bs97_4 <- food_des.dat[grep("stock",food_des.dat$Long_Desc,ignore.case = TRUE, fixed = FALSE),c(1,3)]
+bs97_4_s <- bs97_4[2,]
+print(bs97_4_s)
+
+
+# Matching  'sour cream, cultured' in Food_Des
+# First a search is done for 'cultured'
+# Out of all the entries I found 'Cream, sour, cultured', 
+# as an apt match. The particular record is extracted by index
+bs97_5 <- food_des.dat[grep("cultured",food_des.dat$Long_Desc, ignore.case = TRUE,  fixed = FALSE),c(1,3)]
+bs97_5_s <- bs97_5[2,]
+print(bs97_5_s)
+
+
+# Matching 'Mustard, Dijon' in Food_Des
+# A partial match is obtained for 'Mustard, prepared, yellow' in Food_Des
+bs97_6 <- food_des.dat[grep("^mustard[[:punct:]]|.dijon",food_des.dat$Long_Desc, ignore.case = TRUE, fixed = FALSE),c(1,3)]
+print(bs97_6)
+
+# using rbind the NDB_No's and  Ingredients columnns of
+# BeefStroganoff2006 are commbined into a new table 
+new_bs97 <- rbind(bs97_1_s,bs97_2,bs97_3_s,bs97_4_s,bs97_5_s,bs97_6)
+
+
+
+# BeefStroganoff year 2006
+
+           # beef roast, tenderloin, raw, 0" trim  #
+           #            oil, canola                #
+           #        butter, salted                 #
+           # onion, yellow, fresh, medium, 2 1/2"  #
+           #         mushrooms, fresh              #
+           #  stock, beef, prepared from recipe    #    
+           #  sour cream, cultured                 #
+           #          mustard, dijon               #
+
+
+# Matching 'beef roast, tenderloin, o" trim' in Food_Des
+# First a search is done for 'tenderloin'
+# Out of all the entries I found ' Beef, loin, tenderloin roast, 
+# boneless, separable lean only, trimmed to 0" fat, select, raw'
+# as an apt match. The particular record is extracted by index
+bs06_1_1 <-food_des.dat[grep("tenderloin",food_des.dat$Long_Desc,ignore.case = TRUE,fixed = FALSE), c(1,3)]
+bs06_1 <- bs06_1_1[grep("beef",bs06_1_1$Long_Desc,ignore.case = TRUE,fixed = FALSE), ]
+bs06_1_s <- bs06_1[36,] 
+print(bs06_1_s)
+
+
+# Matching 'oil, canola' in Food_Des
+# A full match is obtained for 'Oil, Canola' in Food_Des
+bs06_2 <- food_des.dat[grep("^oil[[:punct:]].canola", food_des.dat$Long_Desc, ignore.case = TRUE),c(1,3)]
+print(bs06_2)
+
+# Matching 'Butter, salted' in Food_Des
+# A full match is obtained for 'Butter, salted' in Food_Des
+bs06_3 <- food_des.dat[grep("^butter[[:punct:]].salted",food_des.dat$Long_Desc, ignore.case = TRUE),c(1,3)]
+print(bs06_3)
+
+
+
+# Matching 'onion, yellow, fresh, medium, 2 1/2' in Food_Des
+# A partial match is obtained as 'Onions, yellow, sauteed' in Food_Des
+bs06_4 <- food_des.dat[grep("onions[[:punct:]].yellow", food_des.dat$Long_Desc, ignore.case = TRUE),c(1,3)]
+print(bs06_4)
+
+
+# Matching 'mushrooms, fresh' in Food_Des
+# First a search is done for 'mushrooms'
+# Out of all the entries I found 'Mushrooms, white, raw ', 
+# as an apt match. The particular record is extracted by index
+bs06_5 <- food_des.dat[grep("mushrooms",food_des.dat$Long_Desc, ignore.case = TRUE,fixed = FALSE),c(1,3)]
+bs06_5_s <- bs06_5[5,]
+print(bs06_5_s)
+
+
+
+# Matching ' stock, beef, prepared from recipe' in Food_Des
+# First a search is done for 'stock'
+# Out of all the entries I found 'Soup, stock, beef, home-prepared ', 
+# as an apt match. The particular record is extracted by index
+bs06_6 <- food_des.dat[grep("stock",food_des.dat$Long_Desc,ignore.case = TRUE, fixed = FALSE),c(1,3)]
+bs06_6_s <- bs06_6[2,]
+print(bs06_6_s)
+
+
+# Matching  'sour cream, cultured' in Food_Des
+# First a search is done for 'cultured'
+# Out of all the entries I found 'Cream, sour, cultured', 
+# as an apt match. The particular record is extracted by index
+bs06_7 <- food_des.dat[grep("cultured",food_des.dat$Long_Desc, ignore.case = TRUE,  fixed = FALSE),c(1,3)]
+bs06_7_s <- bs06_7[2,]
+print(bs06_7_s)
+
+
+# Matching 'Mustard, Dijon' in Food_Des
+# A partial match is obtained for 'Mustard, prepared, yellow' in Food_Des
+bs06_8 <- food_des.dat[grep("^mustard[[:punct:]]|.dijon",food_des.dat$Long_Desc, ignore.case = TRUE, fixed = FALSE),c(1,3)]
+print(bs06_8) 
+
+
+# using rbind the NDB_No's and  Ingredients columns of 
+# BeefStroganoff2006 are commbined into a new table 
+new_bs06 <- rbind(bs06_1_s,bs06_2,bs06_3,bs06_4,bs06_5_s,bs06_6_s,bs06_7_s,bs06_8)
+
+```
+
+```{r}
+
+
+
+############################## Appending NDB_No column #########################
+
+
+### The Ingredient and NDB_no column are appended 
+### to the tables created in STEP1
+### The appending is done in 3 steps 
+### First, the Ingredient column in the data table is made empty
+### Second, the Long_Desc from the new table created in the previous
+### section is assigned as Ingredient to the recipe table
+### Third, the NDB_No from the new table is assigned to the NDB_No
+### Column created in the recipe table
+
+### The above process is done for AppleDumplings1936, AppleDumplings2006,
+### ScallopedOysters1936, ScallopedOysters2006, BeefStroganoff1997,BeefStroganff2006
+
+
+
+AppleDumplings1936$Ingredient <- c()
+AppleDumplings1936$Ingredient <- new_AD36$Long_Desc
+AppleDumplings1936$NDB_No <- new_AD36$NDB_No
+print(AppleDumplings1936)
+
+
+AppleDumplings2006$Ingredient <- c()
+AppleDumplings2006$Ingredient <- new_AD06$Long_Desc
+AppleDumplings2006$NDB_No <- new_AD06$NDB_No
+print(AppleDumplings2006)
+
+
+ScallopedOysters1936$Ingredient <- c()
+ScallopedOysters1936$Ingredient <- new_so36$Long_Desc
+ScallopedOysters1936$NDB_No <- new_so36$NDB_No
+print(ScallopedOysters1936)
+
+
+ScallopedOysters2006$Ingredient <- c()
+ScallopedOysters2006$Ingredient <- new_so06$Long_Desc
+ScallopedOysters2006$NDB_No <- new_so06$NDB_No
+print(ScallopedOysters2006)
+
+
+BeefStroganoff1997$Ingredient <- c()
+BeefStroganoff1997$Ingredient <- new_bs97$Long_Desc
+BeefStroganoff1997$NDB_No <- new_bs97$NDB_No
+print(BeefStroganoff1997)
+
+BeefStroganoff2006$Ingredient <- c()
+BeefStroganoff2006$Ingredient <- new_bs06$Long_Desc
+BeefStroganoff2006$NDB_No <- new_bs06$NDB_No
+print(BeefStroganoff2006)
+
+
+
+### All the recipe tables updated above are combined into combined_data1
+
+Combined_data1 <- rbind(AppleDumplings1936,AppleDumplings2006,ScallopedOysters1936,ScallopedOysters2006, BeefStroganoff1997, BeefStroganoff2006)
+
+print(Combined_data1)
+
+### The updated recipes tables are written into tab delimited files
+
+write.table(AppleDumplings1936,"AppleDumplings1936.tab",sep="\t", row.names = FALSE)
+
+write.table(AppleDumplings2006,"AppleDumplings2006.tab",sep="\t" ,row.names = FALSE)
+
+write.table(ScallopedOysters1936,"ScallopedOysters1936.tab", sep="\t",row.names = FALSE)
+
+write.table(ScallopedOysters2006,"ScallopedOysters2006.tab",sep="\t",row.names = FALSE)
+
+
+
+
+```
