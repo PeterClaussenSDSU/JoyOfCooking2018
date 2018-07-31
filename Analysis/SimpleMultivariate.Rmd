@@ -151,6 +151,12 @@ FOOD_DES <- read.table("../MarkdownRecipes/FOOD_DES.txt",header=FALSE,sep="^",qu
 names(FOOD_DES) <- c("NDB_No","FdGrp_Cd","Long_Desc","Shrt_Desc",
 "ComName","ManufacName","Survey","Ref_desc","Refuse","SciName",
 "N_Factor","Pro_Factor","Fat_Factor","CHO_Factor")
+#NUTR_DEF <- read.table("../MarkdownRecipes/NUTR_DEF.txt",header=FALSE,sep="^",quote="~")
+#names(NUTR_DEF) <- c("Nutr_No","Units","Tagname","NutrDesc","Num_Dec","SR_Order")
+NUT_DATA <- read.table("../MarkdownRecipes/NUT_DATA.txt",header=FALSE,sep="^",quote="~")
+names(NUT_DATA) <- c("NDB_No","Nutr_No","Nutr_Val","Num_Data_Pts","Std_Error",
+"Src_Cd","Deriv_Cd","Ref_NDB_No","Add_Nutr_Mark","Num_Studies",
+"Min","Max","DF","Low_EB","Up_EB","Stat_cmt","AddMod_Date")
 ```
 
 # Convert Amount to gram equivalents
@@ -257,10 +263,20 @@ MergedRecipes <- merge(x=MergedRecipes,y=FOOD_DES,
 ```
 
 We'll convert to calories for each macro nutrient, by ingredient:
+
+**Note that I'm skipping a step here. We need an intermediate calculation to determine how many grams of fat, per gram of ingredient. This will require additional data merges. Use Nut_No = 203 (Pro) Nut_No = 204 (Fat) Nut_No = 205 (CHO) to merge with NUT_DATA, and use the percent gram weight given by Nutr_Val (Credit Alex Soupir)**
+
 ```{r}
-MergedRecipes$FatCalories <-MergedRecipes$Grams*MergedRecipes$Fat_Factor
-MergedRecipes$ProCalories <-MergedRecipes$Grams*MergedRecipes$Pro_Factor
-MergedRecipes$CHOCalories <-MergedRecipes$Grams*MergedRecipes$CHO_Factor
+#TODO : Merge with NUT_DATA
+MergedRecipes$FatGrams <- 1/3 
+MergedRecipes$ProGrams <- 1/3 
+MergedRecipes$CHOGrams <- 1/3 
+```
+
+```{r}
+MergedRecipes$FatCalories <- MergedRecipes$FatGrams*MergedRecipes$Fat_Factor
+MergedRecipes$ProCalories <- MergedRecipes$ProGrams*MergedRecipes$Pro_Factor
+MergedRecipes$CHOCalories <- MergedRecipes$CHOGrams*MergedRecipes$CHO_Factor
 ```
 
 Finally, for each recipe, determine the total calories from each macronutrient
