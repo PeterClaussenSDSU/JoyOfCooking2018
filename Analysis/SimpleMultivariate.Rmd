@@ -1,0 +1,313 @@
+---
+title: "Simple Multivariate Analysis"
+author: "Peter Claussen"
+date: "7/29/2018"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Introduction
+
+This document outlines the data structure required for some possible multivariate analysis of recipe data. We will be comparing three recipes from two different editions of the Joy of Cooking.
+
+# Recipes
+
+Since this document is intended to describe cluster analysis, I've manually edited NDB_No and servings sizes, for the most part. I've also manually converted among measures
+
+##. Fresh Fruit Souffle 
+
+### 1936 (4-6 servings)
+
+Amount | Measure | NDB_No | Ingredient
+-------|---------|--------|------------------------------------------
+1      | cup, halves |   9034 | apricot, stewed, halves, from dried, stuffed, with added sugar
+5      | large   | 1124   | egg white, raw, large
+0.5    | cup     | 19335 | sugar,white, granulated, granulated
+
+NDB_No 9034 matches with `Apricots, dried, sulfured, stewed, with added sugar` and 'cup, halves'. 
+
+### 2006 (3-4 servings)
+
+Amount | Measure | NDB_No | Ingredient
+-------|---------|--------|------------------------------------------
+1.5    | cup, halves | 9022 | apricot, canned, with skin, in water
+4      | large   |   1123 | egg, raw
+4      | Tbs     |  19335 | sugar, white, granulated, granulated
+1      | Tbs     |   9152 | juice, lemon, fresh
+
+
+## Fruit Gelatin
+
+### 1936 (12 servings)
+
+Amount | Measure | NDB_No | Ingredient
+-------|---------|--------|------------------------------------------
+1      | cup     |  19335 | sugar,white, granulated, granulated added sugar
+2      | envelope (1 tbsp) |  19177 | gelatin, dry, unsweetened
+1      | cup, halves     |  9357 | apricot, canned, in heavy syrup, drained
+2      | medium (7" to 7-7/8" long) |  9040 | banana, fresh, medium, 7' to 7 7/8'
+1      | Tbs     |   9152 | juice, lemon, fresh
+1      | cup     |   9206 | juice, orange, chilled
+2      | cup     |  14555 | water, generic
+
+### 2006 (4 servings)
+
+Amount | Measure | NDB_No | Ingredient
+-------|---------|--------|------------------------------------------
+2.25   | tsp     |  19177 | gelatin, dry, unsweetened
+3      | Tbs     |  14555 | water, generic
+2      | cup     |   9016 | juice, apple, unsweetend
+1.5    | cup slices |   9004 | apple, fresh, sliced
+
+
+## Lemon Gelatin
+
+### 1936 (4 servings)
+
+Amount | Measure | NDB_No | Ingredient
+-------|---------|--------|------------------------------------------
+1.5    | envelope (1 tbsp)     |  19177 | gelatin, dry, unsweetened
+0.75   | cup     |  19335 | sugar,white, granulated, granulated
+0.5    | cup     |   9152 | juice, lemon, fresh
+2.25   | cup     |  14555 | water, generic
+
+### 2006 (4 servings)
+
+Amount | Measure | NDB_No | Ingredient
+-------|---------|--------|------------------------------------------
+2.25   | tsp     |  19177 | gelatin, dry, unsweetened
+0.75   | cup     |  19335 | sugar,white, granulated, granulated
+0.33   | cup     |   9152 | juice, lemon, fresh
+3.00   | Tbs     |  14555 | water, generic
+1.33   | cup     |  14555 | water, generic
+
+
+# Data (Long form)
+
+### Manual conversions
+
+There are a couple conversion necessary for units that are not listed in the `WEIGHT` database.
+
+* 1 Tbs = 1/16 cup
+* 1 tsp = 1/3 Tbs
+
+
+```{r}
+Recipes <- data.frame(
+  Amount = c(1, 5, 0.5,
+             1.5, 4, 4/16, 1/16,
+             2, 1, 2, 1, 1/16, 1, 2,
+             2.25/3, 3/16, 2, 1.5,
+             1.5, 0.75, 0.5, 2.25,
+             2.25/3, 0.75, 0.33, 3/16 + 1.33),
+  Measure = c('cup, halves','large','cup',
+              'cup, halves','large','cup','cup',
+              'cup','envelope (1 tbsp)','cup, halves','medium (7" to 7-7/8" long)','cup','cup','cup',
+              'envelope (1 tbsp)','cup','cup','cup slices',
+              'envelope (1 tbsp)','cup','cup','cup',
+              'envelope (1 tbsp)','cup','cup','cup'
+              ),
+  NDB_No = c(9034, 1124, 19335,
+             9022,1123,19335, 9152,
+             19335, 19177, 9357, 9040, 9152, 9206, 14555,
+             19177,14555,9016,9004,
+             19177, 19335, 9152, 14555,
+             19177, 19335, 9152, 14555),
+  Recipe = c(rep('Fresh Fruit Souffle',3),
+             rep('Fresh Fruit Souffle',4),
+             rep('Fruit Gelatin',7),
+             rep('Fruit Gelatin',4),
+             rep('Lemon Gelatin',4),
+             rep('Lemon Gelatin',4)),
+  Year = c(rep(1936,3),
+           rep(2006,4),
+           rep(1936,7),
+           rep(2006,4),
+           rep(1936,4),
+           rep(2006,4)),
+  MaxServings=c(rep(6,3),
+           rep(4,4),
+           rep(12,7),
+           rep(4,4),
+           rep(4,4),
+           rep(4,4))
+)
+```
+
+# Databases
+
+We'll need to merge recipes with USDA nutrition data.
+
+```{r}
+WEIGHT <- read.table("../MarkdownRecipes/WEIGHT.txt",header=FALSE,sep="^",quote="~")
+names(WEIGHT) <- c("NDB_No","Seq","Amount","Msre_Desc","Gm_Wgt","Num_Data_Pts","Std_Dev")
+head(WEIGHT)
+FOOD_DES <- read.table("../MarkdownRecipes/FOOD_DES.txt",header=FALSE,sep="^",quote="~")
+names(FOOD_DES) <- c("NDB_No","FdGrp_Cd","Long_Desc","Shrt_Desc",
+"ComName","ManufacName","Survey","Ref_desc","Refuse","SciName",
+"N_Factor","Pro_Factor","Fat_Factor","CHO_Factor")
+```
+
+# Convert Amount to gram equivalents
+```{r}
+MergedRecipes <- merge(x=Recipes,y=WEIGHT,
+      #we want all the recipe values, but not all of the weight
+      all.x=TRUE,
+      by.x=c('NDB_No','Measure'),
+      #only the column for measure differs
+      by.y=c('NDB_No','Msre_Desc'))
+MergedRecipes[is.na(MergedRecipes$Gm_Wgt)]
+MergedRecipes$Grams <- MergedRecipes$Amount.x*MergedRecipes$Gm_Wgt
+```
+
+# Cluster Analysis
+
+For cluster analysis, we want the data in the wide form.
+
+```{r}
+RecipeClusters <- reshape(MergedRecipes[c("Recipe","Year","Grams","NDB_No")],
+                     idvar=c("Recipe","Year"),
+                     direction="wide",
+                     v.names="Grams",
+                     timevar="NDB_No")
+```
+
+Later, when we plot the analysis, it's simpler to have row names.
+```{r}
+row.names(RecipeClusters) <- paste(as.character(RecipeClusters$Recipe),as.character(RecipeClusters$Year))
+```
+
+For cluster analysis, we'll want to remove missing values. Zero when an ingredient is not present will be sufficient.
+
+```{r}
+RecipeClusters <- RecipeClusters[,-c(1,2)]
+for(i in 1:dim(RecipeClusters)[1]) {
+  for(j in 1:dim(RecipeClusters)[2]) {
+    if(is.na(RecipeClusters[i,j])) RecipeClusters[i,j] <- 0
+  }
+}
+RecipeClusters
+```
+
+
+We now compare each recipe against every other recipe, using a euclidean norm as a distance.For now, we'll ignore servings per recipe, and instead just compare by gram amounts.
+
+Let's start with the difference in gram weights per ingredient
+```{r}
+RecipeClusters[1,] - RecipeClusters[2,]
+RecipeClusters[1,] - RecipeClusters[3,]
+RecipeClusters[2,] - RecipeClusters[3,]
+```
+
+To get a single value as distance, we can use the Euclidean distance, i.e. the square root of the sum of squares
+
+```{r}
+row.names(RecipeClusters)[1:3]
+sqrt(sum((RecipeClusters[1,] - RecipeClusters[2,])^2))
+sqrt(sum((RecipeClusters[1,] - RecipeClusters[3,])^2))
+sqrt(sum((RecipeClusters[2,] - RecipeClusters[3,])^2))
+```
+
+We can do this in R, for all pairs of recipes, by using the `dist` function.
+```{r}
+print(RecipeClusters <- dist(RecipeClusters, method="euclidean"))
+```
+
+
+We can visualize this using a dendrogram, but first we convert a matrix of distances to a list of clusters:
+
+```{r}
+print(RecipeClusters.hclust <- hclust(RecipeClusters,method="ward.D"))
+```
+
+Base R allows us to plot cluster, by
+
+```{r,fig.width=10,fig.height=12}
+plot(as.dendrogram(RecipeClusters.hclust),horiz = TRUE)
+```
+
+However, one based on `ggplot2` is easier to read.
+
+```{r}
+library(ggdendro)
+ggdendrogram(RecipeClusters.hclust,rotate=TRUE)
+```
+
+What does this tell us?
+
+First, Lemon Gelatin showed the least change from 1936 to 2006, while Fruit Gelatin changed enough so that the Fruit Gelatin recipe from 2006 was more like Fruit Souffle, while the Fruit Gelatin was more like Lemon Gelatin. 
+
+How many recipes in the full data set don't cluster together, in the way that Lemon Gelatin 1936 clusters with Lemon Gelatin 2006? How would this affect an analysis of calories per serving differences between 1936 and 2006? How would programmatically exclude dissimilar recipe pairs (hint - look at the pairwise matrix from `hclust`)
+
+Note that this simple analysis did not adjust for serving size. How might this affect the analysis?
+
+# Principal Components.
+
+There are many possible principal component analysis, but one I'm interested in is the possible shift from fat to carbohydrates. For this, we need to merge with FOOD_DES
+```{r}
+MergedRecipes <- merge(x=MergedRecipes,y=FOOD_DES,
+      #we want all the recipe values, but not all of the weight
+      all.x=TRUE,
+      by=c('NDB_No'))
+```
+
+We'll convert to calories for each macro nutrient, by ingredient:
+```{r}
+MergedRecipes$FatCalories <-MergedRecipes$Grams*MergedRecipes$Fat_Factor
+MergedRecipes$ProCalories <-MergedRecipes$Grams*MergedRecipes$Pro_Factor
+MergedRecipes$CHOCalories <-MergedRecipes$Grams*MergedRecipes$CHO_Factor
+```
+
+Finally, for each recipe, determine the total calories from each macronutrient
+
+```{r}
+RecipePCA <- aggregate(formula=cbind(FatCalories, ProCalories, CHOCalories) ~ Recipe + Year,data=MergedRecipes,FUN=sum,na.rm=TRUE)
+RecipePCA$Year <- as.factor(RecipePCA$Year)
+RecipePCA
+```
+
+R has two options for PCA, roughly equivalent.
+
+```{r}
+RecipePCA.prcomp = prcomp(RecipePCA[,-c(1,2)])
+RecipePCA.princomp <- princomp(~ FatCalories + ProCalories + CHOCalories,
+                   data = RecipePCA,cor=TRUE)
+```
+
+```{r}
+summary(RecipePCA.prcomp)
+```
+
+```{r}
+biplot(RecipePCA.prcomp)
+```
+
+The base R plots are kind of bare-bones; again, `ggplot2` based graphics are easier to read. However, it took a while for `ggfortify` to build on my machine.
+
+```{r}
+library(ggfortify)
+autoplot(RecipePCA.prcomp, data = RecipePCA, colour = 'Recipe', shape='Year', loadings.colour = 'black', loadings.label = TRUE, loadings.label.size = 3)
+```
+
+What does this tell us? This is a bit harder to explain, since the principal components are somewhat artificial - they not always easy to describe in specific terms. 
+
+If we consider the first PC, `Lemon Gelatin` and `Fruit Gelatin` are the most different from each other, with `Fruit Souffle` in the middle; this is consistent with the cluster plot. Most of this difference aligns with `FatCalories`. Along the second PC, we see separation between `ProCalories` and `CHOCalories`.
+
+We can complement this with a simple multivariate AOV:
+```{r}
+MultivariateMANOVA <- manova(cbind(FatCalories, ProCalories, CHOCalories) ~ Year,data=RecipePCA)
+summary(MultivariateMANOVA)
+summary.aov(MultivariateMANOVA)
+```
+
+In this small data, it appears that `Year` does not account for much of the variation; `FatCalories` shows more variation than the other two macronutrients.
+
+Some things to consider. The values have not been normalized - one recipes produces 12 servings; most have only 4. How much does this affect the analysis? Will the be different if the measures are scaled, to calories per serving or calories per gram. 
+
+We can also scale these to percentages - have recipes changed with regard to the percentage of calories from fat, protein or carbohydrates?
+
