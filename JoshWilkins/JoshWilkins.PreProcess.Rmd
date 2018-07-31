@@ -10,8 +10,16 @@ output:
 # Abstract
 A collection of recipes were recorded and stored in individual files as a means of collaboration amongst the class. The most recent version of this data can be found [here](https://github.com/PeterClaussenSDSU/JoyOfCooking2018.git).
 
-TBD...
+This file first attempts to:
+- Fix file extensions
+- Fix recipe file naming convention
+- Remove duplicate recipes
 
+It then proceeds to create a master list of all the recipes joined together by
+- Joining tables (concatenating with rbind)
+- Adding year and recipe columns to master list of recipes
+- Standardizing to the 6 expected columns
+- Convert amount column to weight
 
 Libraries
 ```{r, warning=FALSE, message=FALSE}
@@ -24,8 +32,8 @@ library(tidyverse)
 Create cleaned up folder of recipe files
 
 ```{r}
-old.path.to.recipes <- "./RecipeTables/"   # Path to original recipe files
-path.to.recipes <- "./CleanRecipeTables/"  # Path for cleaned up recipe files
+old.path.to.recipes <- "../RecipeTables/"   # Path to original recipe files
+path.to.recipes <- "../CleanRecipeTables/"  # Path for cleaned up recipe files
 
 dir.create(file.path(".", path.to.recipes), showWarnings = FALSE)  # Create dir if it doesn't exists
 unlink(paste(path.to.recipes, "*", sep=''))  # Remove everything from this new dir (start fresh if rerun R)
@@ -41,8 +49,7 @@ recipe.files <- list.files(path = path.to.recipes)
 num.recipes <- length(recipe.files)
 ```
 
-Looking at filename extensions
-Renaming file if incorrect
+Looking at filename extensions. renaming file if incorrect.
 
 ```{r}
 removed.file.count <- 0  # Keep counter for files removed
@@ -89,16 +96,11 @@ if (!is.null(extensions)) warnings(header="Unexpected File Extension(s)", thing)
 recipe.files <- list.files(path = path.to.recipes)
 ```
 
-Unllike the Midterm instruction that specified a '.tab' file extension, it looks like there a couple files with no extension and a couple with a '.txt' extension.
+Looks like there a couple files with no extension and a couple with a '.txt' extension.
 
-
-And then there is the file name itself...
-Supposed to be in format of Recipe.Name.Year.tab
-
-Well, we can make one assumption here, that all the files have a 4 digit year
-
-I'm just going to strip all the miscellaneous characters from the filenames and reformat everything...
-And grabbing all the years and recipe names while im at it
+Now try to format the recipe file names to Recipe.Name.Year.tab
+Start by striping all the miscellaneous characters from the filenames and then just reformat it.
+Grabbing all the years and recipe names while im at it.
 
 ```{r}
 recipe.files <- list.files(path = path.to.recipes)
@@ -189,8 +191,7 @@ num.recipes <- length(recipe.files)  # Recalculate this to keep up to date
 ```
 
 
-Read in the files
-
+Read in the files into data tables
 ```{r, warning=FALSE}
 # Ignore warnings (some people left the index in so mismatch number of cols to header)
 
@@ -213,9 +214,9 @@ names(recipe.list) <- recipe.files  # Name the recipe tables in our list
 
 # Merge tables
 
-Have to add recipe name and year to each file
-Remove V1 column
-Fix column names
+- Adding recipe name and year to each data table
+- Removing V1 column
+- Standardizing column names
 
 ```{r}
 
@@ -280,8 +281,9 @@ if (!is.null(unmatched)) warnings(header="Unexpected column name, does not map t
 if (length(colnames(master.list)) != 6) stop("Master Recipe list is wrong size!")
 ```
 
+
+Rough attempt at replacing missing NDB numbers by finding similar ingredients in master list
 ```{r}
-# Rough attempt at replacing missing NDB numbers by finding similar ingredients in master list
 master.list$Ingredient <- tolower(master.list$Ingredient)
 for(i in 1:nrow(master.list)) {
   row <- master.list[i,]
@@ -294,21 +296,15 @@ for(i in 1:nrow(master.list)) {
   
   if (nrow(matches) != 0) master.list[i,]$NDB_No <- matches$NDB_No[1]
 }
-
-# Write master list to a file
-write.csv(master.list, "MasterList.csv", row.names=FALSE)
 ```
 
 
 # Amount to Grams
 
-Format the Measure columns in master data set
-
+Converting the amount column to grams
 ```{r}
-master.list <- read.csv("MasterList.csv")
-
 #Reading in the weight table for conversion
-weight.dat <-read.table("./SR-Leg_ASC/WEIGHT.txt",header=FALSE,sep="^",quote="~")
+weight.dat <-read.table("../SR-Leg_ASC/WEIGHT.txt",header=FALSE,sep="^",quote="~")
 names(weight.dat) <- c("NDB_No","Seq","Amount","Msre_Desc","Gm_Wgt","Num_Data_Pts","Std_Dev")
 
 # Remove any straggling NDB_No == NA for now
@@ -346,7 +342,10 @@ remove.matches <- function(cases, possibles){
 add.match <- function(i, measure) {
   # Selects first match in case amounts are different
   weight <- subset(weight.dat$Gm_Wgt, (weight.dat$NDB_No == master.list[i,]$NDB & weight.dat$Msre_Desc == measure))[1]
-  master.list[i,]$Gm_Wgt <- weight
+  
+  # Need to scale according to amount specified in weight table
+  weight.amount <- subset(weight.dat$Amount, (weight.dat$NDB_No == master.list[i,]$NDB & weight.dat$Msre_Desc == measure))[1]
+  master.list[i,]$Gm_Wgt <- weight * master.list[i,]$Amount / weight.amount
   
   match <- subset(weight.dat$Msre_Desc, (weight.dat$NDB_No == master.list[i,]$NDB & weight.dat$Msre_Desc == measure))[1]
   master.list[i,]$Matched_Measure <- as.character(match)
@@ -365,7 +364,7 @@ format.measure <- function(measure) {
 master.list$Measure <- sapply(master.list$Measure, format.measure)
 
 master.list$Gm_Wgt <- 0 # Placeholder...
-master.list$Matched_Measure <- 0 # Placeholder...
+master.list$Matched_Measure <- '' # Placeholder...
 
 # Do the replacement now
 
@@ -478,59 +477,45 @@ for(i in 1:nrow(master.list)) {
 }
 
 # print(master.list[c("Measure", "Matched_Measure")])
-nrow(subset(master.list, Gm_Wgt != 0))
 ```
 
-Dont forget:
-- Scale by amount
-- Remove or fix NA in NDB column
+Things not really considered:
 - Multiple matches
-- Unimportant ingredients
 
-```{r}
+Then remove all the recipes with an ingredient missing
+```{r, warning=FALSE}
 # Remove all recipes with any ingredient missing a weight
 master.list <- master.list %>%
   group_by(Recipe, Year) %>%
   filter(!any(Gm_Wgt == 0))
 ```
 
-
 How many recipes are we left with...
 ```{r}
 nrow(unique(master.list[c("Recipe", "Year")]))
 ```
 
+Not a great result with only about half of the recipes salvaged.
 
-Helper function (debug only)
+Modify the master list columns before writing it to csv:
+- Remove matched measure column, it was there mostly for debugging and is not needed for analysis.
+- Remove measure column (redundant information), the weight column suffices.
+- Remove NDB_No column, it is no longer needed
+- Replace the amount column with the weight column.
 ```{r}
-function(measure) {
-  # prints mesurement description give NDBs associated with a measurement name
-  NDBs <- subset(master.list$NDB_No, grepl(measure, master.list$Measure))
-  for (NDB in unique(NDBs[!is.na(NDBs)])) {
-    print(subset(weight.dat$Msre_Desc, weight.dat$NDB_No == NDB))
-  }
-}
+master.list$Matched_Measure <- NULL
+master.list$Amount <- NULL
+master.list$Measure <- NULL
+master.list$NDB_No <- NULL
+names(master.list)[names(master.list) == 'Gm_Wgt'] <- 'Amount'
 ```
 
-
+Then write the master list to a file so that analyses can be performed. See Josh.Wilkins.Analysis for this.
 ```{r}
-print(unique(master.list$Measure))
+write.csv(master.list, "Ingredients.csv", row.names=FALSE)
 ```
 
-
-
-
-
-
-
-
-
-
-```{r}
-print(weight.dat)
-```
-
-```{r}
+```{r eval=FALSE}
+# Check for validity if needed
 print(master.list)
 ```
-
