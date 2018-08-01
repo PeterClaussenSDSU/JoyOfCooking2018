@@ -1,0 +1,501 @@
+---
+title: "Stat700 Midterm Project Prep"
+author: "Set 30"
+date: "07/21/2018"
+output:
+  word_document: default
+  pdf_document: default
+  html_document: default
+---
+
+# Part 1 - Assign Recipes
+
+
+First, generate a list of all files in the Recipes folder. In order to read the file, the path is directed to the folder where the files are saved. The file length is 109 so I just printed the head of the recipes file. This chunk is all about to read all the .pdf file in that folder and how many .pdf files contain that folder. 
+```{r,eval=FALSE}
+getwd()
+recipes = list.files(path = "./", pattern = '*.pdf')
+length(recipes)
+head(recipes)
+
+```
+
+Make this reproducible. set.seed() function is just to produce the same set of data time and again. We can choose any number of seed. The particular number means it provides the exactly the same data all the time.
+```{r,eval=FALSE}
+set.seed(10010) #To make the reproducable data
+```
+
+
+Create two randomly sampled list of recipe files and cycle this list through 109 rows.It created a list of 2 column of the 109 .pdf file randomly. The ramdamization is controlled by the set.seed() function above.
+```{r,eval=FALSE}
+recipe.pairs <- matrix(c(sample(recipes),sample(recipes)),ncol=2,nrow=109)
+length(recipe.pairs)
+head(recipe.pairs)
+```
+
+Are there any pairs across rows? Yes, there is 2 pairs exist across the row. The sum function is adding the total sum of the recipes pairs among the two rows.
+
+```{r,eval=FALSE}
+sum(recipe.pairs[,1]==recipe.pairs[,2])
+```
+
+Write to a table. I have written in two file format. Those are .csv and .tab file. Those file are automatically saved in the working directory with the file name.
+```{r,eval=FALSE}
+write.csv(recipe.pairs, file="Recipe.Table.csv",row.names = FALSE)
+write.table(recipe.pairs, file="Recipe.Table.tab")
+```
+
+Read the table in and print: This chunk read the .csv and .tab file saved above from the working directory.
+
+```{r,eval=FALSE}
+Recipe.Table <- read.csv("Recipe.Table.csv",header=FALSE,skip=1) #read the .csv file.
+head(Recipe.Table)
+
+Recipe.Table1 = read.table("Recipe.Table.tab",header = TRUE,stringsAsFactors = FALSE) #Read the .tab file
+head(Recipe.Table1)
+```
+
+# Part 2 - Check Nutrient Data.
+
+We will be using the USDA food nutrient database, found at https://www.ars.usda.gov/northeast-area/beltsville-md-bhnrc/beltsville-human-nutrition-research-center/nutrient-data-laboratory/docs/usda-national-nutrient-database-for-standard-reference/
+
+Run this to make sure your system can read the required nutrient database tables.
+```{r}
+weight.dat <- read.table("WEIGHT.txt",header=FALSE,sep="^",quote="~")
+names(weight.dat) <- c("NDB_No","Seq","Amount","Msre_Desc","Gm_Wgt","Num_Data_Pts","Std_Dev")
+head(weight.dat)
+summary(weight.dat)
+```
+
+```{r}
+food_des.dat <- read.table("FOOD_DES.txt",header=FALSE,sep="^",quote="~")
+names(food_des.dat) <- c("NDB_No","FdGrp_Cd","Long_Desc","Shrt_Desc",
+"ComName","ManufacName","Survey","Ref_desc","Refuse","SciName",
+"N_Factor","Pro_Factor","Fat_Factor","CHO_Factor")
+dim(food_des.dat)
+head(food_des.dat)
+summary(food_des.dat)
+```
+
+```{r}
+nut_data.dat <- read.table("NUT_DATA.txt",header=FALSE,sep="^",quote="~")
+names(nut_data.dat) <- c("NDB_No","Nutr_No","Nutr_Val","Num_Data_Pts","Std_Error",
+"Src_Cd","Deriv_Cd","Ref_NDB_No","Add_Nutr_Mark","Num_Studies",
+"Min","Max","DF","Low_EB","Up_EB","Stat_cmt","AddMod_Date")
+head(nut_data.dat)
+summary(nut_data.dat)
+```
+
+
+Comment on the task: In my case the assign recipes were "Caramel Custard" and "Chili with Meat and Beans(Chili con Carne)". While naming the variables I used 36 for 1936 and 06 for 2006 and the name of the recipes stays the same. As per instruction mention in D2L, first I created the data tables with columns Amount, Measure and Ingredient. In addition to the assigned column names I also added two more columns having name recipes and year just for my convinience but I took first two column out if necessary. 
+
+The following chunk is about to how I made a data frame (in r-code) of the provided recipe1 (Carmel Custard) of the year 1936 and 2006. Print those data table after taking two extra column out when needed. I also wrote those file in the .tab file. After that I merge the Carmel Custard file for both year 1936 and 2006 by the ingredients and also wrote that merge file in .tab file again. In addition, the number of rows of the file before and after merge was determined and the difference was due to the mismatch of the ingredent name between those 2 years. I also figured out the mismatched name by using the setdiff() function and also plot the data to see how the difference occur between the year 1936 and 2006 on the Carmel Custard data. The additional description about the code are within the chunk along with the code. 
+
+ 
+
+```{r}
+#Data frame for recipe1 == Carmel Custard for years 1936 & 2006
+#############################################
+############# Carmel Custard ################
+#############     @1936      ################
+#############################################
+CarmelCustard36 <- data.frame(
+  Recipes = c("Caramel Custard"),
+  Year=c(1936),
+  Amount = c(0.50, 2.00, 3.00, 0.50, 1.00),
+  Measure = c("cup", "cup", "ea", "tsp", "Tbs"),
+  Ingredient = c("sugar,white,granulated,granulated", "milk,whole,3.25%", "egg yolk,raw,large", "extract,vanilla", "water,generic"))
+CarmelCustard36[,-c(1,2)] #Taking the unwanted column out
+
+#############################################
+############# Carmel Custard ################
+#############     @2006      ################
+#############################################
+CarmelCustard06 <- data.frame(
+  Recipes = c("Caramel Custard"),
+  Year=c(2006),
+  Amount = c(3.00, 2.00, 0.75, 0.75, 2.00),
+  Measure = c("lrg", "cup", "cup", "tsp", "Tbs"),
+  Ingredient = c("egg,raw","milk,whole,3.25%","sugar,white,granulated,granulated", "extract,vanilla", "water,generic"))
+CarmelCustard06[,-c(1,2)] #Taking the unwanted column out
+
+#Data table for recipie1 for year 1936 and 2006
+CarmelCustard06
+CarmelCustard06
+
+#Writing in tab file
+write.table(CarmelCustard36, file = "CarmelCustard36.tab") #Write in .tab file
+write.table(CarmelCustard06, file = "CarmelCustard06.tab") #Write in .tab file
+
+
+#Merge table for recipie1 for year 1936 and 2006 by ingredent after taking the Name and Year column out
+CarmelCustard36_06 = merge(CarmelCustard36[,-c(1,2)],CarmelCustard06[,-c(1,2)], by = "Ingredient" )
+CarmelCustard36_06 
+
+#Writing in tab file
+write.table(CarmelCustard36_06, file = "CarmelCustard36_06.tab") #Write in .tab file
+
+#Checking the # of row of the recipe1 for year 1936 and 2006 indivisually
+nrow(CarmelCustard36)
+nrow(CarmelCustard06)
+
+#Checking the # of row of the recipe1 of both year 1936 & 2006 after merging by ingrident 
+nrow(CarmelCustard36_06)
+
+#It has been noticed that one row is missing after we merge ("by ingredient") the recipes of two different year. Which means there must be a mismatching at least one the ingredient name. 
+
+#Find the mismatching name
+setdiff(CarmelCustard36$Ingredient, CarmelCustard06$Ingredient)
+# It is clear that there is mismatching in the ingredient name "egg yolk,raw,large" and "egg,raw" stated differently in the year 1936 and 2006 respectively. In a simillar manner we can check for the Measure(Unit) and Amount as well.
+
+
+par(mfrow=c(1,2))
+plot(as.factor(CarmelCustard36$Measure) ,CarmelCustard36$Amount,las = 3,xlab = "Measure(Unit)", ylab = "Amount",main = "1936")
+plot(as.factor(CarmelCustard06$Measure) ,CarmelCustard06$Amount,las = 3,xlab = "Measure(Unit)", ylab = "Amount",main = "2006")
+
+par(mfrow=c(1,2))
+plot(as.factor(CarmelCustard36$Ingredient) ,CarmelCustard36$Amount,las = 3,xlab = "Ingredient", ylab = "Amount",main = "1936")
+plot(as.factor(CarmelCustard06$Ingredient) ,CarmelCustard06$Amount,las = 3,xlab = "Ingredient", ylab = "Amount",main = "2006")
+# The above plot shows that there is one unit mismatch from year 1936 to 2006 and the difference in the amount of "water,generic" Ingredient.
+
+```
+
+
+The following chunk is doing eaxctly the same thing as previous chunk but for the another recipe(Chili with Meat and Beans(Chili con Carne)).
+
+```{r}
+#Data frame for recipe2 == Chili con Carne for years 1936 & 2006
+#############################################
+############# Chili con Carne ###############
+#############     @1936      ################
+#############################################
+ChiliconCarne36 <- data.frame(
+  Recipes = c("Chili con Carne"),
+  Year=c(1936),
+  Amount = c(2.00, 0.50, 1.00, 10.50, 28.00),
+  Measure = c("Tbs", "cup", "lb", "oz", "oz"),
+  Ingredient = c("fat,bacon,cooked,rendered", "onion,yellow,fresh,chopped", "beef,ground,raw,20%fat", "soup,tomato,canned,condensed", "kidney beans,canned"))
+ChiliconCarne36[,-c(1,2)]
+#############################################
+############# Chili con Carne ###############
+#############     @2006      ################
+#############################################
+ChiliconCarne06 <- data.frame(
+  Recipes = c("Chili con Carne"),
+  Year=c(2006),
+  Amount = c(3.00, 2.00, 2.00, 10.00, 2.00, 28.00, 1.00, 1.00, 4.00),
+  Measure = c("lb","Tbs", "cup", "ea", "ea", "oz", "Tbs", "lb", "cup"),
+  Ingredient = c("beef,chuck,stew meat,raw,choice,URMIS1100","oil,olive","onion,yellow,fresh,chopped","garlic cloves,fresh", "jalapeno peppers,fresh",  "tomatos,whole,canned,with juice", "vinegar,red wine","pinto beans,dry", "water,generic"))
+ChiliconCarne06[,-c(1,2)]
+#Data table for recipie2 for year 1936 and 2006
+ChiliconCarne36
+ChiliconCarne06
+
+#Writing in tab file
+write.table(ChiliconCarne36, file = "ChiliconCarne36.tab") #Write in .tab file
+write.table(ChiliconCarne06, file = "ChiliconCarne06.tab") #Write in .tab file
+
+
+#Merge table for recipie2 for year 1936 and 2006 by ingredent after taking the Name and Year column out
+ChiliconCarne36_06 = merge(ChiliconCarne36[,-c(1,2)],ChiliconCarne06[,-c(1,2)], by = "Ingredient" )
+ChiliconCarne36_06
+
+#Writing in tab file
+write.table(ChiliconCarne36_06, file = "ChiliconCarne36_06.tab") #Write in .tab file
+
+#Checking the # of row of the recipe1 for year 1936 and 2006 indivisually
+nrow(ChiliconCarne36)
+nrow(ChiliconCarne06)
+
+#Checking the # of row of the recipe1 of both year 1936 & 2006 after merging by ingrident 
+nrow(ChiliconCarne36_06)
+
+#It has been noticed that only one Ingredient is matching after we merge ("by ingredient") the recipes2 of two different year. Which means there must be a mismatching more than one the ingredient name. 
+
+#Find the mismatching name
+setdiff(ChiliconCarne36$Ingredient, ChiliconCarne06$Ingredient)
+# It is clear that there is mismatching in various ingredients.
+
+
+par(mfrow=c(1,2))
+plot(as.factor(ChiliconCarne36$Measure) ,ChiliconCarne36$Amount,las = 3,xlab = "Measure(Unit)", ylab = "Amount",main = "1936")
+plot(as.factor(ChiliconCarne06$Measure) ,ChiliconCarne06$Amount,las = 3,xlab = "Measure(Unit)", ylab = "Amount",main = "2006")
+
+par(mfrow=c(1,2))
+plot(as.factor(ChiliconCarne36$Ingredient) ,ChiliconCarne36$Amount,las = 3,xlab = "Ingredient", ylab = "Amount",main = "1997")
+plot(as.factor(ChiliconCarne06$Ingredient) ,ChiliconCarne06$Amount,las = 3,xlab = "Ingredient", ylab = "Amount",main = "2006")
+# The above plot shows that there is one unit mismatch from year 1936 to 2006 and the difference in the amount for both Measure and Ingredient.
+
+```
+
+
+The r codes in the below chunk are used to read the .tab file saved in the previous chunk as per midretm instruction. Additionally, codes are also write to read the provided recipes BeefStroganoff for both year 1997 and 2006. The provided year 1997 merged with the 1936 year with other data files. I am assuming that might be the error while enter the data. Again, I merged the BeefStroganoff data of both the year and find the length of row before and after the merging and figure out the mismatch between in the ingredient name between those two years. As above I also ploted the data to see the difference distinctly.
+
+```{r}
+#Reading all the .tab file that I just wrote and saved above.
+getwd() #Getting the working directory (just to check)
+CarmelCustard36 = read.table("CarmelCustard36.tab",header = TRUE,stringsAsFactors = FALSE) #Read the above saved CarmelCustard36 .tab file
+CarmelCustard06 = read.table("CarmelCustard06.tab",header = TRUE,stringsAsFactors = FALSE) #Read the above saved CarmelCustard06 .tab file
+CarmelCustard36_06 = read.table("CarmelCustard36_06.tab",header = TRUE,stringsAsFactors = FALSE) #Read the above saved CarmelCustard36_06 .tab file
+ChiliconCarne36 = read.table("ChiliconCarne36.tab",header = TRUE,stringsAsFactors = FALSE) #Read the above saved ChiliconCarne36 .tab file
+ChiliconCarne06 = read.table("ChiliconCarne06.tab",header = TRUE,stringsAsFactors = FALSE) #Read the above saved ChiliconCarne6 .tab file
+ChiliconCarne36_06 = read.table("ChiliconCarne36_06.tab",header = TRUE,stringsAsFactors = FALSE) #Read the above saved ChiliconCarne36_06 .tab file
+
+
+
+##Read the provided .tab file of BeefStroganoff data
+BeefStroganoff.1997 = read.table("BeefStroganoff.1997.tab",header = TRUE,stringsAsFactors = FALSE) #Read the provided BeefStroganoff.1997 .tab file
+BeefStroganoff.1997
+
+BeefStroganoff.2006 = read.table("BeefStroganoff.2006.tab",header = TRUE,stringsAsFactors = FALSE) #Read the provided BeefStroganoff.2006 .tab file
+BeefStroganoff.2006
+
+#############################################
+#############   Merge data      #############
+#############   using merge()   #############
+#############################################
+BeefStroganoff97_06 = merge(BeefStroganoff.1997,BeefStroganoff.2006,by = "Ingredient") #Merge both BeefStroganoff recipe for both year 1997 and 2006
+BeefStroganoff97_06
+
+#Checking the # of row of the BeefStroganoff for year 1997 and 2006 indivisually
+nrow(BeefStroganoff.1997)
+nrow(BeefStroganoff.2006)
+
+#Checking the # of row of the BeefStroganoff of both year 1997 & 2006 after merging by ingrident 
+nrow(BeefStroganoff97_06)
+
+#It has been noticed that Ingredient is mismatching after we merge ("by ingredient") the BeefStroganoff of two different year. Which means there must be a mismatching on the ingredient name. 
+
+#Find the mismatching name
+setdiff(BeefStroganoff.2006$Ingredient, BeefStroganoff.1997$Ingredient)
+# It is clear that there is mismatching in various ingredients.
+
+
+par(mfrow=c(1,2))
+plot(as.factor(BeefStroganoff.1997$Measure) ,BeefStroganoff.1997$Amount,las = 3,xlab = "Measure(Unit)", ylab = "Amount",main = "1997")
+plot(as.factor(BeefStroganoff.2006$Measure) ,BeefStroganoff.2006$Amount,las = 3,xlab = "Measure(Unit)", ylab = "Amount",main = "2006")
+
+par(mfrow=c(1,2))
+plot(as.factor(BeefStroganoff.1997$Ingredient) ,BeefStroganoff.1997$Amount,las = 3,xlab = "Ingredient", ylab = "Amount",main = "1997")
+plot(as.factor(BeefStroganoff.2006$Ingredient) ,BeefStroganoff.2006$Amount,las = 3,xlab = "Ingredient", ylab = "Amount",main = "2006")
+
+# The above plot shows that there is one unit mismatch from year 1997 to 2006 and the difference in the amount for both Measure and Ingredient.
+
+
+```
+
+
+In the following chunk I merge all the 1936 and 2006 data by ingredients and merging done by two way by taking "all = TRUE and FALSE" indivisually. Also I plotted the data to see the change in between 1936 and 2006.
+```{r}
+#Bind all the 1936 data together
+AllData.1936 = rbind(CarmelCustard36[,-c(1,2)],ChiliconCarne36[,-c(1,2)],BeefStroganoff.1997) 
+AllData.1936
+
+#Bind all the 2006 data together
+AllData.2006 = rbind(CarmelCustard06[,-c(1,2)],ChiliconCarne06[,-c(1,2)],BeefStroganoff.2006) 
+AllData.2006
+
+#Merge all the data (My recipes and provided Beef data) together
+
+AllData.1936_2006 = merge(AllData.1936,AllData.2006,by = "Ingredient") 
+AllData.1936_2006
+
+
+AllData.1936_20061 = merge(AllData.1936,AllData.2006,by = "Ingredient",all = TRUE)
+AllData.1936_20061 #Merged all the data in a single table
+
+#Plot of the data
+par(mfrow=c(1,2))
+plot(as.factor(AllData.1936$Measure),AllData.1936$Amount,las = 3,xlab = "Measure.1936(Unit)", ylab = "Amount",main = "1936")
+plot(as.factor(AllData.2006$Measure),AllData.2006$Amount,las = 3,xlab = "Measure.2006(Unit)", ylab = "Amount",main = "2006")
+```
+
+
+This chunk is to read the Recipes.csv file and append rows for my recipes, then write the table back to Recipes.csv
+```{r}
+#Read the Recipes.csv file
+Given_Recipe <- read.csv("Recipes.csv",header=TRUE,skip=0)
+print(Given_Recipe) #Print the Recipes.csv file
+
+#Creating the my Recipes data table file
+My_Recipe <- data.frame(
+  Recipe = c("Caramel Custard","Caramel Custard","Chili con Carne","Chili con Carne"),
+  Year=c(1936, 2006,1936, 2006),
+  MinServings = c(4.0,5.0, 8.0, 8.0),
+  MaxServings = c(4.0,5.0, 8.0, 8.0))
+print(My_Recipe)
+
+#Append the Recipes file with my Recipies file
+Recipes = rbind(Given_Recipe,My_Recipe)
+print(Recipes) #Print the recipes file
+#write.table(Recipes, file = "Recipes.csv",row.names=FALSE) #Write in .tab file
+#PMC Jul 30 2018 - need to write as csv
+write.csv(Recipes, file = "Recipes.csv",row.names=FALSE)
+```
+
+The following chunk is about the our recipes ingredient checking with the standard USDA ingredient list in a different way. The more description are below. 
+
+```{r}
+#AGAIN for the further step 
+#Read the given .txt file of FOOD_DES
+food_des.dat <- read.table("FOOD_DES.txt",header=FALSE,sep="^",quote="~")
+names(food_des.dat) <- c("NDB_No","FdGrp_Cd","Long_Desc","Shrt_Desc",
+"ComName","ManufacName","Survey","Ref_desc","Refuse","SciName",
+"N_Factor","Pro_Factor","Fat_Factor","CHO_Factor")
+
+#Checking for the Ingredent match in FOOD_DES$Long_Decs file
+grep('(S|s)ugar,(W|w)hite,(G|g)ranulated,(G|g)ranulated',food_des.dat$Long_Desc)
+grep('(M|m)ilk,(W|w)hole,3.25%',food_des.dat$Long_Desc)
+grep('(E|e)gg yolk,(R|r)aw,(L|l)arge',food_des.dat$Long_Desc)
+grep('(E|e)xtract,(V|v)anilla',food_des.dat$Long_Desc)
+grep('(W|w)ater,(G|g)eneric',food_des.dat$Long_Desc)
+grep('(F|f)at,(B|b)acon,(C|c)ooked,(R|r)endered',food_des.dat$Long_Desc)
+grep('(O|o)nion,(Y|y)ellow,(F|f)resh,(C|c)hopped',food_des.dat$Long_Desc)
+grep('(B|b)eef,(G|g)round,(R|r)aw,20%fat',food_des.dat$Long_Desc)
+grep('(S|s)oup,(T|t)omato,(C|c)anned,(C|c)ondensed',food_des.dat$Long_Desc)
+grep('(K|k)idney,(B|b)eans,(C|c)anned',food_des.dat$Long_Desc)
+grep('(E|e)gg ,(R|r)aw',food_des.dat$Long_Desc)
+grep('(B|b)eef,(C|c)huck,(S|s)tew meat,(R|r)aw,(C|c)hoice,URMIS1100',food_des.dat$Long_Desc)
+grep('(O|o)il,(O|o)live',food_des.dat$Long_Desc)
+grep('(G|g)arlic cloves,(F|f)resh',food_des.dat$Long_Desc)
+grep('(J|j)alapeno peppers,(F|f)resh',food_des.dat$Long_Desc)
+grep('(T|t)omatos,(W|w)hole,(C|c)anned,(W|w)ith juice',food_des.dat$Long_Desc)
+grep('(V|v)inegar,(R|r)ed wine',food_des.dat$Long_Desc)
+grep('(P|p)into beans,(D|d)ry',food_des.dat$Long_Desc)
+```
+
+The output of all the above function is 0. So there is no exact match of our recipes ingredient with the USDA data. Which means the data entry was not perfectly accurate. I am interested if ingredient list doesnot match exactly with the USDA data than lets try with two different way, (a) Try to get the ingredient that start with our ingredient first names (b) Try to get the ingredient that at least contain our ingredient first names. To made that work easy I extract some data of interest from FOOD_DES.
+
+```{r}
+ 
+
+#Extracting just the NDB_No and Long_Desc as a data frame from FOOD_DES data file
+food_des.NDB_Long = data.frame(food_des.dat[,c(1,3)])
+head(food_des.NDB_Long) #Printing the head of the new data frame
+nrow(food_des.NDB_Long) #Checking the # of rows of the data frame
+#############################################
+############  Ingredient list with  #########
+############  NDB No in USDA data   #########
+############     @FOOD_DES.TXT      #########
+#############################################
+
+#For (a) Try to get the ingredient that start with our ingredient first names
+#Ingredient started with particular name list. I put the name of the function with their starting ingredient  
+SUGAR = food_des.NDB_Long[grep('(S|s)ugar.,', food_des.NDB_Long$Long_Desc),] 
+MILK = food_des.NDB_Long[grep('(M|m)ilk.,', food_des.NDB_Long$Long_Desc),]
+EGG = food_des.NDB_Long[grep('(E|e)gg.,', food_des.NDB_Long$Long_Desc),]
+EXTRACT = food_des.NDB_Long[grep('(E|e)xtract.,', food_des.NDB_Long$Long_Desc),]
+WATER = food_des.NDB_Long[grep('(W|w)ater.,', food_des.NDB_Long$Long_Desc),]
+FAT = food_des.NDB_Long[grep('(F|f)at.,', food_des.NDB_Long$Long_Desc),]
+ONION = food_des.NDB_Long[grep('(O|o)nion.,', food_des.NDB_Long$Long_Desc),]
+BEEF = food_des.NDB_Long[grep('(B|b)eef.,', food_des.NDB_Long$Long_Desc),]
+SOUP = food_des.NDB_Long[grep('(S|s)oup.,', food_des.NDB_Long$Long_Desc),]
+KIDNEY = food_des.NDB_Long[grep('(K|k)idney.,', food_des.NDB_Long$Long_Desc),]
+OIL = food_des.NDB_Long[grep('(O|o)il.,', food_des.NDB_Long$Long_Desc),]
+GARLIC = food_des.NDB_Long[grep('(G|g)arlic.,', food_des.NDB_Long$Long_Desc),]
+JALOPENO = food_des.NDB_Long[grep('(J|j)alapeno.,', food_des.NDB_Long$Long_Desc),]
+TOMATOS = food_des.NDB_Long[grep('(T|t)omatos.,', food_des.NDB_Long$Long_Desc),]
+VINEGAR = food_des.NDB_Long[grep('(V|v)inegar.,', food_des.NDB_Long$Long_Desc),]
+PINTO_BEANS = food_des.NDB_Long[grep('(P|p)into beans.,', food_des.NDB_Long$Long_Desc),]
+
+head(SUGAR)
+head(MILK)
+```
+
+The ingredient in the USDA data and my data did not exactly match but it does match with my ingredient initial name. I printed head of the two data just for the reference. My ingredient starting name and the USDA data ingredient name matched somehow. But some of them did not match as well, for example in the USDA data there is no ingredient list start with milk but in my list it does exist. So we can say that there is mismatch between those which may be due to the incorrect entry of the data. So we can correct those ingredient name from the USDA data starting with our ingredient name. Otherwise we need to find the best match with out ingredient name and replace our ingredient with the best matched USDA ingredinet name.  
+
+
+```{r}
+#For (b)Try to get the ingredient that at least contain our ingredient first names
+#Ingredient started with particular name list. I put the name of the function with their starting ingredient and 1 to make distinct than previous one. 
+SUGAR1 = food_des.NDB_Long[grep('(S|s)ugar.*', food_des.NDB_Long$Long_Desc),] 
+MILK1 = food_des.NDB_Long[grep('(M|m)ilk.*', food_des.NDB_Long$Long_Desc),]
+EGG1 = food_des.NDB_Long[grep('(E|e)gg.*', food_des.NDB_Long$Long_Desc),]
+Extract1 = food_des.NDB_Long[grep('(E|e)xtract.*', food_des.NDB_Long$Long_Desc),]
+WATER1 = food_des.NDB_Long[grep('(W|w)ater.*', food_des.NDB_Long$Long_Desc),]
+FAT1 = food_des.NDB_Long[grep('(F|f)at.*', food_des.NDB_Long$Long_Desc),]
+ONION1 = food_des.NDB_Long[grep('(O|o)nion.*', food_des.NDB_Long$Long_Desc),]
+BEEF1 = food_des.NDB_Long[grep('(B|b)eef.*', food_des.NDB_Long$Long_Desc),]
+SOUP1 = food_des.NDB_Long[grep('(S|s)oup.*', food_des.NDB_Long$Long_Desc),]
+KIDNEY1 = food_des.NDB_Long[grep('(K|k)idney.*', food_des.NDB_Long$Long_Desc),]
+OIL1 = food_des.NDB_Long[grep('(O|o)il.*', food_des.NDB_Long$Long_Desc),]
+GARLIC1 = food_des.NDB_Long[grep('(G|g)arlic.*', food_des.NDB_Long$Long_Desc),]
+JALOPENO1 = food_des.NDB_Long[grep('(J|j)alapeno.*', food_des.NDB_Long$Long_Desc),]
+TOMATOS1 = food_des.NDB_Long[grep('(T|t)omatos.*', food_des.NDB_Long$Long_Desc),]
+VINEGAR1 = food_des.NDB_Long[grep('(V|v)inegar.*', food_des.NDB_Long$Long_Desc),]
+PINTO_BEANS1 = food_des.NDB_Long[grep('(P|p)into beans.*', food_des.NDB_Long$Long_Desc),]
+
+#Just printing the head of the first sugar function to show that how it extracting the data.
+
+head(SUGAR1)
+head(MILK1)
+
+```
+
+The USDA ingredient list having at least one of our recipes ingredient has lot of list. I just print the head of two data set for the reference. We need to replace our ingredient with perfect or closely match ingredient with the USDA data. 
+
+
+Now grep() the Measure(Unit) from USDA weight data along with NDB_No.
+```{r}
+#Reading the given .txt file of WEIGHT
+weight.dat <- read.table("WEIGHT.txt",header=FALSE,sep="^",quote="~")
+names(weight.dat) <- c("NDB_No","Seq","Amount","Msre_Desc","Gm_Wgt","Num_Data_Pts","Std_Dev")
+
+weight.NDB_Msre = weight.dat[,c(1,4)]
+tbs = weight.NDB_Msre[grep('(T|t)bs', weight.NDB_Msre$Msre_Desc),]
+cup = weight.NDB_Msre[grep('(C|c)up', weight.NDB_Msre$Msre_Desc),]
+ea = weight.NDB_Msre[grep('(E|e)a', weight.NDB_Msre$Msre_Desc),]
+tsp = weight.NDB_Msre[grep('(T|t)sp', weight.NDB_Msre$Msre_Desc),]
+lb = weight.NDB_Msre[grep('(L|l)b', weight.NDB_Msre$Msre_Desc),]
+oz = weight.NDB_Msre[grep('(O|o)z', weight.NDB_Msre$Msre_Desc),]
+lrg = weight.NDB_Msre[grep('(L|l)rg', weight.NDB_Msre$Msre_Desc),]
+head(tbs)
+head(cup)
+
+
+##I tried to find the our recipes measure(Unit) in the USDA standard data (WEIGHT$Msre_Desc). Firstly, I started to find the exact match of the unit with standard data but it appears as little bit different in the USDA data. For example my recipes use "(T|t)tsp" for the unit but USDA standard data it appears as "tbsp". However, cup match eaxctly in both. In a simillar way we can write the comment.
+
+weight.NDB_Msre = weight.dat[,c(1,4)]
+TBS = weight.NDB_Msre[grep('(T|t)bs.,', weight.NDB_Msre$Msre_Desc),]
+CUP = weight.NDB_Msre[grep('(C|c)up.,', weight.NDB_Msre$Msre_Desc),]
+EA = weight.NDB_Msre[grep('(E|e)a.,', weight.NDB_Msre$Msre_Desc),]
+TSP = weight.NDB_Msre[grep('(T|t)sp.,', weight.NDB_Msre$Msre_Desc),]
+LB = weight.NDB_Msre[grep('(L|l)b.,', weight.NDB_Msre$Msre_Desc),]
+OZ = weight.NDB_Msre[grep('(O|o)z.,', weight.NDB_Msre$Msre_Desc),]
+LRG = weight.NDB_Msre[grep('(L|l)rg.,', weight.NDB_Msre$Msre_Desc),]
+head(TBS)
+head(CUP)
+
+
+## Again I tried to find the unit in the USDA data that started with the unit provided in our recipes list and it appears little bit more data than the exactly match above. Which means while entering the data there should be an error in the unit. We need to replace units closely match with our recipes.
+
+TBS1 = weight.NDB_Msre[grep('(T|t)bs.*', weight.NDB_Msre$Msre_Desc),]
+CUP1 = weight.NDB_Msre[grep('(C|c)up.*', weight.NDB_Msre$Msre_Desc),]
+EA1 = weight.NDB_Msre[grep('(E|e)a.*', weight.NDB_Msre$Msre_Desc),]
+TSP1 = weight.NDB_Msre[grep('(T|t)sp.*', weight.NDB_Msre$Msre_Desc),]
+LB1 = weight.NDB_Msre[grep('(L|l)b.*', weight.NDB_Msre$Msre_Desc),]
+OZ1 = weight.NDB_Msre[grep('(O|o)z.*', weight.NDB_Msre$Msre_Desc),]
+LRG1 = weight.NDB_Msre[grep('(L|l)rg.*', weight.NDB_Msre$Msre_Desc),]
+
+head(TBS1)
+head(CUP1)
+
+# These are the data that has the unit started with our recipes unit and USDA data contains at least anywhere that unit. 
+
+
+#Reading the given .txt file of NUT_DATA
+nut_data.dat <- read.table("NUT_DATA.txt",header=FALSE,sep="^",quote="~")
+names(nut_data.dat) <- c("NDB_No","Nutr_No","Nutr_Val","Num_Data_Pts","Std_Error",
+"Src_Cd","Deriv_Cd","Ref_NDB_No","Add_Nutr_Mark","Num_Studies",
+"Min","Max","DF","Low_EB","Up_EB","Stat_cmt","AddMod_Date")
+```
+
+
+
+
+
+
+
+
+
+

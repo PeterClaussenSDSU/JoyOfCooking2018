@@ -1,0 +1,169 @@
+---
+title: "midterm"
+author: "Set 35"
+date: "July 21, 2018"
+output: word_document
+---
+
+1. Recipes data table
+```{r}
+#Scalloped Cauliflower 1936
+Amount=c(1,2,1.5,1,0.25,2)
+NDB_No=c(11135,1001,20082,1077,18079,1001)
+Measure=c("ea","Tbs", "Tbs","cup","cup","Tbs")
+Ingredient=c("Cauliflower, raw","Butter, salted","Wheat flour, white, all-purpose, self-rising, enriched","Milk, whole, 3.25% milkfat, with added vitamin D","Bread, crumbs, dry, grated, plain", "Butter, salted")
+ScallopedCauliflower.1936=data.frame(NDB_No,Amount,Measure,Ingredient)
+ScallopedCauliflower.1936
+
+#Scalloped Cauliflower 2006
+Amount=c(1,4,4,2,0.5,0.33)
+NDB_No=c(11135,1001,20082,1077,18079,1032)
+Measure=c("ea","Tbs", "Tbs","cup","cup","cup")
+Ingredient=c("Cauliflower, raw","Butter, salted","Wheat flour, white, all-purpose, self-rising, enriched","Milk, whole, 3.25% milkfat, with added vitamin D","Bread, crumbs, dry, grated, plain", "Cheese, parmesan, grated")
+ScallopedCauliflower.2006=data.frame(NDB_No,Amount,Measure,Ingredient)
+ScallopedCauliflower.2006
+
+
+#the NDB_No is manually choosen by reading Food_Des file
+#selecting  Ingredient and NDB_No from FOOD_DES file
+food_des.dat <- read.table("FOOD_DES.txt",header=FALSE,sep="^",quote="~")
+floor.allpurpose<-food_des.dat[grep("flour.*purpose", food_des.dat$Long_Desc, ignore.case = T),]
+egg.raw<- food_des.dat[grep("egg.*raw", food_des.dat$Long_Desc, ignore.case = T),]
+milkwhole<-food_des.dat[grep("milk.*whole", food_des.dat$Long_Desc, ignore.case = T),]
+sugarwhite<-food_des.dat[grep("sugar.*granulated", food_des.dat$Long_Desc, ignore.case = T),]
+blueberries<-food_des.dat[grep("blueberries", food_des.dat$Long_Desc, ignore.case = T),]
+butter<-food_des.dat[grep("butter", food_des.dat$Long_Desc, ignore.case = T),]
+butter<-food_des.dat[grep("butter", food_des.dat$Long_Desc, ignore.case = T),]
+vanilla<-food_des.dat[grep("vanilla", food_des.dat$Long_Desc, ignore.case = T),]
+sugarwhite<-food_des.dat[grep("sugar.*granulated", food_des.dat$Long_Desc, ignore.case = T),]
+cauliflower<-food_des.dat[grep("cauliflower", food_des.dat$Long_Desc, ignore.case = T),]
+butter<-food_des.dat[grep("butter", food_des.dat$Long_Desc, ignore.case = T),]
+bread<-food_des.dat[grep("bread", food_des.dat$Long_Desc, ignore.case = T),]
+cheese<-food_des.dat[grep("cheese.*grated", food_des.dat$Long_Desc, ignore.case = T),]
+
+#Blueberry Muffin 1936
+#creating data frame
+Amount=c(2,0.33,2,4,0.75,1)
+NDB_No=c(20082,19335,1123,1001,1077,9050)
+Measure=c("cup","cup", "lrg","Tbs","cup","cup")
+Ingredient=c("Wheat flour, white, all-purpose, self-rising, enriched","Sugars, granulated","Egg, whole, raw, fresh","Butter,Salted","Milk, whole, 3.25% milkfat", "Blueberries, raw")
+BlueberryMuffins.1936=data.frame(NDB_No,Amount,Measure,Ingredient)
+BlueberryMuffins.1936
+
+#Blueberries muffin 2006
+#creating data frame
+Amount=c(2,2,1,0.33,1.5, 0.25,1,2)
+NDB_No=c(20082,1123,1077,19335,9050,1001,2050,19335)
+Measure=c("cup", "lrg","cup","cup","cup","cup","tsp","Tbs")
+Ingredient=c("Wheat flour, white, all-purpose, self-rising, enriched", "Egg, whole, raw, fresh","Milk, whole, 3.25% milkfat, with added vitamin D","Sugars, granulated","Blueberries, raw","Butter,Salted","Vanilla extract", "Sugars, granulated")
+BlueberryMuffins.2006=data.frame(NDB_No,Amount,Measure,Ingredient)
+BlueberryMuffins.2006
+
+```
+
+
+2. Exporting tab file for the recipes 
+
+```{r}
+
+write.table(ScallopedCauliflower.1936, "ScallopedCauliflower.1936.tab")
+write.table(ScallopedCauliflower.2006, "ScallopedCauliflower.2006.tab")
+
+write.table(BlueberryMuffins.1936, "BlueberryMuffins.1936.tab")
+write.table(BlueberryMuffins.2006, "BlueberryMuffins.2006.tab")
+
+```
+
+
+3. Reading tab files and merging with sample recipe file from d2l. 
+```{r}
+BeefStroganoff.1997 <- read.table("BeefStroganoff.1997.tab",header=TRUE, sep = "")
+BeefStroganoff.1997
+
+ScallopedCauliflower.1936 <- read.table("ScallopedCauliflower.1936.tab",header=TRUE, sep = "")
+ScallopedCauliflower.1936
+ScallopedCauliflower.2006 <- read.table("ScallopedCauliflower.2006.tab",header=TRUE, sep = "")
+ScallopedCauliflower.2006
+BlueberryMuffins.1936 <- read.table("BlueberryMuffins.1936.tab",header=TRUE, sep = "")
+BlueberryMuffins.1936
+BlueberryMuffins.2006 <- read.table("BlueberryMuffins.2006.tab",header=TRUE, sep = "")
+BlueberryMuffins.2006
+
+```
+
+merging files 
+
+```{r}
+###adding NDB_No column to BeefStronganoff data with just NA
+BeefStroganoff.1997$NDB_No<-c(NA)
+BeefStroganoff.1997<-BeefStroganoff.1997[c(4,1,2,3)]
+
+#merging file
+mergedtable=rbind(BeefStroganoff.1997,ScallopedCauliflower.1936,ScallopedCauliflower.2006,BlueberryMuffins.1936,BlueberryMuffins.2006)
+mergedtable
+
+mergedtable$Recipe<- c(rep('BeefStrganoff.1997', nrow(BeefStroganoff.1997)), rep('ScallopedCauliflower.1936',nrow(ScallopedCauliflower.1936)), rep("ScallopedCauliflower.2006", nrow(ScallopedCauliflower.2006)),rep("BlueberryMuffins.1936",nrow(BlueberryMuffins.1936)), rep("BlueberryMuffins.2006", nrow(BlueberryMuffins.2006)))
+
+mergedtable
+
+```
+
+
+4. Checking errors
+
+```{r}
+merged1<-merge(ScallopedCauliflower.1936, ScallopedCauliflower.2006, by="Ingredient")
+plot(merged1$Amount.x , merged1$Amount.y )
+print(merged1)
+```
+
+The table shows that for Scallopedcauliflower recipe there is increase of the incredient amount from 1936 to 2006 for ScallopedCauliflower recipe. the ingredient "Bread, crumbs, dry, grated, plain", "Butter Salted", "Milk, whole, 3.25% milkfat, with added vitamin D" incrased twice than it was in 1936. there is also increase of ingredient "Wheat flour, white, all-purpose, self-rising, enriched" almost three times. The Ingredient list for 1936 shows butter twice and in 2006 the one buttter is replaced with cheese. 
+
+
+```{r}
+merged2<-merge(BlueberryMuffins.1936, BlueberryMuffins.2006, by="Ingredient")
+plot(merged2$Amount.x , merged2$Amount.y )
+print(merged2)
+```
+
+For Blueberries muffin recipe, there are only 6 ingredient used in 1936 and there are 8 ingredient used in 2006 recipe. six ingredient are common in 1936 and 2006. the "Vanilla extract" in included in 2006 reipe but not in 1936, the "Sugars, granulated" is listed twice in 2006 recipe.The unit of ingredient "sugar granulated" and Butter Salted is different in 1936 and 2006, thus it is difficult to compare the cahnge in amount of these ingredint from 1936 to 2006.
+
+
+
+5. Reading the Recipe file and appending my recipes to the file
+
+```{r}
+Recipes = read.csv("Recipes.csv",header=TRUE)
+Recipes
+Recipe=c("ScallopedCauliflower", "ScallopedCauliflower", "BlueberryMuffins", "BlueberryMuffins")
+Year=c(1936,2006, 1936, 2006)
+MinServings=c(4,4,36,16)
+MaxServings=c(4,4,36,16)
+myrecipes=data.frame(Recipe,Year,MinServings,MaxServings)
+myrecipes
+
+Recipes=rbind(Recipes,myrecipes)
+Recipes
+
+write.table(Recipes, "Recipes.tab")
+write.csv(Recipes,"Recipes.csv",row.names = FALSE)
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

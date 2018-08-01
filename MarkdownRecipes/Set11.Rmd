@@ -1,0 +1,517 @@
+---
+title: "MidTerm"
+author: "Set 11"
+date: "July 21, 2018"
+output: word_document
+---
+
+Introduction: For our midterm project, we are asked to do some prep work for our final project. For our midterm project, we are creating data files that can be merged to make a database of recipes and ingredients. Later, this work will be used to calculate calories per serving, as in Wansink's "The Joy of Cooking Too Much."
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, include=F}
+food_des.dat <- read.table("FOOD_DES.txt",header=FALSE,sep="^",quote="~", stringsAsFactors = FALSE) 
+names(food_des.dat) <- c("NDB_No","FdGrp_Cd","Long_Desc","Shrt_Desc",
+"ComName","ManufacName","Survey","Ref_desc","Refuse","SciName",
+"N_Factor","Pro_Factor","Fat_Factor","CHO_Factor")
+dim(food_des.dat)
+head(food_des.dat)
+summary(food_des.dat)
+#write.csv(food_des.dat, "food_des.csv")
+```
+
+
+
+
+
+#Part 1: Create Data Tables
+_Create data tables for your assigned recipes, with columns Amount, Unit and Ingredient._
+
+On my first run-through (which was performed before the midterm directions were finalized). I simply entered in the recipe information (Amount, Measure, and Ingredient) for each recipe as written in the "esha research" pages for each recipe. I only made some small changes where I noticed a mistake. For example, the amount of sugar in the 2006 Blueberry Muffin recipe on the "esha research" page did not match what was listed in the actual recipe. I also added a blank column for NBD_No, which will allow us to cross-reference our ingredients with the USDA nutrition database. 
+See the accompanying RMD file for this code.
+
+
+```{r, echo=F}
+
+Blueberry.Muffins.2006<-data.frame( Amount=c(2, 1, 1, 0.33, 1.50, .25, 1), 
+  Measure=c("cup", "lrg", rep("cup", 4), "tsp" ) ,
+  Ingredient= c( "Flour, all purpose, self rising, enriched",
+    "Egg, raw", "Milk, whole, 3.25%", 
+    "Sugar, white, granulated, granulated",
+    "Blueberries, fresh", "Butter, salted",
+    "Extract, vanilla" ), NBD_No=rep(NA, 7), stringsAsFactors = FALSE
+  )
+
+
+Blueberry.Muffins.1936<-data.frame( Amount=c( 2, 0.66, 2, 4, 0.75, 1.00     ), 
+  Measure=c("cup", "cup", "lrg", "Tbs", "cup", "cup"  ) ,
+  Ingredient= c( "Flour, cake, white, unsifted, enriched",
+    "Sugar, white, granulated, granulated",
+     "Egg, raw", "butter, salted",     "Milk, whole, 3.25%", 
+    "Blueberries, fresh"), NBD_No=rep(NA, 6), stringsAsFactors=FALSE #why does stringsasfactors not work?
+  )
+
+White.Veal.1936<-data.frame( Amount=c( 2.50, 6, 8, 4, 3, 3, 2, 3, 3, 3),
+  Measure=c("lb", "ea", "ea", "cup", "Tbs", "Tbs", "cup", "ea", "Tbs", "cup"  ) ,
+  Ingredient= c( "Veal roast, shoulder blade, raw", 'Celery stalk, fresh, medium, 7.5" to 8 in"', #how to code in quotation marks
+                 "Onion, white, fresh, small", "Water, generic",
+                 "Butter, salted", 
+                 "Flour, all purpose, self rising, enriched",
+                 "Stock, beef, prepared from recipe",
+                 "Egg yolk, raw, large",
+                 "Juice, lemon, fresh",
+                 "Rice, white, cooked, long grain, unenriched"),
+  NBD_No=rep(NA, 10), stringsAsFactors = FALSE
+  )
+
+White.Veal.2006<-data.frame( Amount=c(1.50, 1.50, 5, 1, 1, 1, 24, 2, 0.25, 0.25, 3, 0.5, 2),
+  Measure=c("lb", "lb", "cup", rep("ea", 4), "cup", "cup", "cup",  "ea", "cup", "Tbs" ) ,
+  Ingredient= c( "Veal roast, shoulder blade, raw", 
+                "Veal breast, raw", 
+                "Stock, chicken, prepared from recipe",
+                "Onion, yellow, fresh, large",
+                "Carrots, fresh, medium",
+                'Celery, fresh, small stalk, 5"', #how to code in quotation marks
+                 "Onion, white, fresh, small", 
+                "Mushrooms, fresh",
+                "Flour, all purpose, self rising, enriched",
+                 "Butter, salted", 
+                 "Egg yolk, raw, large",
+                "Cream, whipping, heavy",
+                 "Juice, lemon, fresh"), NBD_No=rep(NA, 13), stringsAsFactors = FALSE
+  )
+resource1<-Blueberry.Muffins.1936 #these are just me saving for later to compare. 
+resource2<-Blueberry.Muffins.2006
+resource3<-White.Veal.1936
+resource4<-White.Veal.2006
+```
+The main task became finding the matching food description in the USDA's "food_des" spreadsheet. To help me do this I created a function. The function would take my recipe data frames, and use grep to attempt to match the ingredient name with the closest matching ingredient in the food description spreadsheet. I created three cases:  
+1. The food description had an exact match for the ingredient. Then our ingredient name is correct and I just want the corresponding nutrition database number (NBD_No).   
+2. An exact match cannot be found, but when I split the ingredient name (using comma as the delimeter), I find matches for the first word or phrase (that preceeds the first comma). For example, if the ingredient is "Onion, white, fresh, small", the function will find all items in the food description containing the word "onion.""  
+3. We cannot find an exact match or a match for the first phrase. Then, we break up the first phrase and look for matches for the first word. This third scenario was envoked for "egg yolk." I needed to search for "egg."  
+For any of these scenarios, I collected the matches in a list. I manually looked at each dataframe in the list, and I took the ingredient name that I thought fit best. I also took the matching nutrition database number.
+Below is my function code:
+
+```{r}
+wordfinder.function<-function(recipe.sample)
+{
+listoflists<-vector("list", nrow(recipe.sample)) #found this in list documentation, makes list of requisite length
+for(i in 1:nrow(recipe.sample))
+{
+ exact.match<- grep(toupper(recipe.sample$Ingredient[i]), toupper(food_des.dat$Long_Desc)) #used toupper on both so don't have to worry about capitalization
+ if(length(exact.match)==1)
+ {
+   listoflists[[i]]<-food_des.dat[exact.match, c(1, 3)] #if exact match, put in exactly what we want 
+ }
+ else{
+ temp.string<-lapply( strsplit(recipe.sample$Ingredient[i], split=","), trimws) #scenario 2, want first phrase
+  list.to.check<-grep(toupper( temp.string[[1]][1] ), toupper( food_des.dat$Long_Desc) )  #gets first word, finds all matches, have to look at them
+  listoflists[[i]]<-food_des.dat[list.to.check, c(1, 3)]
+  
+
+  if(nrow( listoflists[[i]])==0)    #need to deal with cases where first words are a phrase and it doesn't work quite correctly
+  { #veal roast was one problem area
+   try.again<-  strsplit(temp.string[[1]][1], split=" ")[[1]][1] #get first word only
+    
+     list.to.check<-grep(toupper( try.again ), toupper( food_des.dat$Long_Desc) )  
+  listoflists[[i]]<-food_des.dat[list.to.check, c(1, 3)]
+  }
+  
+ }}
+return(listoflists)
+}
+#run the functions
+Blueberry.results.1936<-wordfinder.function(Blueberry.Muffins.1936)
+Blueberry.results.2006<-wordfinder.function(Blueberry.Muffins.2006)
+White.Veal.results.1936<-wordfinder.function(White.Veal.1936)
+White.Veal.results.2006<-wordfinder.function(White.Veal.2006) 
+
+```
+
+
+```{r, include=F}
+Blueberry.Muffins.1936
+Blueberry.results.1936
+
+
+
+```
+
+
+
+
+
+Below is my code for reassigning the ingredient names and nutrition database numbers for the 1936 Blueberry Muffin recipe. See my RMD document for the similar work on the other three recipes.
+
+```{r}
+Blueberry.Muffins.1936[1,3]<-as.character(Blueberry.results.1936[[1]][60, 2]) #get 1st list, 60th row, 2nd column, which is closest match IMO
+#not sure why need to do as.character again, when it was addressed earlier with stringsasfactors=F, but seem to need this
+Blueberry.Muffins.1936[1,4]<-Blueberry.results.1936[[1]][60, 1] #also need NBD_No
+#do I need to worry about factor levels?
+
+Blueberry.Muffins.1936[2,3]<-as.character(Blueberry.results.1936[[2]][59, 2] )
+Blueberry.Muffins.1936[2,4]<-Blueberry.results.1936[[2]][59, 1]
+
+Blueberry.Muffins.1936[3,3]<-as.character(Blueberry.results.1936[[3]][2, 2])
+Blueberry.Muffins.1936[3,4]<-Blueberry.results.1936[[3]][2, 1]
+
+Blueberry.Muffins.1936[4,3]<-as.character(Blueberry.results.1936[[4]][1, 2] ) #"butter, salted" was an exact match
+Blueberry.Muffins.1936[4,4]<-Blueberry.results.1936[[4]][1, 1] 
+
+Blueberry.Muffins.1936[5,3]<-as.character(Blueberry.results.1936[[5]][12, 2] )
+Blueberry.Muffins.1936[5,4]<-Blueberry.results.1936[[5]][12, 1]
+
+Blueberry.Muffins.1936[6,3]<-as.character(Blueberry.results.1936[[6]][1, 2] ) #first match for "blueberries" was correct
+Blueberry.Muffins.1936[6,4]<-Blueberry.results.1936[[6]][1, 1] 
+
+
+
+```
+
+
+```{r, include=F}
+#this was for my manual comparisons. Worked well in RMD code chunks. Displayed items of lists as separate data frames I could click through.
+Blueberry.Muffins.2006
+Blueberry.results.2006
+
+```
+
+```{r, include=F}
+
+Blueberry.Muffins.2006[1,3]<-as.character(Blueberry.results.2006[[1]][58, 2] ) #self-rising flour, used cake flour last time
+Blueberry.Muffins.2006[1,4]<-Blueberry.results.2006[[1]][58, 1]
+Blueberry.Muffins.2006[2,3]<-as.character(Blueberry.results.2006[[2]][2, 2] )
+Blueberry.Muffins.2006[2,4]<-Blueberry.results.2006[[2]][2, 1]
+Blueberry.Muffins.2006[3,3]<-as.character(Blueberry.results.2006[[3]][12, 2] )
+Blueberry.Muffins.2006[3,4]<-Blueberry.results.2006[[3]][12, 1]
+Blueberry.Muffins.2006[4,3]<-as.character(Blueberry.results.2006[[4]][59, 2] )
+Blueberry.Muffins.2006[4,4]<-Blueberry.results.2006[[4]][59, 1]
+Blueberry.Muffins.2006[5,3]<-as.character(Blueberry.results.2006[[5]][1, 2] )
+Blueberry.Muffins.2006[5,4]<-Blueberry.results.2006[[5]][1, 1]
+Blueberry.Muffins.2006[6,3]<-as.character(Blueberry.results.2006[[6]][1, 2] )
+Blueberry.Muffins.2006[6,4]<-Blueberry.results.2006[[6]][1, 1]
+Blueberry.Muffins.2006[7,3]<-as.character(Blueberry.results.2006[[7]][1, 2] ) #there are like three entries for vanilla that really seem the same
+Blueberry.Muffins.2006[7,4]<-Blueberry.results.2006[[7]][1, 1]
+
+
+```
+
+
+
+
+```{r, include=F}
+White.Veal.1936
+White.Veal.results.1936
+
+```
+
+```{r, include=F}
+
+White.Veal.1936[1,3]<-as.character(White.Veal.results.1936[[1]][33, 2] ) #I went with shoulder, and chose whole to include the blade, and chose "lean and fat" rather than lean only
+White.Veal.1936[1,4]<-White.Veal.results.1936[[1]][33, 1]
+White.Veal.1936[2,3]<-as.character(White.Veal.results.1936[[2]][5, 2] ) 
+White.Veal.1936[2,4]<-White.Veal.results.1936[[2]][5, 1]
+
+White.Veal.1936[3,3]<-as.character(White.Veal.results.1936[[3]][9, 2] ) 
+White.Veal.1936[3,4]<-White.Veal.results.1936[[3]][9, 1]
+
+White.Veal.1936[4,3]<-as.character(White.Veal.results.1936[[4]][206, 2] ) #water, bottled, generic
+White.Veal.1936[4,4]<-White.Veal.results.1936[[4]][206, 1]
+White.Veal.1936[5,3]<-as.character(White.Veal.results.1936[[5]][1, 2] ) 
+White.Veal.1936[5,4]<-White.Veal.results.1936[[5]][1, 1]
+White.Veal.1936[6,3]<-as.character(White.Veal.results.1936[[6]][58, 2] ) 
+White.Veal.1936[6,4]<-White.Veal.results.1936[[6]][58, 1]
+White.Veal.1936[7,3]<-as.character(White.Veal.results.1936[[7]][2, 2] ) 
+White.Veal.1936[7,4]<-White.Veal.results.1936[[7]][2, 1]
+White.Veal.1936[8,3]<-as.character(Blueberry.results.1936[[3]][4, 2])
+White.Veal.1936[8,4]<-Blueberry.results.1936[[3]][4, 1] 
+White.Veal.1936[9,3]<-as.character(White.Veal.results.1936[[9]][36, 2] ) 
+White.Veal.1936[9,4]<-White.Veal.results.1936[[9]][36, 1]
+White.Veal.1936[10,3]<-as.character(White.Veal.results.1936[[10]][78, 2] ) 
+White.Veal.1936[10,4]<-White.Veal.results.1936[[10]][78, 1]
+
+
+```
+
+
+```{r, include=F}
+White.Veal.2006
+White.Veal.results.2006
+
+```
+
+
+
+```{r, include=F}
+
+White.Veal.2006[1,3]<-as.character(White.Veal.results.2006[[1]][33, 2] ) 
+White.Veal.2006[1,4]<-White.Veal.results.2006[[1]][33, 1]
+
+White.Veal.2006[2,3]<-as.character(White.Veal.results.2006[[2]][84, 2] ) 
+White.Veal.2006[2,4]<-White.Veal.results.2006[[2]][84, 1]
+White.Veal.2006[3,3]<-as.character(White.Veal.results.2006[[3]][3, 2] ) #chicken stock this time, not beef, interesting choice for veal
+White.Veal.2006[3,4]<-White.Veal.results.2006[[3]][3, 1]
+White.Veal.2006[4,3]<-as.character(White.Veal.results.2006[[4]][9, 2] ) #yellow onion
+White.Veal.2006[4,4]<-White.Veal.results.2006[[4]][9, 1]
+White.Veal.2006[5,3]<-as.character(White.Veal.results.2006[[5]][4, 2] ) 
+White.Veal.2006[5,4]<-White.Veal.results.2006[[5]][4, 1]
+White.Veal.2006[6,3]<-as.character(White.Veal.results.2006[[6]][5, 2] ) 
+White.Veal.2006[6,4]<-White.Veal.results.2006[[6]][5, 1]
+White.Veal.2006[7,3]<-as.character(White.Veal.results.2006[[7]][9, 2] ) #different kind of onion, but still an onion
+White.Veal.2006[7,4]<-White.Veal.results.2006[[7]][9, 1]
+White.Veal.2006[8,3]<-as.character(White.Veal.results.2006[[8]][5, 2] ) #went with white mushrooms
+White.Veal.2006[8,4]<-White.Veal.results.2006[[8]][5, 1]
+White.Veal.2006[9,3]<-as.character(White.Veal.results.2006[[9]][58, 2] ) 
+White.Veal.2006[9,4]<-White.Veal.results.2006[[9]][58, 1]
+White.Veal.2006[10,3]<-as.character(White.Veal.results.2006[[10]][1, 2] ) 
+White.Veal.2006[10,4]<-White.Veal.results.2006[[10]][1, 1]
+White.Veal.2006[11,3]<-as.character(Blueberry.results.1936[[3]][4, 2]) #egg yolks, stole from blueberry list
+White.Veal.2006[11,4]<-Blueberry.results.1936[[3]][4, 1]
+White.Veal.2006[12,3]<-as.character(White.Veal.results.2006[[12]][8, 2] ) #
+White.Veal.2006[12,4]<-White.Veal.results.2006[[12]][8, 1]
+White.Veal.2006[13,3]<-as.character(White.Veal.results.2006[[13]][36, 2] ) #
+White.Veal.2006[13,4]<-White.Veal.results.2006[[13]][36, 1]
+
+
+
+White.Veal.2006
+resource4
+```
+
+
+I also read in the beef stroganoff tab files. The expression "sep=""" worked to read the files properly. "stringAsFactors=FALSE" requires R to treat the ingredient names as characters, rather than factors. 
+```{r}
+Beef.Stroganoff.1997<-read.table(file="BeefStroganoff.1997.tab", sep="", header=TRUE, stringsAsFactors = FALSE)
+Beef.Stroganoff.2006<-read.table("BeefStroganoff.2006.tab", header=T, sep="", stringsAsFactors = FALSE)
+```
+
+I added a blank vector nutrition database number, as I did with my other dataframes. Then I applied my function and used the same proccess as before to match ingredient names and nutrition database numbers. See my RMD file. I used the discussion board to determine which of the many similar "beef" entries classmates were using for the beef roast ingredient.
+
+```{r,include=F}
+
+Beef.Stroganoff.1997<-data.frame(Beef.Stroganoff.1997, NBD_No=rep(NA, nrow(Beef.Stroganoff.1997)), stringsAsFactors = F)
+Beef.Stroganoff.1997$Ingredient[1]<-'Beef, loin, tenderloin roast, boneless, separable lean and fat, trimmed to 0" fat, all grades, raw'
+Beef.Stroganoff.2006<-data.frame(Beef.Stroganoff.2006, NBD_No=rep(NA, nrow(Beef.Stroganoff.2006)), stringsAsFactors = F)
+Beef.results.1997<-wordfinder.function(Beef.Stroganoff.1997)
+Beef.results.2006<-wordfinder.function(Beef.Stroganoff.2006)
+
+```
+
+
+
+```{r, include=F}
+Beef.Stroganoff.2006
+Beef.results.2006
+```
+
+```{r, include=F}
+
+Beef.Stroganoff.2006[1,3]<-'Beef, loin, tenderloin roast, boneless, separable lean and fat, trimmed to 0" fat, all grades, raw'
+Beef.Stroganoff.2006[1,4]<-23336
+#Beef.Stroganoff.2006[2,3]<-Beef.results.2006[[2]][1, 2]
+Beef.Stroganoff.2006[2,4]<-Beef.results.2006[[2]][1, 1]
+
+Beef.Stroganoff.2006[3,4]<-Beef.results.2006[[3]][1, 1]
+Beef.Stroganoff.2006[4,3]<-Beef.results.2006[[4]][9, 2]
+Beef.Stroganoff.2006[4,4]<-Beef.results.2006[[4]][9, 1]
+Beef.Stroganoff.2006[5,3]<-Beef.results.2006[[5]][5, 2]
+Beef.Stroganoff.2006[5,4]<-Beef.results.2006[[5]][5, 1]
+Beef.Stroganoff.2006[6,3]<-Beef.results.2006[[6]][2, 2]
+Beef.Stroganoff.2006[6,4]<-Beef.results.2006[[6]][2, 1]
+Beef.Stroganoff.2006[7,3]<-Beef.results.2006[[7]][1, 2]
+Beef.Stroganoff.2006[7,4]<-Beef.results.2006[[7]][1, 1]
+Beef.Stroganoff.2006[8,3]<-Beef.results.2006[[8]][2, 2]
+Beef.Stroganoff.2006[8,4]<-Beef.results.2006[[8]][2, 1]
+Beef.Stroganoff.2006$Measure[c(1,2,3,4, 8)]<-c("oz",  "tbsp", "tbsp", "medium", "tbsp")
+Beef.Stroganoff.2006$Amount[1]<-2*16
+Beef.Stroganoff.2006
+#make note of changes to cups and oz/pounds
+```
+
+
+
+```{r, include=F}
+Beef.Stroganoff.1997
+Beef.results.1997
+```
+
+
+
+```{r, include=F}
+Beef.Stroganoff.1997[1,3]<-'Beef, loin, tenderloin roast, boneless, separable lean and fat, trimmed to 0" fat, all grades, raw'
+Beef.Stroganoff.1997[1,4]<-23336
+Beef.Stroganoff.1997[2,4]<-Beef.results.1997[[2]][1,1]
+Beef.Stroganoff.1997[3,3]<-Beef.results.1997[[3]][58,2]
+Beef.Stroganoff.1997[3,4]<-Beef.results.1997[[3]][58,1]
+Beef.Stroganoff.1997[4,3]<-Beef.results.1997[[4]][2,2]
+Beef.Stroganoff.1997[4,4]<-Beef.results.1997[[4]][2,1]
+Beef.Stroganoff.1997[5,3]<-Beef.results.1997[[5]][1,2]
+Beef.Stroganoff.1997[5,4]<-Beef.results.1997[[5]][1,1]
+Beef.Stroganoff.1997[6,3]<-Beef.results.1997[[6]][2,2]
+Beef.Stroganoff.1997[6,4]<-Beef.results.1997[[6]][2,1]
+Beef.Stroganoff.1997$Measure[c(1,2,3, 5)]<-c("oz","tbsp", "tbsp", "tbsp")
+Beef.Stroganoff.1997$Amount[1]<-1.5*16
+Beef.Stroganoff.1997
+
+
+```
+
+
+
+#Part 2: Look for errors
+_Proof the data to check for errors. Consider, for example, the error in the example Beef Stroganoff recipes, where the measures for sour cream are inconsistent. If we merge the two recipes by Ingredient, we can plot Measure.1997 vs Measure.2006 and see quickly where the measures are not consistent. We could also create a contingency table comparing Measure.1997 and Measure.2006 to look for mismatches in measures between ingredients. We can plot Amount.1997 and Amount.2006 to look for unexpected changes in values._
+(This is number 4 on midterm list, but I wanted to do it with my individual data sets.)
+For both my blueberry muffin and white veal stew recipes, I merged the 1936 and 2006 versions by ingredient. This allowed me to compare the measure and amount for each.
+
+
+```{r}
+Blueberry.merge<-merge(Blueberry.Muffins.1936, Blueberry.Muffins.2006, by="Ingredient")
+Veal.merge<-merge(White.Veal.1936, White.Veal.2006, by="Ingredient")
+```
+Below is my contingency table for the measures in the two blueberry muffin recipes. This allows me to check if the unit of measurement has changed.
+```{r}
+table(Blueberry.merge$Measure.x, Blueberry.merge$Measure.y)
+
+```
+Below is my plot of the amounts in the two recipes. If we were asked to increase an ingredient from 1 to 4 tablespoons, for example, we would see this on the plot. However, it does not account for cases where the unit has changed.
+```{r}
+plot(x=Blueberry.merge$Amount.x, y=Blueberry.merge$Amount.y, xlab = "1936", ylab="2006", main="Blueberry Amounts")
+```
+
+A few changes are reflected in this table and plot. Butter changes from being measured in tablespoon to cups, but it is actually the same amount in each (0.25 cups = 4 tablespoons). Since the weight file includes both tbsp and cup, we don't need to change this. The amount of blueberries increase, though the number of eggs decrease. The sugar increases from 1/3 cup to 2/3 cup. The 2006 recipe also includes vanilla, but that isn't reflected in the plot or table. Flour stays the same, but the type changes slightly ("cake" flour in the 1936 recipe and "all-purpose" in 2006), though this of course is not reflected in the table or plot.  
+
+
+
+Below is my contingency table for the measurements in the two versions of the white veal stew.
+
+```{r, echo=F}
+
+table(Veal.merge$Measure.x, Veal.merge$Measure.y)
+
+
+```
+Below is the plot of amounts in the two versions of the white veal stew.
+```{r}
+plot(x=Veal.merge$Amount.x, y=Veal.merge$Amount.y, xlab = "1936", ylab="2006", main="Veal Amounts")
+
+```
+
+The amount of veal does increase from 2.5 to 3.0 pounds, but the recipe also changes from 2.5 lbs of one type of veal to 1.5 lbs each of two different cuts, so that makes it look like there is a decrease on the plot. 
+The number of celery stalks called for does increase, but the size of that stalk also increases from "small" to "medium" (so I will change the "amount" from "ea" to "small" or "medium" later), which amounts to much more celery. The amount of stock decreases (with water added instead in the 2006 recipe). There is a surprising change in onions, as we exchange 8 small onions for 1 large and 24 small. 
+The units for flour change from tablespoons to cups, though the real amount is only increased by a tablespoon. However, the USDA weight file (which will we be used to calculate calories) only lists "cup" as a measure, so I will change the listings so they are both measured in cups. (Similarly, the unit for lemon juice is listed as tablespoons, even though the weight file lists only cups).  
+The 2006 recipe also adds mushrooms and removes rice from the recipe. 
+
+At this point, I also made some changes to reflect the units used in the weight spreadsheet. The vegatables are measured by the USDA with "small", "medium", or "large" as units, so I adopted those words as units (rather than "ea" for "each") when appropriate. The USDA document uses "tbsp" as an abbreviation for tablespoon instead of the more common Tsp, so I changed this. There were also specific cases where I changed my measurements (3 tablespoons of lemon juice to 3/16 cup of lemon juice) to reflect the units used in the spreadsheet. I do expect that we will have to apply some conversions when we complete our final regardless.
+
+```{r}
+#changes
+#discovered belatedly that weight doc uses tbsp instead of the universal Tsp because they are heathens
+Blueberry.Muffins.1936$Measure[c(3, 4)]<-c("large", "tbsp")
+
+Blueberry.Muffins.2006$Measure[2]<-"large"
+
+White.Veal.1936$Measure[c(2,3,5,6, 8, 9)]<-c("medium", "small", "tbsp", "tbsp","large", "cup")
+
+White.Veal.1936$Amount[9]<-3/16 #lemon juice
+White.Veal.1936$Amount[6]<-3/16 #this is for flour
+#change units
+White.Veal.2006$Measure[c(4,5,6,7,11, 12, 13)]<-c("large",  "medium", "small", "small", "large", "cup, fluid","cup") 
+#for heavy whipping cream, there are two different "cup" entries in the weight file, so I picked the one that seemed correct
+White.Veal.2006$Amount[13]<-2/16 #16 tbsp in a cup, this is for lemon juice
+#did change lemon juice from tbsp to cup - I think we are going to need to put in some conversions anyway though
+
+
+```
+
+#Part 3: Write to tab files
+_Write each individual recipe to a tab delimited file. The name of the tab file should be comprised of the recipe file name and the year of the recipe (1936 or 2006, in most cases)._
+(This is number 2 in directions).
+I created tab files. I adopted the naming convention of "Recipe.year.tab".
+
+```{r}
+write.table(Blueberry.Muffins.1936, "BlueberryMuffins.1936.tab" )
+write.table(Blueberry.Muffins.2006, "BlueberryMuffins.2006.tab" )
+write.table(White.Veal.1936, "WhiteVealStew.1936.tab" )
+write.table(White.Veal.2006, "WhiteVealStew.2006.tab" )
+
+```
+
+
+#Part 4
+_Read in each tab file, and merge the tables with the example Beef Stroganoff tables. _
+(This is number 3 in directions).
+I began by binding my beef stroganoff data frames into a single data frame.
+Need to start recipe file with stroganoff dataframe. When I did this I created columns for Recipe and Year.
+Need to read in names. 
+```{r, include=F}
+
+Beef.Stroganoff.1997
+
+```
+
+```{r}
+#nrow(Beef.Stroganoff.1997) #6
+#nrow(Beef.Stroganoff.2006) #8
+Ingredient.list<-rbind(Beef.Stroganoff.1997, Beef.Stroganoff.2006)
+Ingredient.list<-data.frame(  Recipe = rep("BeefStroganoff", 14),
+             Year = c(  rep(1997, 6), rep(2006, 8) ),
+             Ingredient.list, stringsAsFactors = F
+)
+
+
+```
+
+Next, I wanted to create code to read in all my tab files, but not the stroganoff files I have already read in.
+I used "grep" to recognize which filenames ended in "tab" and which files included "BeefStroganoff". Then I used the "setdiff" function to exclude the latter files from the list of the former. I then created a for loop to read in all the files that I wish to include, and create Year and Recipe data out of the filenames using the "strsplit" function. I believe this code could be useful for the final exam. I then wrote a csv file called Ingredients that includes my new data frame.
+
+```{r}
+recipe.list<-list.files()
+tab.files<-grep("tab$", recipe.list)
+beef.files<-grep("BeefStroganoff", recipe.list)
+index1<-setdiff(tab.files, beef.files) #asymmetric set difference, excludes from first anything in second
+#so want all that end with tab, but not the stroganoff files
+
+recipe.vector<-rep(NA, length(index1))
+year.vector<-rep(NA, length(index1))
+
+for(i in 1:length(index1))
+{
+  temp1<-read.table(recipe.list[index1[i] ], sep="", header=T, stringsAsFactors = F) #read in a file
+  temp.string<-strsplit( recipe.list[index1[i] ], split="[.]") #get name
+  recipe.vector[i]<-temp.string[[1]][1] #record name for later in a vector of names
+  year.vector[i]<-temp.string[[1]][2] #record year for later in a vector of years
+  temp.recipe<-rep( temp.string[[1]][1], nrow(temp1)) #make vector of name
+  temp.year<-rep( temp.string[[1]][2], nrow(temp1)) #make vector of year
+  Ingredient.list<-rbind( Ingredient.list, 
+         data.frame( Recipe=temp.recipe, Year=temp.year,
+              temp1, stringsAsFactors = F) )
+ 
+}
+write.csv(Ingredient.list, "Ingredients.csv")  
+
+```
+
+
+#Part 5: Recipes File
+_Read the Recipes.csv, append rows for your recipes, then write the table back to Recipes.csv. We would be able to determine the file names for your recipes by concatentating Recipe and Year, removing white space if necessary._
+
+We also want a file of all the recipes and the number of min/max servings for each one. All of us will be combining all our information. When I created my Ingredients data frame, I did record the recipe names and years, so I could recycle here. I bound a recipe with my info to the pre-existing info.
+```{r}
+recipe<-read.csv("Recipes.csv", header=T)
+recipe<-rbind(recipe,
+data.frame( Recipe=recipe.vector, Year=year.vector, MinServings=c(36, 16, 6, 6), MaxServings=c(36, 16, 6, 6),
+            stringsAsFactors = F))
+write.csv(recipe, "Recipes.csv")
+
+
+
+
+```
+
+
+#Conclusion  
+In this project, I accomplished my goals by applying string manipulations and building functions and for loops. I also merged data frames and made simple plots and contingency tables to make comparisons. I created a data frame of the ingredients in six recipes that will be utilized later to calculate calories. Along the way, I tried to standardize measurements to make this comparison as easy as possible. I also created a small data frame of the servings in these six recipes so we can later calculated calories per serving. 
+
+##Don't forget to change name of recipes file last thing

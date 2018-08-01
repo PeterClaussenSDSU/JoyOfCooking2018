@@ -1,0 +1,222 @@
+---
+title: "Joy Of Cooking Midterm Project"
+author: "Set 20"
+date: "7/18/2018"
+output:
+  word_document: default
+  html_document: default
+---
+
+# Part 1 - Assign Recipes
+
+First, generate a list of all files in the Recipes folder.
+```{r,eval=FALSE,include = TRUE}
+recipes <- list.files(path = "./", pattern = '*.pdf')
+setwd("./")
+```
+
+Make this reproducible.
+```{r,eval=FALSE}
+set.seed(10010)
+```
+
+Create two randomly sampled list of recipe files and cycle this list through 80 rows
+
+```{r,eval=FALSE}
+recipe.pairs <- matrix(c(sample(recipes),sample(recipes)),ncol=2,nrow=108)
+```
+
+Are there any pairs across rows?
+
+```{r,eval=FALSE}
+sum(recipe.pairs[,1]==recipe.pairs[,2])
+```
+
+Write to a table
+
+```{r,eval=FALSE}
+write.csv(recipe.pairs, file="Recipe.Table.csv",row.names = FALSE)
+```
+
+Read the table in and print:
+
+```{r,eval=FALSE}
+Recipe.Table <- read.csv("Recipe.Table.csv",header=FALSE,skip=1)
+print(Recipe.Table)
+```
+
+# Part 2 - Check Nutrient Data.
+
+We will be using the USDA food nutrient database, found at https://www.ars.usda.gov/northeast-area/beltsville-md-bhnrc/beltsville-human-nutrition-research-center/nutrient-data-laboratory/docs/usda-national-nutrient-database-for-standard-reference/
+
+Run this to make sure your system can read the required nutrient database tables.
+```{r}
+weight.dat <- read.table("./WEIGHT.txt",header=FALSE,sep="^",quote="~")
+names(weight.dat) <- c("NDB_No","Seq","Amount","Msre_Desc","Gm_Wgt","Num_Data_Pts","Std_Dev")
+head(weight.dat)
+summary(weight.dat)
+```
+
+```{r}
+food_des.dat <- read.table("./FOOD_DES.txt",header=FALSE,sep="^",quote="~")
+names(food_des.dat) <- c("NDB_No","FdGrp_Cd","Long_Desc","Shrt_Desc",
+"ComName","ManufacName","Survey","Ref_desc","Refuse","SciName",
+"N_Factor","Pro_Factor","Fat_Factor","CHO_Factor")
+dim(food_des.dat)
+head(food_des.dat)
+summary(food_des.dat)
+```
+
+```{r}
+nut_data.dat <- read.table("./NUT_DATA.txt",header=FALSE,sep="^",quote="~")
+names(nut_data.dat) <- c("NDB_No","Nutr_No","Nutr_Val","Num_Data_Pts","Std_Error",
+"Src_Cd","Deriv_Cd","Ref_NDB_No","Add_Nutr_Mark","Num_Studies",
+"Min","Max","DF","Low_EB","Up_EB","Stat_cmt","AddMod_Date")
+head(nut_data.dat)
+summary(nut_data.dat)
+```
+#Midterm:
+
+##Assigned Receipies: Farina Pudding, Irish Stew
+
+1. Create data tables for your assigned recipes, with columns Amount, Unit and Ingredient.
+```{r eval=TRUE, include = TRUE}
+    stew1936_table <- data.frame(
+      Amount=c(1.5,3,0.25,3,0.25,1.5,0.25,0.33,2,0.5),
+      Unit=c("lb","Tbs","cup","cup","cup","cup","cup","cup","Tbs","cup"),
+      Ingredient=c(
+        "beef,chuck, stew meat, raw, choice, URMIS 1100\"","oil, canola","flour, all purpose, self rising, enriched","water,generic","onion, yellow, fresh sliced","potato, fresh, with skin, diced","carrots, fresh, sclied","turnip, fresh, cubes","flour, all purpose, self rising, enriched","stock, beef, prepared from recipe")
+    )
+    stew2006_table <- data.frame(
+      Amount=c(2,3,6,3,4),
+      Unit=c("Tbs","lb","ea","cup","ea"),
+      Ingredient=c("lamb stew meat, raw, lean, 1/4 trim","oil, canola","potato, red, fresh, with skin, medium 2 1/4 to 3","stock, chicken, prepared from recipe","carrots, fresh, medium"))
+    
+    pudding1936_table <- data.frame(
+      Amount=c(2,0.25,0.5,1,2,1),
+      Unit=c(
+        "cup","cup","cup","Tbs","Irg","tsp"),
+    Ingredient=c("milk, whole, 3,25%","white, granulated, granulated","hot cereal, farina, dry, unenriched","butter, salted","egg, raw","extract, vanilla"))
+    
+    pudding2006_table <- data.frame(
+      Amount=c(2,0.25,0.5,1,2,1),
+      Unit=c(
+        "cup","cup","cup","Tbs","Irg","tsp"),
+    Ingredient=c("milk, whole, 3,25%","white, granulated, granulated","hot cereal, farina, dry, unenriched","butter, salted","egg, yolk, raw large","extract, vanilla"))
+    
+```
+2. Write each individual recipe to a tab delimited file. The name of the tab file should be comprised of the recipe file name and the year of the recipe (1936 or 2006, in most cases).
+
+```{r eval=TRUE, include = TRUE}
+stew1936.filename<- "IrishStew.1936.tab"
+stew2006.filename<- "IrishStew.2006.tab"
+pudding1936.filename <- "FarinaPudding.1936.tab"
+pudding2006.filename <- "FarinaPudding.2006.tab"
+
+write.table(stew1936_table, "IrishStew.1936.tab", sep="\t")
+write.table(stew2006_table,"IrishStew.2006.tab", sep="\t")
+write.table(pudding1936_table,"FarinaPudding.1936.tab", sep="\t")
+write.table(pudding2006_table, "FarinaPudding.2006.tab", sep="\t")
+```
+3. Read in each tab file, and merge the tables with the example Beef Stroganoff tables. 
+```{r eval=TRUE}
+#Part 3
+stroganoff1997 <- read.table('BeefStroganoff.1997.tab', sep="\t", header = TRUE)
+stroganoff2006 <- read.table('BeefStroganoff.2006.tab', sep="\t", header = TRUE)
+pudding1936 <- read.table('FarinaPudding.1936.tab', sep="\t", header = TRUE)
+pudding2006 <- read.table('FarinaPudding.2006.tab', sep="\t", header = TRUE)
+stew1936 <- read.table('IrishStew.1936.tab', sep="\t", header = TRUE)
+stew2006 <- read.table('IrishStew.2006.tab', sep="\t", header = TRUE)
+#Merging all files together
+m <-Reduce(function(...) merge(...,all=TRUE, by="Ingredient"), list(pudding1936, pudding2006, stew1936,stew2006))
+m
+```
+
+Check to make sure we dont have any missspellings or incorrect ammounts.
+-- In this case everything is correct
+```{r eval=TRUE}
+table(m$Unit.x,m$Unit.y)
+plot(m$Amount.x, m$Amount.y)
+```
+
+4. Manually finding using regex. Replacing Ingredient from the pdf with the properly formated Long Description in the FOOD_DES and writing it back to the file along with NBD_No. We select the best match by looking over a series of partial matches and determining the most suitable.
+```{r eval=TRUE}
+
+#Find using regex, that finds all instances where there is a partial match (order doesn't matter)
+idx<- grep('(E|e)gg.*(R|r)aw.*', food_des.dat$Long_Desc)
+print(food_des.dat$Long_Desc[idx]) #Printing values at returned index
+
+#Setting NDB_No of best matches and populating data frames with vector of retrieved Long Descriptions
+stew1936$NDB_NO <- c(11352,11124,11564,20481,6170)
+stew1936$Ingredient <- food_des.dat[match(stew1936$NDB_NO,food_des.dat$NDB_No),]$Long_Desc
+
+
+stew2006$NDB_NO <- c(17003,4582,11355,6172,11124)
+stew2006$Ingredient <- food_des.dat[match(stew2006$NDB_NO,food_des.dat$NDB_No),]$Long_Desc
+
+
+pudding1936$NDB_NO <- c(1077,19335,8172,1001,1124,2050)
+pudding1936$Ingredient <- food_des.dat[match(pudding1936$NDB_NO,food_des.dat$NDB_No),]$Long_Desc
+
+
+pudding2006$NDB_NO <- c(1077,19335,8172,1001,1125,2050)
+pudding2006$Ingredient <- food_des.dat[match(pudding2006$NDB_NO,food_des.dat$NDB_No),]$Long_Desc
+
+#Writing to file to save changes
+write.table(stew1936, paste("./",stew1936.filename,sep=""), sep="\t")
+write.table(stew2006, paste("./",stew2006.filename,sep=""), sep="\t")
+write.table(pudding1936,paste("./",pudding1936.filename,sep=""), sep="\t")
+write.table(pudding2006, paste("./",pudding2006.filename,sep=""), sep="\t")
+
+```
+
+Another way of finding the best match (not manually) is using a set inersesct.
+Suppose we have two sets, where one is a source list(what we intend to find) and another target list(where we intend to find). We then [tokenize](https://cran.r-project.org/web/packages/tokenizers/vignettes/introduction-to-tokenizers.html) them both. E.g with lookaround regex ```\s+|(?=\p{P})|(?<=\p{P})s```, or tokenization library and converting into a vector. 
+
+We then find a set intersect, where we have the most elements of \({A}\cap{B}\). This would be our best match.
+
+In the example below, it's in the ```target_set1```
+```{r eval=TRUE}
+#Extracted line from pudding 1936
+source_set<- c("milk", "whole", "3,25%")
+
+target_set1 <-c("milk","whole", "3,25%", "milkfat", "with added vitamin D")
+target_set2 <- c("Yogurt", "plain", "whole milk")
+target_set3 <- c("milk", "dry", "whole", "with added vitamin D")
+
+length(intersect(target_set1,source_set))
+length(intersect(target_set2,source_set))
+length(intersect(target_set3,source_set))
+
+```
+
+This is however relatively inefficient since we have a time complexity of O(N*M) of looping through each pattern and scanning for it in the text. We could use [Aho???Corasick algorithm](https://en.wikipedia.org/wiki/Aho%E2%80%93Corasick_algorithm) to reduce this problem to O(N+M), which can be optimized even more by reducing the characted set. R implementation: (https://cran.r-project.org/web/packages/AhoCorasickTrie/index.html)
+![alt text](https://www.researchgate.net/profile/Ciprian_Pungila/publication/232647970/figure/fig6/AS:541106037559298@1506021140200/An-Aho-Corasick-automaton-Failed-transitions-are-dashed-Omitted-transitions-lead-to-the.jpg)
+
+
+5. Read the Recipes.csv, append rows for your recipes, then write the table back to Recipes.csv. We would be able to determine the file names for your recipes by concatentating Recipe and Year, removing white space if necessary.
+
+```{r}
+recipesdf <- read.csv('./Recipes.csv')
+#splitting into recipe-year
+stew1936.name <- unlist(strsplit(stew1936.filename, "[.]"))
+stew2006.name <- unlist(strsplit(stew2006.filename, "[.]"))
+pudding1936.name <- unlist(strsplit(pudding1936.filename, "[.]"))
+pudding2006.name <- unlist(strsplit(pudding2006.filename, "[.]"))
+
+#TODO: Rewrite into a function
+#adding space between two words
+stew_row.1936 <- data.frame(Recipe=gsub("([a-z])([A-Z])","\\1 \\2",stew1936.name[1]),Year=as.numeric(stew1936.name[2]),MinServings=NA,MaxServings=NA)
+stew_row.2006 <- data.frame(Recipe=gsub("([a-z])([A-Z])","\\1 \\2",stew2006.name[1]),Year=as.numeric(stew2006.name[2]),MinServings=NA,MaxServings=NA)
+pudding_row.1936 <- data.frame(Recipe=gsub("([a-z])([A-Z])","\\1 \\2",pudding1936.name[1]),Year=as.numeric(pudding1936.name[2]),MinServings=NA,MaxServings=NA)
+pudding_row2006 <- data.frame(Recipe=gsub("([a-z])([A-Z])","\\1 \\2",pudding2006.name[1]),Year=as.numeric(pudding2006.name[2]),MinServings=NA,MaxServings=NA)
+
+### Creating a dataframe with all and wiring to a file
+finalList <- do.call("rbind", list(recipesdf,stew_row.1936,stew_row.2006,pudding_row.1936,pudding_row2006))
+#have to set row.names=FALSE in order to prevent bug found here https://stackoverflow.com/questions/7484325/prevent-row-names-to-be-written-to-file-when-using-write-csv
+
+write.csv(finalList, "./Recipes.csv",row.names=FALSE)
+```
+
+
+

@@ -1,0 +1,332 @@
+---
+title: "Joy Of Cooking Midterm Project"
+author: "Set 13"
+date: "July 13, 2018"
+output:
+  html_document: default
+---
+
+# Create data tables for your assigned recipes, with columns Amount, Unit and Ingredient.
+
+I created these preliminary data frames using the ESHA Research tables found in the recipe PDF's.
+
+*Create Apple Pie 1936 table.*
+```{r}
+ApplePie1936 <- data.frame(
+  Amount=c(1.75, 4.00, 2.00, 6.00, 0.67, 1.50, 1.50, 1.00),
+  Measure = c('cup', 'Tbs', 'Tbs', 'ea', 'cup', 'Tbs', 'Tbs', 'Tbs'),
+  Ingredient = c('flour, cake, white, unsifted, enriched',
+                'lard',
+                'butter, salted',
+                'apple, fresh, medium, 3"',
+                'sugar, white, granulated, granulated',
+                'starch, corn',
+                'butter, salted',
+                'juice, lemon, fresh')
+)
+```
+
+*Create Apple Pie 2006 table.*
+```{r}
+ApplePie2006 <- data.frame(
+  Amount=c(2.50, 0.75, 3.00, 2.50, 0.75, 2.00, 2.00, 2.00),
+  Measure = c('cup', 'cup', 'Tbs', 'lb', 'cup', 'Tbs', 'Tbs', 'tsp'),
+  Ingredient = c('flour, all purpose, self rising, enriched',
+                 'lard',
+                 'butter, salted',
+                 'apple, fresh, large, 3 1/4"',
+                 'sugar, white, granulated, granulated',
+                 'flour, all purpose, self rising, enriched',
+                 'butter, salted',
+                 'sugar, white, granulated, granulated')
+)
+```
+
+*Create Sweet-and-Sour Beets 1936 table.*
+```{r}
+SweetandSourBeets1936 <- data.frame(
+  Amount=c(3.00, 0.50, 1.00, 0.33, 0.17, 2.00),
+  Measure = c('cup', 'cup', 'Tbs', 'cup', 'cup', 'Tbs'),
+  Ingredient = c('beets, boiled, with salt, drained, sliced',
+                'sugar, white, granulated, granulated',
+                'starch, corn',
+                'vinegar, cider',
+                'water, generic',
+                'butter, salted')
+)
+```
+
+*Create Sweet-and-Sour Beets 2006 table.*
+```{r}
+SweetandSourBeets2006 <- data.frame(
+  Amount=c(1.00, 0.50, 0.50, 1.00, 2.00),
+  Measure = c('lb', 'cup', 'cup', 'Tbs', 'Tbs'),
+  Ingredient = c('beets, boiled, with salt, drained, sliced',
+                'sugar, white, granulated, granulated',
+                'vinegar, cider',
+                'starch, corn',
+                'butter, salted')
+)
+```
+
+
+# Match Ingredient to the Long Description in FOOD_DES.txt.
+
+I used the grep function to perform partial matches. For some ingredients, there was one match. For others, I had to run a series of grep functions with different keywords to reduce the number of matches then picked the best one based on judgment.   
+
+*Read in FOOD_DES.txt.*
+```{r}
+food_des.dat <- read.table("FOOD_DES.txt",header=FALSE,sep="^",quote="~",stringsAsFactors=FALSE)
+names(food_des.dat) <- c("NDB_No","FdGrp_Cd","Long_Desc","Shrt_Desc",
+"ComName","ManufacName","Survey","Ref_desc","Refuse","SciName",
+"N_Factor","Pro_Factor","Fat_Factor","CHO_Factor")
+```
+
+*ApplePie 1936 ingredient matches.*
+```{r}
+grep('*(F|f)lour.*cake.*', food_des.dat$Long_Desc, value=TRUE)
+grep('^(L|l)ard', food_des.dat$Long_Desc, value=TRUE)
+grep('(B|b)utter.*salted.*', food_des.dat$Long_Desc, value=TRUE)
+grep('(A|a)pples.*raw.*', food_des.dat$Long_Desc, value=TRUE)  # Picked the generic apple variety ('Apples, raw, with skin')
+grep('(S|s)ugars.*granulated.*', food_des.dat$Long_Desc, value=TRUE)
+grep('^(C|c)orn.*starch.*', food_des.dat$Long_Desc, value=TRUE)
+grep('(L|l)emon.*juice.*raw.*', food_des.dat$Long_Desc, value=TRUE)
+```
+
+*ApplePie 2006 ingredient matches.*
+```{r}
+grep('*(F|f)lour.*all-purpose.*self-rising.*enriched.*', food_des.dat$Long_Desc, value=TRUE)
+```
+
+*SweetandSourBeets 1936 ingredient matches.*
+```{r}
+grep('^(B|b)eets.*boiled.*with salt.*', food_des.dat$Long_Desc, value=TRUE)
+grep('^(V|v)inegar.*cider.*', food_des.dat$Long_Desc, value=TRUE)
+grep('^(W|w)ater.*generic.*', food_des.dat$Long_Desc, value=TRUE)
+```
+
+*NOTE: No unique ingredients left from SweetandSourBeets2006.*
+
+*BeefStroganoff 1997 ingredient matches.*
+```{r}
+grep('^(B|b)eef.*tenderloin.*roast.*trimmed to 0.*raw', food_des.dat$Long_Desc, value=TRUE)  # Picked result based on judgment
+grep('(S|s)tock.*beef.*', food_des.dat$Long_Desc, value=TRUE)
+grep('^(C|c)ream.*sour.*cultured.*', food_des.dat$Long_Desc, value=TRUE)  # Picked the one without reduced fat
+grep('^(M|m)ustard.*', food_des.dat$Long_Desc, value=TRUE)  # Picked Mustard, prepared, yellow
+```
+
+*BeefStroganoff 2006 ingredient matches.*
+```{r}
+grep('^(O|o)il.*canola$', food_des.dat$Long_Desc, value=TRUE)
+grep('(O|o)nion.*raw.*', food_des.dat$Long_Desc, value=TRUE)  # Picked Onions, raw 
+grep('^(M|m)ushroom.*raw.*', food_des.dat$Long_Desc, value=TRUE)  # Picked Mushrooms, white, raw
+```
+
+
+# Replace Ingredient columns of the original data frames with matches from FOOD_DES.txt
+
+Since ingredients have been matched to Long_Desc in FOOD_DES.txt in the previous step, we can now use these matches to replace Ingredient columns of the original data frames.
+
+*Read in the Beef Stroganoff files.*
+```{r}
+BeefStroganoff1997 <- read.table("BeefStroganoff.1997.tab", header=TRUE, sep="", stringsAsFactors=FALSE)
+BeefStroganoff2006 <- read.table("BeefStroganoff.2006.tab", header=TRUE, sep="", stringsAsFactors=FALSE)
+```
+
+*Replace Ingredient columns with matches.*
+```{r}
+ApplePie1936$Ingredient <- c('Wheat flour, white, cake, enriched',
+                             'Lard',
+                             'Butter, salted',
+                             "Apples, raw, with skin (Includes foods for USDA's Food Distribution Program)",
+                             'Sugars, granulated',
+                             'Cornstarch',
+                             'Butter, salted',
+                             'Lemon juice, raw')
+
+ApplePie2006$Ingredient <- c('Wheat flour, white, all-purpose, self-rising, enriched',
+                             'Lard',
+                             'Butter, salted',
+                             "Apples, raw, with skin (Includes foods for USDA's Food Distribution Program)",
+                             'Sugars, granulated',
+                             'Wheat flour, white, all-purpose, self-rising, enriched',
+                             'Butter, salted',
+                             'Sugars, granulated')
+
+SweetandSourBeets1936$Ingredient <- c('Beets, cooked, boiled. drained, with salt',
+                                      'Sugars, granulated',
+                                      'Cornstarch',
+                                      'Vinegar, cider',
+                                      'Water, bottled, generic',
+                                      'Butter, salted')
+
+SweetandSourBeets2006$Ingredient <- c('Beets, cooked, boiled. drained, with salt',
+                                      'Sugars, granulated',
+                                      'Vinegar, cider',
+                                      'Cornstarch',
+                                      'Butter, salted')
+
+BeefStroganoff1997$Ingredient <- c('Beef, loin, tenderloin roast, boneless, separable lean and fat, trimmed to 0\" fat, all grades, raw',
+                                   'Butter, salted',
+                                   'Wheat flour, white, all-purpose, self-rising, enriched',
+                                   'Soup, stock, beef, home-prepared',
+                                   'Cream, sour, cultured',
+                                   'Mustard, prepared, yellow')
+
+BeefStroganoff2006$Ingredient <- c('Beef, loin, tenderloin roast, boneless, separable lean and fat, trimmed to 0\" fat, all grades, raw',
+                                   'Oil, canola',
+                                   'Butter, salted',
+                                   'Onions, raw',
+                                   'Mushrooms, white, raw',
+                                   'Soup, stock, beef, home-prepared',
+                                   'Cream, sour, cultured',
+                                   'Mustard, prepared, yellow')
+```
+
+
+# Find the corresponding NDB_No of matched ingredients.
+
+In the previous step, we updated the Ingredient columns with matches from FOOD_DES.txt. We can loop over the Ingredient column of each data frame and obtain the corresponding NDB_No of each ingredient. 
+
+*ApplePie 1936 NDB_No.*
+```{r}
+for (i in ApplePie1936$Ingredient) {
+  print(food_des.dat$NDB_No[food_des.dat$Long_Desc == i])
+}
+```
+
+*ApplePie 2006 NDB_No.*
+```{r}
+for (i in ApplePie2006$Ingredient) {
+  print(food_des.dat$NDB_No[food_des.dat$Long_Desc == i])
+}
+```
+
+*SweetandSourBeets 1936 NDB_No.*
+```{r}
+for (i in SweetandSourBeets1936$Ingredient) {
+  print(food_des.dat$NDB_No[food_des.dat$Long_Desc == i])
+}
+```
+
+*SweetandSourBeets 2006 NDB_No.*
+```{r}
+for (i in SweetandSourBeets2006$Ingredient) {
+  print(food_des.dat$NDB_No[food_des.dat$Long_Desc == i])
+}
+```
+
+*BeefStroganoff 1997 NDB_No.*
+```{r}
+for (i in BeefStroganoff1997$Ingredient) {
+  print(food_des.dat$NDB_No[food_des.dat$Long_Desc == i])
+}
+```
+
+*BeefStroganoff 2006 NDB_No.*
+```{r}
+for (i in BeefStroganoff2006$Ingredient) {
+  print(food_des.dat$NDB_No[food_des.dat$Long_Desc == i])
+}
+```
+
+
+# Add NDB_No columns to data frames.
+
+In the previous step, we found the corresponding NDB_No of the ingredients in each recipe and can now add them as columns to the data frames.
+
+```{r}
+ApplePie1936$NDB_No <- c(20084, 4002, 1001, 9003, 19335, 20027, 1001, 9152)
+
+ApplePie2006$NDB_No <- c(20082, 4002, 1001, 9003, 19335, 20082, 1001, 19335)
+
+SweetandSourBeets1936$NDB_No <- c(11734, 19335, 20027, 2048, 14555, 1001)
+
+SweetandSourBeets2006$NDB_No <- c(11734, 19335, 2048, 20027, 1001)
+
+BeefStroganoff1997$NDB_No <- c(23336, 1001, 20082, 6170, 1056, 2046)
+
+BeefStroganoff2006$NDB_No <- c(23336, 4582, 1001, 11282, 11260, 6170, 1056, 2046)
+```
+
+
+# Write each individual recipe to a tab delimited file.
+
+```{r}
+write.table(ApplePie1936, "ApplePie.1936.tab", sep="\t", row.names=FALSE)
+write.table(ApplePie2006, "ApplePie.2006.tab", sep="\t", row.names=FALSE)
+write.table(SweetandSourBeets1936, "SweetandSourBeets.1936.tab", sep="\t", row.names=FALSE)
+write.table(SweetandSourBeets2006, "SweetandSourBeets.2006.tab", sep="\t", row.names=FALSE)
+```
+
+
+# Read in each tab file, and merge the tables with the example Beef Stroganoff tables.
+
+*Read in each tab file.*
+```{r}
+ApplePie1936 <- read.table("ApplePie.1936.tab", header=TRUE, stringsAsFactors=FALSE)
+ApplePie2006 <- read.table("ApplePie.2006.tab", header=TRUE, stringsAsFactors=FALSE)
+SweetandSourBeets1936 <- read.table("SweetandSourBeets.1936.tab", header=TRUE, stringsAsFactors=FALSE)
+SweetandSourBeets2006 <- read.table("SweetandSourBeets.2006.tab", header=TRUE, stringsAsFactors=FALSE)
+```
+
+*Merge the tables with the example Beef Stroganoff tables.*
+```{r}
+merged <- rbind(ApplePie1936, ApplePie2006, SweetandSourBeets1936, SweetandSourBeets2006, BeefStroganoff1997,
+                BeefStroganoff2006)
+merged
+```
+
+
+# Proof the data to check for errors.
+
+First merge the two data frames for each recipe by Ingredient. Then check for inconsistencies in Measure and Amount. To accomplish this, I chose to display the Ingredient, Measure, and Amount columns side-by-side, created contingency tables to compare Measure and scatterplots to compare Amount.
+
+*Check for errors in ApplePie.*
+```{r}
+ApplePie.merged <- merge(ApplePie1936, ApplePie2006, by='Ingredient')   
+ApplePie.merged[, c('Ingredient', 'Measure.x', 'Measure.y', 'Amount.x', 'Amount.y')]  
+table(ApplePie.merged$Measure.x, ApplePie.merged$Measure.y)  # Contingency table 
+plot(Amount.y ~ Amount.x, data=ApplePie.merged)  # Scatterplot 
+```
+
+*NOTE: Measure inconsistencies found in apples, lard, and sugar for ApplePie. Any significant differences in Amount were due to measure changes.*
+
+*Check for errors in SweetandSourBeets.*
+```{r}
+SweetandSourBeets.merged <- merge(SweetandSourBeets1936, SweetandSourBeets2006, by='Ingredient')
+SweetandSourBeets.merged[, c('Ingredient', 'Measure.x', 'Measure.y', 'Amount.x', 'Amount.y')] 
+table(SweetandSourBeets.merged$Measure.x, SweetandSourBeets.merged$Measure.y)  # Contingency table
+plot(Amount.y ~ Amount.x, data=SweetandSourBeets.merged)  # Scatterplot 
+```
+
+*NOTE: Measure inconsistencies found in beets for SweetandSourBeets. Any significant differences in Amount were due to measure changes.*
+
+*Check for errors in BeefStroganoff.*
+```{r}
+BeefStroganoff.merged <- merge(BeefStroganoff1997, BeefStroganoff2006, by='Ingredient')
+BeefStroganoff.merged[, c('Ingredient', 'Measure.x', 'Measure.y', 'Amount.x', 'Amount.y')]
+table(BeefStroganoff.merged$Measure.x, BeefStroganoff.merged$Measure.y)  # Contingency table
+plot(Amount.y ~ Amount.x, data=BeefStroganoff.merged)  # Scatterplot 
+```
+
+*NOTE: Measure inconsistencies found in sour cream and mustard for BeefStroganoff. Any significant differences in Amount were due to measure changes.*
+
+
+# Read the Recipes.csv, append rows for your recipes, then write the table back to Recipes.csv.
+
+Set eval=TRUE to evaluate.
+
+```{r,eval=FALSE}
+# Read the Recipes.csv
+Recipes.dat <- read.csv("Recipes.csv", stringsAsFactors=FALSE )
+
+# Append rows for your recipes
+Recipes.dat[nrow(Recipes.dat) + 1, ] = list('Apple Pie', 1936, 1, 1)
+Recipes.dat[nrow(Recipes.dat) + 1, ] = list('Apple Pie', 2006, 1, 1)
+Recipes.dat[nrow(Recipes.dat) + 1, ] = list('SweetandSour Beets', 1936, 6, 6)
+Recipes.dat[nrow(Recipes.dat) + 1, ] = list('SweetandSour Beets', 2006, 6, 6)
+
+# Write the table back to Recipes.csv
+write.csv(Recipes.dat, "Recipes.csv", row.names=FALSE)
+```

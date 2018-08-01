@@ -1,0 +1,386 @@
+---
+title: "Midterm Report"
+author: "Set 33"
+date: "July 20, 2018"
+output:
+  word_document: default
+  html_document: default
+---
+# Introduction
+
+We have been asked to work on two recipes that was randomly given to us from USDA food data base.  The food descriptions, nutrition and weight form USDA database was used for this objectives. I was assigned to work on German potato salad and Irish stew
+
+# Objectives
+
+###To collect information about the recipes, ingredients and amount and measure of servings for the 1936 and 2006.
+###To learn how to merge or match the tables in our recipes to other persons or to recipes that was given as an example
+###To match the ingredients in the data base and check if any measurement or ingredient inconsistences was obsrved. 
+
+
+
+
+
+# PART 1. Preparing tables for the selcted recipes
+
+Gathering infromation about the given recipes and table preparation
+
+## Irish Stew 1936
+```{r}
+Irish.Stew.1936=data.frame(Recipe=c(rep("Irish Stew", 10)),
+                           NDB_No=c(rep(NA, 10)),
+                           Year=c("1936", "1936", "1936", "1936", "1936", "1936", "1936", "1936", "1936","1936"),
+                           Amount=c(1.50, 3.00, 0.25, 3.00, 0.25, 1.50, 0.25, 0.33, 2.00, 0.50),
+                           Measure=c("lb", "Tbs", "cup","cup","cup","cup","cup","cup","Tbs","cup"),
+                           Ingredient=c('beef, chuck, stew meat, raw, choice,URMIS 1100',
+                                        'oil, canola',
+                                        'flour, all purpose, self rising, enrcihed',
+                                        'water, generic',
+                                        'onion, yellow, fresh, sliced',
+                                        'potato, fresh, with skin, diced',
+                                        'carrotes, fresh, sliced',
+                                        'turnip, fresh, cubes',
+                                        'flour, all purpose, self rising, enrcihed',
+                                        'stock, beef, prepared from recipe'))
+
+  
+
+```
+
+
+## Irish Stew 2006
+```{r}
+Irish.Stew.2006=data.frame(Recipe=c(rep("Irish Stew", 6)),
+                           NDB_No=c(rep(NA, 6)),
+                           Year=c("2006","2006","2006","2006","2006","2006"), 
+                           Amount=c(2.00,2.00,3.00,6.00,3.00,4.00),
+                           Measure=c("Tbs", "ea","lb","ea","cup","ea"),
+                           Ingredient=c('Oil, canola', 
+                                        'onion, yelow, fresh, medium, 2 1/2', 
+                                        'lamb stew meat,raw lean 1/4"trim', 
+                                        'potato, red, fresh, with skin, medium, 2 1/4" to 3 1/4"',
+                                        'stock, chiken, prepared from recipe',
+                                        'carrots, fresh, medium'))
+
+```
+
+## German Potato Salad 1936
+```{r}
+
+German.Potato.Salad.1936=data.frame(Recipe=c(rep("German Potato Salad", 6)),
+                                    NDB_No=c(rep(NA, 6)),
+                                    Year=c("1936","1936","1936","1936","1936","1936"), 
+                                    Amount=c(6.00,4.00,0.25,5.00,5.00,0.25),
+                                    Measure=c("Tbs", "ea","lb","ea","cup","ea"),
+                                    Ingredient=c('potato, red, fresh, with skin, medium, 2 1/4" to 3 1/4"', 
+                                      'bacon, raw, cured', 
+                                      'onion, yellow, fresh, chopped', 
+                                      'vinegar, distilled',
+                                      'sugar, white, granulated, granulated',
+                                      'water, generic'))
+
+```
+
+
+## German Potato Salad 2006
+```{r}
+
+German.Potato.Salad.2006=data.frame(Recipe=c(rep("German Potato Salad", 8)),
+                                    NDB_No=c(rep(NA, 8)),
+                                    Year=c("2006","2006","2006","2006","2006","2006","2006","2006"), 
+                                    Amount=c(2.00,4.00,0.25,0.25,0.25,5.00,5.00,0.25),
+                                    Measure=c("lb", "pce","cup","cup","cup","cup", "tsp", "cup"),
+                                    Ingredient=c('potato, red, fresh, with skin, medium, 2 1/4" to 3 1/4"', 
+                                                 'bacon, raw, cured',
+                                                 'onion, yellow, fresh, chopped',
+                                                 'celery, fresh, diced',
+                                                 'pickles, dill, chopped',
+                                                 'vinegar, cider',
+                                                 'sugar, white, granulated, granulated',
+                                                 'water, generic'))
+
+```
+
+
+
+```{r}
+print(Irish.Stew.1936)
+write.table(Irish.Stew.1936,"Irish.Stew.1936.txt")
+
+print(Irish.Stew.2006)
+write.table(Irish.Stew.2006,"Irish.Stew.2006.txt")
+
+print(German.Potato.Salad.1936)
+write.table(German.Potato.Salad.1936,"German.Potato.Salad.1936.txt")
+
+print(German.Potato.Salad.2006)
+write.table(German.Potato.Salad.2006,"German.Potato.Salad.2006.txt")
+
+```
+
+# Part 2 - Checing and matching of ingredients from database USDA.
+
+We will be using the USDA food nutrient database, found at https://www.ars.usda.gov/northeast-area/beltsville-md-bhnrc/beltsville-human-nutrition-research-center/nutrient-data-laboratory/docs/usda-national-nutrient-database-for-standard-reference/
+
+Run this to make sure your system can read the required nutrient database tables.
+```{r}
+food_des.dat <- read.table("FOOD_DES.txt",header=FALSE,sep="^",quote="~")
+names(food_des.dat) <- c("NDB_No","FdGrp_Cd","Long_Desc","Shrt_Desc",
+"ComName","ManufacName","Survey","Ref_desc","Refuse","SciName",
+"N_Factor","Pro_Factor","Fat_Factor","CHO_Factor")
+dim(food_des.dat)
+head(food_des.dat)
+summary(food_des.dat)
+```
+
+
+### Irish strew  ingredient matching to food database in USDA
+```{r}
+rish.Stew.1936.beef<- food_des.dat[grep("beef.*chunk*", food_des.dat$Long_Desc, ignore.case = T),]
+Irish.Stew.1936.oil<- food_des.dat[grep("oil, canola", food_des.dat$Long_Desc, ignore.case = T),]
+Irish.Stew.1936.flour<- food_des.dat[grep("Flour*", food_des.dat$Long_Desc, ignore.case = T),]
+Irish.Stew.1936.water<- food_des.dat[grep("generic*", food_des.dat$Long_Desc, ignore.case = T),]
+Irish.Stew.1936.onion<- food_des.dat[grep ("onion.*yellow*", food_des.dat$Long_Desc, ignore.case = T),]
+Irish.Stew.1936.potato<- food_des.dat[grep('*potato*' , food_des.dat$Long_Desc, ignore.case = T),]
+Irish.Stew.1936.carrotes<- food_des.dat[grep('carrotes.*' , food_des.dat$Long_Desc, ignore.case = T), ]
+Irish.Stew.1936.turnip<- food_des.dat[grep('turnip*' , food_des.dat$Long_Desc, ignore.case = T), ]
+Irish.Stew.1936.flour<- food_des.dat[grep("Flour*", food_des.dat$Long_Desc, ignore.case = T),]
+Irish.Stew.1936.stock<- food_des.dat[grep('(?=.stock.)(?=.*beef*)', food_des.dat$Long_Desc,perl = TRUE),]
+
+Irish.Stew.1936.oil<- food_des.dat[grep("oil, canola", food_des.dat$Long_Desc, ignore.case = T),]
+Irish.Stew.1936.onion<- food_des.dat[grep ("onion.*yellow*", food_des.dat$Long_Desc, ignore.case = T),]
+rish.Stew.1936.beef<- food_des.dat[grep("lamb.*", food_des.dat$Long_Desc, ignore.case = T),]
+Irish.Stew.1936.potato<- food_des.dat[grep('*potato*' , food_des.dat$Long_Desc, ignore.case = T),]
+Irish.Stew.1936.flour<- food_des.dat[grep("stock.*chiken*", food_des.dat$Long_Desc, ignore.case = T),]
+Irish.Stew.1936.carrotes<- food_des.dat[grep('carrotes.*' , food_des.dat$Long_Desc, ignore.case = T), ]
+
+```
+
+### German Potato salad ingredient matching to food database in USDA
+```{r}
+potato.1936.carrotes<- food_des.dat[grep('carrotes.*' , food_des.dat$Long_Desc, ignore.case = T), ]
+potato.1936.potato.<- food_des.dat[grep("potato.*", food_des.dat$Long_Desc, ignore.case = T),]
+potato.1936.bacon<- food_des.dat[grep("bacon*", food_des.dat$Long_Desc, ignore.case = T),]
+potato.1936.onion.<- food_des.dat[grep ("onion.*yellow*", food_des.dat$Long_Desc, ignore.case = T),]
+potato.1936.water<- food_des.dat[grep( "water*" , food_des.dat$Long_Desc, ignore.case = T),]
+potato.1936.sugar<- food_des.dat[grep("sugar*", food_des.dat$Long_Desc, ignore.case = T),]
+potato.1936.generic<- food_des.dat[grep("generic*", food_des.dat$Long_Desc, ignore.case = T),]
+
+potato.1936.potato<- food_des.dat[grep("potato.*red*", food_des.dat$Long_Desc, ignore.case = T),]
+potato.1936.bacon<- food_des.dat[grep("bacon.raw*", food_des.dat$Long_Desc, ignore.case = T),]
+potato.1936.onion<- food_des.dat[grep ("onion.*yellow*", food_des.dat$Long_Desc, ignore.case = T),]
+potato.1936.celery<- food_des.dat[grep('*celery.*' , food_des.dat$Long_Desc, ignore.case = T),]
+potato.1936.pickles<- food_des.dat[grep('*pickles.*dill*' , food_des.dat$Long_Desc, ignore.case = T),]
+potato.1936.vinegar<- food_des.dat[grep('vinegar.*cider' , food_des.dat$Long_Desc, ignore.case = T),]
+potato.1936.sugar<- food_des.dat[grep("sugar*", food_des.dat$Long_Desc, ignore.case = T),]
+potato.1936.water<- food_des.dat[grep( "water*" , food_des.dat$Long_Desc, ignore.case = T),]
+
+```
+
+
+# Part 3. Finding NDB_No and relating tables using NDB_No as a key
+
+During matching in part 2, row numbers of each ingredient in the food.dat database was identified. Then after, using this row numbers I sublet the data of the data in the food.dat database to get NDB_No for each ingredients.
+
+Finally, using NDB_No i able to related and retrieve information from weight and nutrition database in the USDA too.
+
+### Selcting ingreidents from the food data base of USDA using row number identified during matching
+```{r}
+subset_foodIrish.des1936<- food_des.dat[c(1404,	706,	6000,	4038,	2650,	2709,	2517,	2854,	6000,	1266),c(1,3)]
+subset_foodIrish.des2006<- food_des.dat[c(706,	2650,	4622,	2709,	1267,	2717),c(1,3)]
+subsetpotato_food.des1936<- food_des.dat[c(2709,	2218,	2650,	315,	5776,	4038),c(1,3)]
+subsetpotato_food.des2006<- food_des.dat[c(2709,	2218,	2650,	2530,	3159,	310,	5776,	4038),c(1,3)]
+
+```
+
+
+### Insering DOB_no into the recipies selcted
+```{r}
+##Replacing of ingreidents from the data base to the sected ingredients
+Irish.Stew.1936$Ingredient=subset_foodIrish.des1936$Long_Desc
+Irish.Stew.2006$Ingredient=subset_foodIrish.des2006$Long_Desc
+German.Potato.Salad.1936$Ingredient =subsetpotato_food.des1936$Long_Desc
+German.Potato.Salad.2006$Ingredient =subsetpotato_food.des2006$Long_Desc
+
+##Inserting NDB_No
+Irish.Stew.1936$NDB_No=subset_foodIrish.des1936$NDB_No
+Irish.Stew.2006$NDB_No=subset_foodIrish.des2006$NDB_No
+German.Potato.Salad.1936$NDB_No =subsetpotato_food.des1936$NDB_No
+German.Potato.Salad.2006$NDB_No =subsetpotato_food.des2006$NDB_No
+```
+
+# Printing the final tables
+```{r}
+
+print(Irish.Stew.1936)
+print(Irish.Stew.2006)
+print(German.Potato.Salad.1936)
+print(German.Potato.Salad.2006)
+
+```
+
+## Write each individual recipe to a tab delimited file. The name of the tab file should be comprised of the recipe file name and the year of the recipe (1936 or 2006, in most cases).
+```{r}
+
+write.table(Irish.Stew.1936,file= "Irish.Stew.1936") #Write in .tab file
+write.table(Irish.Stew.2006,file="Irish.Stew.2006" )
+write.table(German.Potato.Salad.1936, file= "German.Potato.Salad.1936")
+write.table(German.Potato.Salad.2006, file= "German.Potato.Salad.1936")
+
+```
+
+## Read in each tab file, and merge the tables with the example Beef Stroganoff tables.
+
+The Reading the example beef Stroganoff tables.
+```{r}
+
+BeefStroganoff.2006 <- read.table("BeefStroganoff.2006.tab", header=TRUE)
+BeefStroganoff.2006$NDB_No<-c(NA)
+BeefStroganoff.2006$Recipe<-c("BeefStroganoff")
+BeefStroganoff.2006$Year<-c("2006")
+                                                            
+
+BeefStroganoff.1997 <- read.table("BeefStroganoff.1997.tab", header=TRUE)
+BeefStroganoff.1997$NDB_No<-c(NA)
+BeefStroganoff.1997$Recipe<-c("BeefStroganoff")
+BeefStroganoff.1997$Year<-c("1997")
+
+
+
+
+```
+
+### Merging all the selcted recipes to  beeffStroganoff recipes
+
+Merging the recipes  German.Potato.Salad, BeefStroganoff, and Irish.Stew using *reduce function*
+```{r}
+#merging all the recipes with beeffStroganoff.1997
+merged.data=Reduce(function(x, y) merge(x, y, all=TRUE), list(Irish.Stew.1936,
+                                                  Irish.Stew.2006,
+                                                  German.Potato.Salad.1936,
+                                                  German.Potato.Salad.2006,                  
+                                                  BeefStroganoff.1997,
+                                                  BeefStroganoff.2006))
+#Saving the result
+write.csv(merged.data,"merged.data.csv")
+```
+
+### Comparing with the gram weight database using NDB_No as key
+
+
+```{r}
+weight.dat <- read.table("WEIGHT.txt",header=FALSE,sep="^",quote="~")
+names(weight.dat) <- c("NDB_No","Seq","Amount","Msre_Desc","Gm_Wgt","Num_Data_Pts","Std_Dev")
+head(weight.dat,10)
+summary(weight.dat)
+
+```
+
+
+```{r}
+Wt.Irish.1936 = subset(weight.dat, NDB_No %in% c(Irish.Stew.1936$NDB_No))
+Wt.Irish.2006 = subset(weight.dat, NDB_No %in% c(Irish.Stew.2006$NDB_No))
+Wt.Potato.1936 = subset(weight.dat, NDB_No %in% c(German.Potato.Salad.1936$NDB_No))
+Wt.Potato.2006 = subset(weight.dat, NDB_No %in% c(German.Potato.Salad.2006$NDB_No))
+
+#print(Wt.Irish.1936)
+#print(Wt.Irish.2006)
+#print(Wt.Potato.1936)
+#print(Wt.Potato.1936)
+
+```
+
+
+### Comparing with Nutrion data base
+
+```{r}
+nut_data.dat <- read.table("NUT_DATA.txt",header=FALSE,sep="^",quote="~")
+names(nut_data.dat) <- c("NDB_No","Nutr_No","Nutr_Val","Num_Data_Pts","Std_Error",
+"Src_Cd","Deriv_Cd","Ref_NDB_No","Add_Nutr_Mark","Num_Studies",
+"Min","Max","DF","Low_EB","Up_EB","Stat_cmt","AddMod_Date")
+head(nut_data.dat[, c(1,2,5,11,12)])
+
+```
+
+```{r}
+nut_data.dat=nut_data.dat[,c(1,2,5,11,12)]
+
+Nt.Irish.1936 = subset(nut_data.dat, NDB_No %in% c(Irish.Stew.1936$NDB_No))
+Nt.Irish.2006 = subset(nut_data.dat, NDB_No %in% c(Irish.Stew.2006$NDB_No))
+Nt.Potato.1936 = subset(nut_data.dat, NDB_No %in% c(German.Potato.Salad.1936$NDB_No))
+Nt.Potato.2006 = subset(nut_data.dat, NDB_No %in% c(German.Potato.Salad.2006$NDB_No))
+
+#print(Nt.Irish.1936)
+#print(Nt.Irish.2006)
+#print(Nt.Potato.1936)
+#print(Nt.Potato.2006)
+
+
+```
+
+# Part 4. Proof of data to check for errors
+
+Recipies are merged by  Ingredient and to check for inconsistency in the measurement and amounts.
+
+```{r}
+#Merging by Ingredient
+
+merge.P<-merge(German.Potato.Salad.1936, German.Potato.Salad.2006, by="Ingredient")
+print(merge.P)
+
+#The plot to show the existance of inconsistency
+
+plot(merge.P$Amount.x , merge.P$Amount.y )
+print(merge.P)
+
+```
+
+### Comments:
+The merging of the recipes using ingadient indicated that there are difrences in some of the gradents interms of ther mesuremen acroos difrent years aswell as with in the some year too. 
+
+
+```{r}
+#Merging by Ingredient
+
+merge.I<-merge(Irish.Stew.1936, Irish.Stew.2006, by="Ingredient")
+print(merge.I)
+
+#The plot to show the existance of inconsistency
+
+plot(merge.I$Amount.x , merge.I$Amount.y )
+print(merge.I)
+
+```
+
+#Part 5.Reading the Recipes.csv file and appending my recipes.
+ 
+#Reading the example Recipe file
+
+```{r}
+#Example recipes
+Recipes<- read.csv("Recipes.csv", header = T)
+
+##Recipe file for my recipes
+my_recipes<-data.frame(
+  Recipe= c('Irish Stew ', 'Irish Stew', 'German Potato Salad', 'German Potato Salad'),
+  Year= c(1936,2006,1936,2006),
+  MinServings=c(4,4,4,6),
+  MaxServings=c(6,6,4,6))
+
+## merging both files
+Rec.max.min.merge<-rbind(Recipes, my_recipes)
+
+##writing the merged file to CSV
+write.csv(Rec.max.min.merge, "Rec.max.min.merge.csv")
+
+# Table showing the recipes merged to show the  maximum and  minim serving 
+print(Rec.max.min.merge)
+```
+
+
+
+
+
+
+
+```
+

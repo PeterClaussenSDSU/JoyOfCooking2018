@@ -1,0 +1,172 @@
+---
+title: "Midterm"
+author: "Set 21"
+date: "July 21, 2018"
+output:
+  pdf_document: default
+  html_document: default
+---
+1. Create data tables for your assigned recipes, with columns Amount, Unit and Ingredient.
+
+```{r}
+HungarianGoulash.1936 <- data.frame(
+  NDB_No=c(rep(NA, 6)),
+  Amount = c(2, 4,1.5,1,3,2),
+  Measure = c("lb","Tbs", "cup", "cup","Tbs", "Tbs"),
+  Ingredient = c('beef steak, bottom round, raw, 1/8" trim, URMIS 1466','butter,salted', 
+                 'onion, yellow, fresh, chopped', 'stock, beef, prepared from recipe',
+                 'butter, salted', 'flour, all purpose, self rising, enriched'))
+
+##Hungarian Goulash @ 2006
+HungarianGoulash.2006 <- data.frame(
+  NDB_No=c(rep(NA, 5)),
+  Amount = c(2, 0.25,1.5,1,0.25),
+  Measure = c("lb", "cup", "cup","cup", "cup"),
+  Ingredient = c('beef, chuck, stew meat, raw, choice, URMIS 1100', 
+                 'butter, salted', 'onion, yellow, fresh, chopped',
+                 'stock, beef, prepared from recipe',
+                 'flour, all purpose, self rising, enriched'))
+
+##Mushroom Souffle @1936
+MushroomSouffle.1936 <- data.frame(
+  NDB_No=c(rep(NA, 7)),
+  Amount = c(1.5,0.75,0.25,2,3,1,3),
+  Measure= c("Tbs", "lb", "cup", "Tbs", "Tbs", "cup","lrg" ),
+  Ingredient= c('butter, salted','mushrooms, fresh',
+                'celery, cooked, drained, diced',
+                'butter, salted', 'flour, all purpose, self rising, enriched',
+                'milk, whole, 3.25%', 'egg, raw'))
+
+##Mushroom Souffle @2006
+MushroomSouffle.2006<- data.frame(
+  NDB_No=c(rep(NA, 8)),
+  Amount= c(0.25,4.5,4.5,1.5,6,0.5,1.5,2),
+  Measure = c("cup","Tbs", "Tbs","cup","lrg","cup","cup", "Tbs"),
+  Ingredient= c('bread crumbs, plain, dry, grated','butter,salted',
+                'flour, all purpose, self rising, enriched', 
+                'milk, whole, 3.25%', 'egg, raw',
+                'cheese, gruyere, shredded', 'mushrooms, cooked, drained', 'buttter, salted'))
+```
+
+These recipes are not according to the standard in FOOD_DES.txt therefore our next step is to find the correct recipe form FOOD_DES.txt and replace the corresponding recipe.
+```{r}
+###Opening food_des.dat to check for ingredient 
+food_des.dat <- read.table("FOOD_DES.txt",header=FALSE,sep="^",quote="~")
+names(food_des.dat) <- c("NDB_No","FdGrp_Cd","Long_Desc","Shrt_Desc",
+                         "ComName","ManufacName","Survey","Ref_desc","Refuse","SciName",
+                         "N_Factor","Pro_Factor","Fat_Factor","CHO_Factor")
+
+##ingredient match in Food_des.
+
+beefsteak<- food_des.dat[grep("beef.*bottom", food_des.dat$Long_Desc, ignore.case = T),]
+butter.salted<- food_des.dat[grep("butter.*salted", food_des.dat$Long_Desc, ignore.case = T),]
+onion.yellow<- food_des.dat[grep("onion", food_des.dat$Long_Desc, ignore.case = T),]
+beef.stock<-food_des.dat[grep("beef.*soup|soup.*beef", food_des.dat$Long_Desc, ignore.case = T),]
+floor.allpurpose<-food_des.dat[grep("flour", food_des.dat$Long_Desc, ignore.case = T),]
+beef.stewmeat<- food_des.dat[grep("beef.*stew", food_des.dat$Long_Desc, ignore.case = T),]
+mushroom<- food_des.dat[grep("mushrooms.*raw", food_des.dat$Long_Desc, ignore.case = T),]
+celery<- food_des.dat[grep("celery", food_des.dat$Long_Desc, ignore.case = T),]
+milkwhole<-food_des.dat[grep("milk.*whole", food_des.dat$Long_Desc, ignore.case = T),]
+egg.raw<- food_des.dat[grep("egg.*raw", food_des.dat$Long_Desc, ignore.case = T),]
+breadcrumbs<- food_des.dat[grep("bread.*crumbs", food_des.dat$Long_Desc, ignore.case = T),]
+cheese<- food_des.dat[grep("cheese.*gruyere|gruyere.*cheese", food_des.dat$Long_Desc, ignore.case = T),]
+mushroomcooked<- food_des.dat[grep("mushrooms.*cooked", food_des.dat$Long_Desc, ignore.case = T),]
+
+##making as subset of food_des containing only recipes of interest
+subset_food.des<- food_des.dat[c(3633,1,2658,1266,6000,1343,6540,2604,2531,182,114,5140,23,2626),c(1,3)]
+subset_food.des$Long_Desc<-as.character(subset_food.des$Long_Desc)
+
+HungarianGoulash.1936$Ingredient<-as.character(HungarianGoulash.1936$Ingredient)
+
+HungarianGoulash.1936$Ingredient<-subset_food.des[c(1,2,3,4,2,5),2]
+```
+In the above code I used grep function to find the recipe with the closest mathces to my my recipe and manually selected the best match from the narrowed down list. I then created a subset of FOOD_DES.dat containing the recipes present in my recipes. 
+
+Now next job will be to replace the NDB column and ingredient column with the correct one from subset.
+```{r}
+##replacing Ingredient in Hungarian Goulash
+HungarianGoulash.1936$Ingredient<-subset_food.des[c(1,2,3,4,2,5),2]
+##replacing NDB column in hungarian goulahs 
+HungarianGoulash.1936$NDB_No<-subset_food.des[c(1,2,3,4,2,5),1]
+##replacing for Hungarian Goulash 2006
+HungarianGoulash.2006$Ingredient<- subset_food.des[c(7,2,3,6,5),2]
+HungarianGoulash.2006$NDB_No<- subset_food.des[c(7,2,3,6,5),1]
+##Replacing for MushroomSouffle 1936
+MushroomSouffle.1936$Ingredient<-subset_food.des[c(2,8,9,2,5,10,11),2]
+MushroomSouffle.1936$NDB_No<-subset_food.des[c(2,8,9,2,5,10,11),1]
+##Replacing for MushroomSouffle 2006
+MushroomSouffle.2006$Ingredient<-subset_food.des[c(12,2,5,10,11,13,14,2),2]
+MushroomSouffle.2006$NDB_No<-subset_food.des[c(12,2,5,10,11,13,14,2),1]
+
+#printing the final tables.
+print(HungarianGoulash.1936)
+print(HungarianGoulash.2006)
+print(MushroomSouffle.1936)
+print(MushroomSouffle.2006)
+```
+
+
+
+#2. Write each individual recipe to a tab delimited file. The name of the tab file should be comprised of the recipe file name and the year of the recipe (1936 or 2006, in most cases).
+
+```{r}
+write.table(HungarianGoulash.1936,file= "HungarianGoulash.1936") #Write in .tab file
+write.table(HungarianGoulash.2006,file="HungarianGoulash.2006" )
+write.table(MushroomSouffle.1936, file= "MushroomSouffle.1936")
+write.table(MushroomSouffle.2006, file= "MushroomSouffle.2006")
+
+```
+
+##3. Read in each tab file, and merge the tables with the example Beef Stroganoff tables.
+```{r}
+##lets start by reading the example beef Stroganoff tables. 
+BeefStroganoff.1997 <-read.table("BeefStroganoff.1997.tab", 
+                                 sep="", header=TRUE, stringsAsFactors = FALSE)
+##adding NDB_No column with just NA
+BeefStroganoff.1997$NDB_No<-c(NA)
+BeefStroganoff.1997<-BeefStroganoff.1997[c(4,1,2,3)]
+##merging all the recipes with beeffStroganoff.1997
+all.merged<- rbind(BeefStroganoff.1997, HungarianGoulash.1936, HungarianGoulash.2006, MushroomSouffle.1936, MushroomSouffle.2006)
+##adding the recipe name to this merged table
+all.merged$Recipe<- c(rep('BeefStrganoff.1997', nrow(BeefStroganoff.1997)), rep('HungarianGoulash.1936',nrow(HungarianGoulash.1936)), rep("HungarianGoulash.2006", nrow(HungarianGoulash.2006)),rep("MushroomSouffle.1936",nrow(MushroomSouffle.1936)), rep("MushroomSouffle.2006", nrow(MushroomSouffle.2006)))
+
+```
+###4. Proof of data to check for errors
+I merged the recipes by Ingredient and checked for inconsistency in the measurement and amounts.
+```{r}
+merged1<-merge(HungarianGoulash.1936, HungarianGoulash.2006, by="Ingredient")
+#lets plot amounts to seee if there is some inconsistency
+plot(merged1$Amount.x , merged1$Amount.y )
+print(merged1)
+```
+So from the table and plot we can clearly see that in 1936 the measurements were done in Tbs and in 2006 in cups. thats why amounts are also so different. I checked the pdf and it is the same way in pdf. I am not sure if I should do the conversion to make them uniform. Comments will be appreciated. I also found they changed some Ingredients from 1936 to 2006 so all the ingredients are not in merged table
+
+Lets to the same for the Mushroom recipe
+
+```{r}
+merged2<-merge(MushroomSouffle.1936, MushroomSouffle.2006, by="Ingredient")
+#lets plot amounts to seee if there is some inconsistency
+plot(merged2$Amount.x , merged2$Amount.y )
+print(merged1)
+```
+
+So, in MushroomSouffle also they have increased the amount of many ingredient. But they are consistent with the unit of measurement in this case. Also they added some new ingredient in 2006 to the recipe. 
+
+##5. Reading the Recipes.csv file and appending my recipes. 
+```{r}
+#Reading the example Recipe file
+Recipes<- read.csv("Recipes.csv", header = T)
+##Recipe file for my recipes
+my_recipes<-data.frame(
+  Recipe= c('HungarianGoulash', 'HungarianGoulash', 'MushroomSouffle', 'MushroomSouffle'),
+  Year= c(1936,2006,1936,2006),
+  MinServings=c(6,6,4,6),
+  MaxServings=c(6,6,4,6)
+)
+##merging both files
+Recipes<-rbind(Recipes, my_recipes)
+##writing the merged file to CSV
+write.csv(Recipes, "Recipes.csv",row.names=FALSE)
+print(Recipes)
+```
+

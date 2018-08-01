@@ -1,0 +1,353 @@
+---
+title: "Midterm"
+author: "Set 26"
+date: "7/16/2018"
+output:
+  word_document: default
+  html_document: default
+---
+
+#LOBSTER NEWBURG
+#STEAMED CARAMEL PUDDING
+
+For this Midterm, I will be creating tables for Lobster Newburg and Steamed Caramel Pudding for the years 1936 and 2006. Along with those recipes will be Beef Stroganoff from 1997 and 2006. These recipes will be stored in dataframes and merged together at the end after adding appropriate columns. The columns to be added are NDB_No Column, recipe, and year. Recipe and year will come from the filename and the columns will most likely be added at the end prior to combining all tables. To test the files, each will be written out to tab file and read back in to ensure there will not be problems. I will need to ensure that ingredients in my tables line up with ingredients in the database. Some substitutions may need to be made after looking them up with pattern matching.
+To check questionable output and errors, there will be comparisons for the two years of each recipe. From first glance, I can tell there are differing ingredients and various quantities of ingredients in the Steamed Caramel Pudding.
+
+We will also be dealing with the recipe.csv file and preparing it for future analysis. I will add in my two recipes containing name, year, minserving, and maxserving. Will perform procedure similar to the early part of project where creating dataframes for each recipe. This will create a table for my recipes and the beef stroganoff. After combined, I will make sure it is able to be written to a csv file.
+
+In the end, there will be two tables. One with all recipes combined with the Recipe, Years, Ingredients, Amount, NDB_NO, and measurement. The other will be more simple with Recipe, Year, MaxServings, and MinServings.
+
+First, generate a list of all files in the Recipes folder.
+```{r,eval=FALSE}
+recipes <- list.files(path = "D:\\RecipesData", pattern = '*.pdf')
+recipes
+```
+
+```{r,eval=FALSE}
+set.seed(10010)
+```
+
+```{r,eval=FALSE}
+recipe.pairs <- matrix(c(sample(recipes),sample(recipes)),ncol=2,nrow=106)
+```
+
+```{r,eval=FALSE}
+sum(recipe.pairs[,1]==recipe.pairs[,2])
+```
+
+```{r,eval=FALSE}
+write.csv(recipe.pairs, file="Recipe.Table.csv",row.names = FALSE)
+```
+
+```{r,eval=FALSE}
+Recipe.Table <- read.csv("Recipe.Table.csv",header=FALSE,skip=1)
+
+```
+
+Read in FOOD_DES, WEIGHT, and, NUT_DATA files and renamed as instructed
+
+#import databases
+```{r}
+food_des.dat <- read.table("FOOD_DES.txt", header=FALSE, sep="^",quote="~")
+names(food_des.dat) <- c("NDB_No","FdGrp_Cd","Long_Desc","Shrt_Desc",
+"ComName","ManufacName","Survey","Ref_desc","Refuse","SciName",
+"N_Factor","Pro_Factor","Fat_Factor","CHO_Factor")
+dim(food_des.dat)
+head(food_des.dat)
+
+```
+wrote the food_des to csv so I could look at it in excel
+```{r}
+weight.dat <- read.table("WEIGHT.txt", header=FALSE, sep="^", quote="~")
+names(weight.dat) <- c("NDB_No","Seq","Amount","Msre_Desc","Gm_Wgt","Num_Data_Pts","Std_Dev")
+head(weight.dat)
+
+write.csv(food_des.dat, file="fooddesc.csv",row.names = FALSE)
+```
+
+```{r}
+nut_data.dat <- read.table("NUT_DATA.txt", header=FALSE, sep="^", quote="~")
+names(nut_data.dat) <- c("NDB_No","Nutr_No","Nutr_Val","Num_Data_Pts","Std_Error",
+"Src_Cd","Deriv_Cd","Ref_NDB_No","Add_Nutr_Mark","Num_Studies",
+"Min","Max","DF","Low_EB","Up_EB","Stat_cmt","AddMod_Date")
+head(nut_data.dat)
+
+```
+
+
+
+#Create DatataFrames with NDB_NO, amount, unit, ingredient for each recipe
+To easily look up NDB_NO, I used find and replace in excel after writing food_des.dat to csv
+Updated measurements specifically to what weight.dat measures by
+Several ingredients do not have measurements in weight seen in original recipes. Manually translated them to proper measurement
+
+```{r}
+SteamedCaramelPudding1936 <- data.frame(
+NDB_NO= c(19335, 1077, 1001, 1123, 2050, 20084, 12061),
+Amount=c(.33, .75, 2, 5, 1,1,1),
+Measure= c("cup", "cup", "tbsp", "large", "tsp", "tbsp", "cup, ground"),
+Ingredient= c("Sugars, granulated", "Milk, whole, 3.25% milkfat, with added vitamin D","Butter, salted","Egg, whole, raw, fresh", "Vanilla extract","Wheat flour, white, bread, enriched","Nuts, almonds"))
+
+SteamedCaramelPudding2006 <- data.frame(
+NDB_NO=c(12061, 14555, 19335, 1053, 1001, 1123, 20082, 2050, 4529),
+Amount=c(3,2,1.5,1,6,6,.33,1,1),
+Measure=c("cup, slivered","tbsp","cup","cup, whipped","tbsp","large","cup","tbsp","tsp"),
+Ingredient=c("Nuts, almonds, slivered", "Water, bottled, generic", "Sugars, granulated", "Cream, fluid, heavy whipping", "Butter, salted", "Egg, whole, raw, fresh", "Wheat flour, white, all-purpose, self-rising, enriched", "Vanilla Extract", "Oil, Almond"))
+
+LobsterNewburg1936 <- data.frame(
+NDB_NO=c(1001, 15148, 1125, 1053, 43154),
+Amount=c(4,8,3,1,2),
+Measure=c("tbsp", "oz", "ea", "cup, whipped", "oz"),
+Ingredient=c("Butter, salted", "Crustaceans, lobster, northern, cooked, moist heat", "Egg, yolk, raw, fresh", "Cream, fluid, heavy whipping", "Alcoholic beverage, wine, cooking")
+)
+
+LobsterNewburg2006 <- data.frame(
+NDB_NO=c(15148, 1001, 43154, 1125, 1053),
+Amount=c(8, 4, 2, 3, 1),
+Measure=c("oz", "tbsp", "oz", "ea", "cup, whipped"),
+Ingredient=c("Crustaceans, lobster, northern, cooked, moist heat", "Butter, salted", "Alcoholic beverage, wine, cooking", "Egg, yolk, raw, fresh", "Cream, fluid, heavy whipping")
+)
+
+```
+
+#Find proper ingredients
+Had to use grep function on almost all ingredients to find proper matching ingredients from long_desc column of food_des.
+Several did not exist such as "sherry" and had to be replaced with similar ingredients(Alcoholic beverage,wine,cooking in "sherry" case).
+Majority of ingredients did not specifically match so almost all were modified in some way
+Example for "egg, raw" being replaced with "egg, whole, raw, fresh" since it is closest match.
+```{r}
+grep('(E|e)gg.*(R|r)aw', food_des.dat$Long_Desc, value=TRUE)
+```
+#Write tables to tab file
+```{r}
+write.table(SteamedCaramelPudding1936, "SteamedCaramelPudding1936.tab",row.names = FALSE, sep="\t")
+write.table(SteamedCaramelPudding2006, "SteamedCaramelPudding2006.tab",row.names = FALSE, sep="\t")
+write.table(LobsterNewburg1936, "LobsterNewburg1936.tab",row.names = FALSE, sep="\t")
+write.table(LobsterNewburg2006, "LobsterNewburg2006.tab",row.names = FALSE, sep="\t")
+
+```
+Wrote tables to tab file similar to the example of beef stroganoff
+
+
+#Read tables back in
+Then, read the beef stroganoff tables into R. Also brought my tables back in to make sure they are read properly
+
+```{r}
+BeefStroganoff1997 <- read.table("BeefStroganoff.1997.tab", header=TRUE, sep="")
+BeefStroganoff2006 <- read.table("BeefStroganoff.2006.tab", header=TRUE, sep="")
+
+BeefStroganoff1997
+BeefStroganoff2006
+
+SteamedCaramelPudding1936 <- read.table("SteamedCaramelPudding1936.tab", header=TRUE, sep="")
+SteamedCaramelPudding2006 <- read.table("SteamedCaramelPudding2006.tab", header=TRUE, sep="")
+LobsterNewburg1936 <- read.table("LobsterNewburg1936.tab", header=TRUE, sep="")
+LobsterNewburg2006 <- read.table("LobsterNewburg2006.tab", header=TRUE, sep="")
+SteamedCaramelPudding1936
+SteamedCaramelPudding2006
+```
+
+
+#Update Beefstroganoff ingredients to match database and assign NDB_NO.
+
+Created vectors with ingredients found in the USDA database as well as NDB_NO number
+```{r}
+BeefStroganoff2006Ingredients <- c("Beef, loin, tenderloin steak, boneless, separable lean and fat, trimmed to 0\" fat, all grades, raw","Oil, canola","Butter, salted", "Onions, raw", "Mushrooms, white, raw", "Soup, stock, beef, home-prepared", "Cream, sour, cultured","Mustard, prepared, yellow")
+BeefStroganoff1997Ingredients <- c("Beef, loin, tenderloin steak, boneless, separable lean and fat, trimmed to 0\" fat, all grades, raw","Butter, salted","Wheat flour, white, all-purpose, self-rising, enriched","Soup, stock, beef, home-prepared", "Cream, sour, cultured","Mustard, prepared, yellow")
+BeefStroganoff2006NDB_NO <- c(23342, 4582, 1001, 11282, 11260, 6170, 1056, 2046)
+BeefStroganoff1997NDB_NO <- c(23342, 1001, 20082, 6170, 1056, 2046)
+```
+
+Drop original Ingredient column using subset of other columns
+```{r}
+BeefStroganoff2006<-subset(BeefStroganoff2006, select = c(Amount, Measure))
+BeefStroganoff1997<-subset(BeefStroganoff1997, select = c(Amount, Measure))
+```
+
+Add in the new ingredient column as well as NDB_NO column to the BeefStroganoff tables
+```{r}
+BeefStroganoff2006$Ingredient <-BeefStroganoff2006Ingredients
+BeefStroganoff2006$NDB_NO <- BeefStroganoff2006NDB_NO
+
+BeefStroganoff1997$Ingredient <- BeefStroganoff1997Ingredients
+BeefStroganoff1997$NDB_NO <- BeefStroganoff1997NDB_NO
+
+BeefStroganoff1997
+BeefStroganoff2006
+
+```
+
+Amount and measure do not line up with database so I am repeating above steps (creating vectors and replacing old inaccurate ones).
+Mushrooms was the most complicated. Converted them to grams, then to cups, whole to equate with database. Was 3.02....cups, but rounded to 3.
+Tables won't be in proper order now. Will reorder columns later
+```{r}
+
+BeefStroganoff1997<-subset(BeefStroganoff1997, select = c(Ingredient, NDB_NO))
+BeefStroganoff2006<-subset(BeefStroganoff2006, select = c(Ingredient, NDB_NO))
+
+BeefStroganoff1997Amount<-c(24, 3.5, .0625, 1, 3, 1)
+BeefStroganoff1997Measure<-c("oz", "tbsp", "cup", "cup", "tbsp", "tsp")
+BeefStroganoff2006Amount<-c(32, 2, 3, 1, 3, 1, 3, 1)
+BeefStroganoff2006Measure<-c("oz", "tbsp", "tbsp", "medium(2-1/2\" dia)", "cup, whole", "cup", "tbsp", "tsp")
+
+BeefStroganoff2006$Amount <-BeefStroganoff2006Amount
+BeefStroganoff2006$Measure <- BeefStroganoff2006Measure
+
+BeefStroganoff1997$Amount <- BeefStroganoff1997Amount
+BeefStroganoff1997$Measure <- BeefStroganoff1997Measure
+
+BeefStroganoff1997
+BeefStroganoff2006
+
+```
+
+#CHECKING FOR ERRORS
+
+Compare recipe ingredient by initial and final year for each recipe. Will merge the two different years by ingredient and look and make tables comparing ingredients used.
+```{r}
+m1<-merge(SteamedCaramelPudding1936, SteamedCaramelPudding2006, by="Ingredient", all=TRUE ,all.y=TRUE)
+m1
+m2<-merge(LobsterNewburg1936, LobsterNewburg2006, by="Ingredient", all=TRUE, all.y=TRUE)
+m2
+m3<-merge(BeefStroganoff1997, BeefStroganoff2006, by="Ingredient", all=TRUE, all.y=TRUE)
+m3
+```
+
+We will now look at comparison tables to look for errors
+```{r}
+table(m1$Measure.x, m1$Measure.y)
+table(m1$Amount.x, m1$Amount.y)
+
+```
+The first table shows the measurements each year and there are only three measurements that align(almonds were in different "form" in each recipe so they don't align perfectly) Looking back at the ingredients, you can see that there are many more ingredients in 2006 in comparison to 1936 to explain why there are differences.
+The second table is of the amounts of ingredients and it brings questioning about a couple ingredients such as butter and sugar as there is a large difference. Does the added vanilla extract or cream make up for the difference?
+
+```{r}
+table(m2$Measure.x, m2$Measure.y)
+table(m2$Amount.x, m2$Amount.y)
+
+```
+The lobster newburg recipe actually perfectly aligns with ingredients. Later we will notice that servings differ and will have impact in analysis. Hint: number of servings is less in 2006...surprise
+
+```{r}
+table(m3$Measure.x, m3$Measure.y)
+table(m3$Amount.x, m3$Amount.y)
+```
+What stood out initially with the beef stroganoff recipe is in the measurement table where there was a match with cup and Tbs. Seeing that made me catch a measurement that needed to be corrected. I went back and updated it. 
+
+#Add in recipe name and year to each table
+
+To add in the Recipe and Name column, I will use basename function to get filename, then use substrings to select names of recipes and years from the filename. In order to make them proper format for the dataframe, I created vectors of proper length for each column to add to each recipe's dataframe. The recipe and year column are then added individually in each recipe. Finally, the dataframe columns are re-ordered to have recipes and years first with NDB_NO at the end. 
+
+```{r}
+LNName<-basename("C:/Users/andre/OneDrive/Documents/LobsterNewburg2006")
+SCPName<-basename("C:/Users/andre/OneDrive/Documents/SteamedCaramelPudding1936")
+SCPRecipeName<-substr(SCPName, 1, 21)
+Year2006<-substr(LNName,15,18)
+Year1936<-substr(SCPName, 22,25)
+SCPYear1936<-c(Year1936, Year1936,Year1936,Year1936,Year1936,Year1936,Year1936)
+SCPYear2006<-c(Year2006,Year2006,Year2006,Year2006,Year2006,Year2006,Year2006,Year2006,Year2006)
+SCPNamevec2006<-c(SCPRecipeName,SCPRecipeName,SCPRecipeName,SCPRecipeName,SCPRecipeName,SCPRecipeName,SCPRecipeName,SCPRecipeName,SCPRecipeName)
+SCPNamevec1936<-c(SCPRecipeName,SCPRecipeName,SCPRecipeName,SCPRecipeName,SCPRecipeName,SCPRecipeName,SCPRecipeName)
+SteamedCaramelPudding1936$Recipe <- SCPNamevec1936
+SteamedCaramelPudding2006$Recipe <- SCPNamevec2006
+SteamedCaramelPudding1936$Year <- SCPYear1936
+SteamedCaramelPudding2006$Year <- SCPYear2006
+
+
+LNRecipe <-substr(LNName,1,14)
+LNYear1936<-c(Year1936, Year1936,Year1936,Year1936,Year1936)
+LNYear2006vec<-c(Year2006,Year2006,Year2006,Year2006,Year2006)
+LNNamevec<-c(LNRecipe, LNRecipe,LNRecipe,LNRecipe,LNRecipe)
+LobsterNewburg2006$Year <-LNYear2006vec
+LobsterNewburg2006$Recipe <- LNNamevec
+LobsterNewburg1936$Recipe <- LNNamevec
+LobsterNewburg1936$Year <-LNYear1936
+
+BeefStrName<-basename("C:/Users/andre/OneDrive/Documents/BeefStroganoff.1997")
+BeefStrRecipe <- substr(BeefStrName,1,14)
+Year1997 <- substr(BeefStrName,16,19)
+BeefStr1997 <-c(Year1997,Year1997,Year1997,Year1997,Year1997,Year1997)
+BeefStr2006 <-c(Year2006, Year2006,Year2006,Year2006,Year2006,Year2006,Year2006,Year2006)
+BeefStrNamevec1997 <- c(BeefStrRecipe,BeefStrRecipe,BeefStrRecipe,BeefStrRecipe,BeefStrRecipe,BeefStrRecipe)
+BeefStrNameVec2006 <- c(BeefStrRecipe,BeefStrRecipe,BeefStrRecipe,BeefStrRecipe,BeefStrRecipe,BeefStrRecipe,BeefStrRecipe,BeefStrRecipe)
+BeefStroganoff1997$Year <-BeefStr1997
+BeefStroganoff1997$Recipe <-BeefStrNamevec1997
+BeefStroganoff2006$Year <- BeefStr2006
+BeefStroganoff2006$Recipe <- BeefStrNameVec2006
+
+
+SteamedCaramelPudding1936<-SteamedCaramelPudding1936[c(5,6,2,3,4,1)]
+SteamedCaramelPudding2006<-SteamedCaramelPudding2006[c(5,6,2,3,4,1)]
+
+LobsterNewburg2006<-LobsterNewburg2006[c(5,6,2,3,4,1)]
+LobsterNewburg1936<-LobsterNewburg1936[c(5,6,2,3,4,1)]
+
+BeefStroganoff1997<-BeefStroganoff1997[c(6,5,3,4,1,2)]
+BeefStroganoff2006<-BeefStroganoff2006[c(6,5,3,4,1,2)]
+
+SteamedCaramelPudding1936
+SteamedCaramelPudding2006
+LobsterNewburg1936
+LobsterNewburg2006
+BeefStroganoff1997
+BeefStroganoff2006
+```
+
+#Putting everything together
+
+Combine all tables with rbind
+
+```{r}
+CombinedTable<-rbind(BeefStroganoff1997,BeefStroganoff2006, SteamedCaramelPudding1936, SteamedCaramelPudding2006, LobsterNewburg1936, LobsterNewburg2006)
+CombinedTable
+```
+
+#Merge recipe servings in csv file
+
+Read in the recipes csv file(contains only beefStroganoff) and will add matching data for my recipes
+
+```{r}
+BeefStroganoffRecipe<- read.csv(file="Recipes.csv", header=TRUE)
+
+BeefStroganoffRecipe
+```
+
+
+creating dataframes that match formatting of recipe table
+```{r}
+SteamedCaramelPuddingRecipe <- data.frame(
+  Recipe= c("Steamed Caramel Pudding", "Steamed Caramel Pudding"),
+  Year = c(1936, 2006),
+  MinServings =c(6, 10),
+  MaxServings =c(6, 12))
+
+LobsterNewburgRecipe <- data.frame(
+Recipe =c("Lobster Newburg", "Lobster Newburg"),
+Year = c(1936, 2006),
+MinServings = c(6, 4),
+MaxServings =c(6,4))
+
+```
+
+Will now use rbind to connect all three recipes
+
+```{r}
+Recipe <- rbind(BeefStroganoffRecipe,SteamedCaramelPuddingRecipe, LobsterNewburgRecipe)
+Recipe
+```
+
+table is now written to csv as Recipes.csv containing all recipes
+wrote CombinedTable as well to check all data is accounted for
+
+```{r}
+write.csv(Recipe, file="Recipes.csv", row.names=FALSE)
+write.csv(CombinedTable, file="CombinedTable.csv", row.names=FALSE)
+
+```
+
+
+
+
+
+
