@@ -1,0 +1,439 @@
+---
+title: 'Joy Of Cooking Midterm Project '
+author: "Set 24"
+date: "July 20, 2018"
+output:
+  word_document: default
+  html_document: default
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+# Part 1-2 - Create data tables for your assigned recipes, with columns Amount, Unit and Ingredient. *THE TABLES CREATED IN THIS STEP DOES NOT HAVE THE FINAL DESIRED COLUMNS, THEY ARE WITH THE INGREDIENTS AS SHOWS IN THE BOOKS RECIPES. THE FINAL TABLES TO EXPORT ARE GOING TO BE CREATED AT THE END OF THE DOCUMENT*
+
+Entring the DATA from the assgined recipes: *Green Bean Casserole* and *Asparagus Timbales*
+
+
+*The following use data frame function to enter the recipe information, the using the write.table function create a code that export the created dataframe into .tab format to the working directory*
+```{r}
+#PMC - changed Unit to Measure to merge with Beef Stroganoff files
+AsparagusTimbales.1936 <- data.frame(
+  Amount=c(1.5,4,0.5,1.5,3,30),
+  Measure= c('cup','Irg','cup','Tbs','ea','ea'),
+  Ingredient=c("milk, whole, 3.25%","egg, raw","butter, salted","juice, lemon, fresh","eggyolk, raw, large","asparagus tips, fresh")
+)
+
+AsparagusTimbales.2006 <- data.frame(
+  Amount=c(1.5,2,0.33,0.25,3.5,1),
+  Measure= c('cup','Irg','cup','cup','Tbs','Tbs'),
+  Ingredient=c("asparagus tips, fresh","egg, raw","bread crumbs, plain, dry, grated",
+               "cheese, swiss, shredded","cream, whipping, heavy","onion, yellow, fresh, chopped")
+)
+GreenBeanCasserole.1936 <- data.frame(
+  Amount=c(1,4,2,0.25),
+  Measure= c("lb","ea","ea","cup"),
+  Ingredient=c("green beans, fresh","onion, yellow, fresh, medium, 2 1/2","bell pepper, green, fresh, medium, 2 1/2","butter, salted")
+)
+GreenBeanCasserole.2006 <- data.frame(
+  Amount=c(1,0.75,10.75,1.17),
+  Measure= c("lb","cup","oz","cup"),
+  Ingredient=c("green beans, fresh","milk, whole, 3.25%","soup, cream of mushroom, canned, condensed","onion, french dried, dry")
+)
+
+write.table(AsparagusTimbales.1936,"AsparagusTimbales.1936.tab",sep = " ")
+write.table(AsparagusTimbales.2006,"AsparagusTimbales.2006.tab",sep = " ")
+write.table(GreenBeanCasserole.1936,"GreenBeanCasserole.1936.tab",sep = " ")
+write.table(GreenBeanCasserole.2006,"GreenBeanCasserole.2006.tab",sep = " ")
+```
+##PART 3 Read in each tab file, and merge the tables with the example Beef Stroganoff tables
+
+Merge the created tables with the examples tables, using a code that is able to merge all the .tab files in a given directory
+
+*The following merge the created data with the  example tables, using a variable with the path of the desired directiry, use .tab as pattern to select the strings containg the files names and assing this to a variable called $file.names$, also tokenize this string to latter add the correspond name to the recipe and year using the name of the file as template. Thus, using the created variables use a for loop with the functrion readtable and rbind to merge the tables, additionally use the list indexing to assing the corresponding  name of recipe and year. Finally use data frame to organize the data in the desired format*
+
+
+```{r}
+path = "./"
+file.names <- dir(path, pattern =".tab")
+file.list <- lapply(strsplit(file.names,"[.]"),trimws)
+
+out.file=c()
+
+for(i in 1: length(file.names)){
+  file <- read.table (file.names[i],header=T)
+  file$Recipe<-c(rep(file.list[[i]][1],(nrow(file))))
+  file$Year<-c(rep(file.list[[i]][2],(nrow(file))))
+  out.file <- rbind(out.file, file)
+}
+
+Merged_recipes<- data.frame(
+      Recipe=out.file$Recipe,
+      Year=out.file$Year,
+      Amount=out.file$Amount,
+       Measure=out.file$Measure,
+      Ingredient=out.file$Ingredient
+      )
+
+Merged_recipes
+
+```
+
+
+## PART 4. Proof the data to check for errors.
+
+To check data for mistakes or curious trends, I used some contingency tables and two plots to check differences between years(for this case, therefore recipe of year 1997 was consider of the same group of 1936, for comparison purposes). 
+
+*This table allows to check for consistensy in the units between recipes, therefore it allows to suspect of "tsp" unit as an error*
+```{r} 
+## this create a table counting cases recipes vs units 
+tab10 <- table((Merged_recipes$Recipe),(Merged_recipes$Measure))
+tab10 
+```   
+
+*The following table allows to identify quickly which ingredients are common between recipes, this allows to identify when an ingredient that supoused to be the same is different and take a teh decition to change it*
+
+Fon intance, the ingredients $onion, yellow, fresh, medium, 2 1/2"$ and $onion,yellow,fresh,medium,2 1/12$ the only difference in both was the $"$ and for that reason the were shown as different in the list."
+
+*Since every recipe have two versions, this table also allows to identify which ingredients are only in one of the two years, and compare them.Additionally, in some cases I were able to find some typo errors and correct them*
+```{r}  
+##shows  ingredients sorted and their ocurrence in the recipes
+tab7<- table(sort(as.character(Merged_recipes$Ingredient)),Merged_recipes$Recipe)
+tab7
+```
+
+*Finally, the following creates a code for a bar plot that allows to roughly identify abrupt changes in ingredients amounts between years (not discriminated by the recipe) and evaluated if is due to a change on the units, additionally shows the ingredients organized between years (allowing to identify typos in the ingredient names*
+```{r}
+
+attach(Merged_recipes)
+
+## plot ingredients and ammounts from the merged tables and assing a color label that correspond to the units  
+
+par(mar=c(10.5,0,0,0),ps = 11, cex.axis=1, oma=c(2,2,2,2),mfrow=c(1,2),xpd=T)
+
+## plot for years 1936 and 1997 
+
+bp <- (barplot((Amount[which(Year!=2006)]),width =0.7,
+      names.arg=(Ingredient[which(Year!=2006)]), horiz=F,las=2,xlim=c(0,15),ylim=c(0,31),
+      col=seq(1:24), args.legend=levels(as.factor(Measure[which(Year!=2006)]))))
+legend("top",length(Ingredient[which(Year==2006)]), legend=levels(as.factor(Measure[which(Year==2006)])), lwd=2,cex=0.8, col=seq(1:length(Ingredient[which(Year==2006)])))
+
+## plot for year 2006
+
+bp1 <- (barplot((Amount[which(Year==2006)]),width =0.7, 
+      names.arg=(Ingredient[which(Year==2006)]), horiz=F,las=2,xlim=c(0,15),ylim=c(0,31),
+      col=seq(1:50),       args.legend=levels(as.factor(Measure[which(Year==2006)]))))
+
+legend("top",length(Ingredient[which(Year!=2006)]), legend=levels(as.factor(Measure[which(Year!=2006)])), lwd=2,cex=0.8, col=seq(1:length(Ingredient[which(Year!=2006)])))
+
+```
+
+
+
+
+## PART 5. Read the Recipes.csv, append rows for your recipes, then write the table back to Recipes.csv.
+
+*The following creates a data frame with the information of servings using the data drame function, additionally, with read.csv function reAd the file Recipe and assing it to a variable, then using the rbind function to apend the created servings data frames to the recipe data frame, then using the write.table function, export the *
+```{r}
+AsparagusTimbales.1936.servings <- data.frame(
+   Recipe=c("AsparagusTimbales"),
+  Year =c("1936"), 
+  MinServings = c(8),
+  MaxServings= c(8)
+  )
+
+AsparagusTimbales.2006.servings  <- data.frame(
+   Recipe=c("AsparagusTimbales"),
+  Year =c("2006"), 
+  MinServings = c(8),
+  MaxServings= c(8)
+  )
+
+## The servings for green casserole of the year 1936 was assumed by the author to be 5, since it is not explicitly written in the the recipe, the recipe mentiond to add custard for timbales which are 4 servings, therefore it makes more sense to asume 4 servings 
+
+GreenBeanCasserole.1936.servings  <- data.frame(
+   Recipe=c("GreenBeanCasserole"),
+  Year =c("1936"), 
+  MinServings = c(4),
+  MaxServings= c(4)
+  )
+GreenBeanCasserole.2006.servings  <- data.frame(
+   Recipe=c("GreenBeanCasserole"),
+  Year =c("2006"), 
+  MinServings = c(4),
+  MaxServings= c(4)
+  )
+
+recipes.csv<-read.csv("Recipes.csv")
+recipes.csv<-rbind(
+  recipes.csv, 
+  AsparagusTimbales.1936.servings,
+  AsparagusTimbales.2006.servings,
+  GreenBeanCasserole.1936.servings,
+  GreenBeanCasserole.2006.servings
+)
+recipes.csv
+
+write.table(recipes.csv, "recipes.csv", sep=",", row.names=F)
+```
+
+## Change rhe ingredients in recipes to coincide with the provided databases 
+
+*For the following part, I worked in collaboration with Christian Ramirez, we shared ideas to construct functions that help in the process of change the names using the tools that we have learned*
+
+*first open the provied files*
+```{r}
+weight.dat <- read.table("WEIGHT.txt",header=FALSE,sep="^",quote="~")
+names(weight.dat) <- c("NDB_No","Seq","Amount","Msre_Desc","Gm_Wgt","Num_Data_Pts","Std_Dev")
+head(weight.dat)
+summary(weight.dat)
+
+```
+
+```{r}
+food_des.dat <- read.table("FOOD_DES.txt",header=FALSE,sep="^",quote="~")
+names(food_des.dat) <- c("NDB_No","FdGrp_Cd","Long_Desc","Shrt_Desc",
+"ComName","ManufacName","Survey","Ref_desc","Refuse","SciName",
+"N_Factor","Pro_Factor","Fat_Factor","CHO_Factor")
+dim(food_des.dat)
+head(food_des.dat)
+summary(food_des.dat)
+```
+
+*We have have created two functions to help in the process of enter ingredients using the text listed in FOOD_DES.txt.* 
+
+First  we have to create two new columns $NDB_No$ and $Long_Desc$, they  will be use to compare the old ingredient to the new found in the data base and the NDB_No is used as identifider of the ingredient.
+
+The *NDB_No* function returns a list of the most probable match of the ingredients in the original recipes, using a sequences of matching, the output is divided into two lists, the last values of are a more refine matching. This was desing with the intention of help to find the corresponding NDB_No values to use it as an index to add the new ingredient name to the data frame.  
+
+The *NDBvalues* function create a questionary using the current names of the ingredients and asking for the NDB_No of the ingredient in FOOD_DES.txt, using the prevously generated list to identify value of NDB_No of the ingredient selected with the help of the *NDB_No* function. Using this number as indexing the function add the corresponding value to the columns $NDB_No$, $Long_Desc$, that were preciously define as zeros in the data frame. 
+
+In some few cases, we have to use a external program to find a coincidence and select the near match. This is the cases when the ingredient of the recipe have a very different name or a when it was not in the data base. For instance, the ingredient $onion,french dried,dry$ was not in FOOD_DES.txt, then the value assinged was the corresponding to  $Onions, dehydrated flakes$. 
+
+Finally we create a function to create the final data frame before export it as table. 
+
+Some of the functions were set to *eval=FALSE* since, it we only use them once as tool to search in the FOOD_DES file, and to reduce the output of the file.
+
+
+```{r}
+AsparagusTimbales.1936$NDB_No <-""
+AsparagusTimbales.1936$Long_Desc <-"" 
+
+```
+
+
+```{r,eval=TRUE}
+NDB_No<-function(BabarianBerryCream36.dat){ ##any table
+  Z=c()
+  Q=c()
+  for (i in 1:length(BabarianBerryCream36.dat$Ingredient)){
+    a = unlist(c(lapply(strsplit((as.vector(BabarianBerryCream36.dat$Ingredient[i])),","),trimws))) ## tokenize each ingredient
+    toMatch= paste( paste("^",a[1],",",sep=""),
+                    "|",
+                    paste("^",a[1],"s",",",sep=""),
+                    "|",
+                    paste(a[1],a[2],sep=", "),
+                    "|",
+                    paste(a[1], a[2], a[3],sep=", ")
+                    ,sep="") ## Creates a string containing the first word of the ingredient, the first word +s, the first and second word and the three first words of the ingredient.
+    Y=grep(toMatch,food_des.dat$Long_Desc, ignore.case = T, value=F)  ## look for the previous string in the food_des.dat database
+    Z=rbind(as.matrix(Y),Z) ## save the indexes of the values found in this loop
+  }
+  
+  Newfood_des.dat<-food_des.dat[as.vector(Z),] ## Creates a new database containig just the values found in the previous loop, the following code will look for the ingredietns with a little more detail
+
+  Q=c()
+  for (j in 1:length(BabarianBerryCream36.dat$Ingredient)){
+    P=c()
+    b = unlist(c(lapply(strsplit((as.vector(BabarianBerryCream36.dat$Ingredient[j])),","),trimws)))## as in the previous loop tokenize each ingredient
+    toMatch2= paste( b[2],"|",b[3],"|",b[4],sep="")## Creates a string containing the second, third and fourth word of the ingredient,
+    P=grep(toMatch2, Newfood_des.dat$Long_Desc, ignore.case = T, value=F) ## look for the previous string in the new database created from the previous loop
+    Q=rbind(as.matrix(P),Q) ## save the indexes of the values found in this loop
+  }  
+  Lastfood_des.dat<-Newfood_des.dat[Q,] 
+  Lastfood_des.dat<-unique(Lastfood_des.dat) ## from the last loop we obtained some values that were repeated, with this line we just select the unique values
+  ## The following dataframe joins the two tables. Two tables were created since the second table is more precise in looking for the ingredients but some ingredients could be missed, if that the case the first part of the table helps.
+  blank=data.frame(
+    NDB_No="0",
+    Shrt_Desc="########## If the value is not in the following table check above:##########")
+    output= rbind(Newfood_des.dat[,c(1,4)],blank[,c(1,2)], Lastfood_des.dat[,c(1,4)])
+  output
+} 
+
+## The following Function inputs the NDB_No values and create another Column with the food_des.dat description
+NDBvalues<-function(x){
+for (i in 1:length(x$Ingredient)){
+n <- readline(prompt=paste("Best NDB_No for:", x$Ingredient[i], "\b: "))## print the name of each ingredient and ask for a NDB_No in the console
+x[i,4]<-n ##That value is stored in the column 4 called NDB_No for each ingredient
+x$Long_Desc[i]<-as.character(food_des.dat$Long_Desc[which(food_des.dat$NDB_No==n)]) ##Assigns the Long description of each ingredient from the food_des.dat database to the temporal row Long_Desc in the recipe table
+}
+return(x)
+}
+
+### Fuction to produce the final data frame with the new variables and chenges
+finaltable<-function(x){
+table<-data.frame( ## Creates a new data frame for editing the previous one
+  Amount=x$Amount, ## Keeps the same value of the original table
+  Measure=x$Measure,## Keeps the same value of the original table
+  Ingredient=x$Long_Desc,##replate the original ingredients of the recipes with the ones obtained from the food_des.dat database
+  NDB_No=x$NDB_No ## keeps the same NDB_No number
+  )
+return(table)## return the modified table
+}
+```
+
+*The following lines use the created functions to the data frames *
+```{r,eval=TRUE}
+NDB_No(AsparagusTimbales.1936)
+```
+
+*After get the list with the most possible coincidences of ingredients, we use NDBvalues to assing the values to the two created functions, in the final code this function will be set as eval False since it requires to the user to enter manually the values from the list that best match acording to the user criteria *
+
+```{r,eval=FALSE}
+AsparagusTimbales.1936<- NDBvalues(AsparagusTimbales.1936)
+AsparagusTimbales.1936
+```
+
+*After print the table with the $NDB_No$ and $Long_Desc$ columns with can assing the corresponding values*
+
+```{r}
+AsparagusTimbales.1936$NDB_No<-c(1211,1123,1001,9152,1125,11011)
+
+AsparagusTimbales.1936$Long_Desc<-c(
+  as.character(food_des.dat$Long_Desc[which(food_des.dat$NDB_No==AsparagusTimbales.1936$NDB_No[1])]),
+  as.character(food_des.dat$Long_Desc[which(food_des.dat$NDB_No==AsparagusTimbales.1936$NDB_No[2])]),
+  as.character(food_des.dat$Long_Desc[which(food_des.dat$NDB_No==AsparagusTimbales.1936$NDB_No[3])]),
+  as.character(food_des.dat$Long_Desc[which(food_des.dat$NDB_No==AsparagusTimbales.1936$NDB_No[4])]),
+  as.character(food_des.dat$Long_Desc[which(food_des.dat$NDB_No==AsparagusTimbales.1936$NDB_No[5])]),
+  as.character(food_des.dat$Long_Desc[which(food_des.dat$NDB_No==AsparagusTimbales.1936$NDB_No[6])])
+)
+```
+
+*We can check the new columns before create the new data frame*
+
+```{r}
+AsparagusTimbales.1936
+```
+
+*Finally using the created function $finaltable$ we reconfigure the table as required*
+
+```{r}
+AsparagusTimbales.1936 <- finaltable(AsparagusTimbales.1936)
+AsparagusTimbales.1936
+write.table(AsparagusTimbales.1936,"AsparagusTimbales.1936.tab",sep = " ")
+```
+##This very process was repited for every recipe, then for the rest of the recipes the functions were set to eval=false
+**
+```{r,eval=FALSE}
+NDB_No(AsparagusTimbales.2006)
+
+```
+**
+```{r,eval=FALSE}
+AsparagusTimbales.2006<- NDBvalues(AsparagusTimbales.2006)
+AsparagusTimbales.2006
+```
+
+*After print the table with the $NDB_No$ and $Long_Desc$ columns with can assing the corresponding values*
+
+```{r}
+AsparagusTimbales.2006$NDB_No<-c(11011,1123,18069,1040,1053,11282)
+
+AsparagusTimbales.2006$Long_Desc<-c(
+  as.character(food_des.dat$Long_Desc[which(food_des.dat$NDB_No==AsparagusTimbales.2006$NDB_No[1])]),
+  as.character(food_des.dat$Long_Desc[which(food_des.dat$NDB_No==AsparagusTimbales.2006$NDB_No[2])]),
+  as.character(food_des.dat$Long_Desc[which(food_des.dat$NDB_No==AsparagusTimbales.2006$NDB_No[3])]),
+  as.character(food_des.dat$Long_Desc[which(food_des.dat$NDB_No==AsparagusTimbales.2006$NDB_No[4])]),
+  as.character(food_des.dat$Long_Desc[which(food_des.dat$NDB_No==AsparagusTimbales.2006$NDB_No[5])]),
+  as.character(food_des.dat$Long_Desc[which(food_des.dat$NDB_No==AsparagusTimbales.2006$NDB_No[6])])
+)
+```
+
+*We can check the new columns before create the new data frame*
+
+```{r}
+AsparagusTimbales.2006
+```
+*Finally using the created function $finaltable$ we reconfigure the table as required*
+```{r}
+AsparagusTimbales.2006 <- finaltable(AsparagusTimbales.2006)
+AsparagusTimbales.2006
+write.table(AsparagusTimbales.2006,"AsparagusTimbales.2006.tab",sep = " ")
+```
+
+**
+```{r,eval=FALSE}
+NDB_No(GreenBeanCasserole.1936)
+```
+**
+```{r,eval=FALSE}
+GreenBeanCasserole.1936<- NDBvalues(GreenBeanCasserole.1936)
+GreenBeanCasserole.1936
+```
+
+
+*After print the table with the $NDB_No$ and $Long_Desc$ columns with can assing the corresponding values*
+
+```{r}
+GreenBeanCasserole.1936$NDB_No<-c(11052,11282,11333,1001)
+
+GreenBeanCasserole.1936$Long_Desc<-c(
+  as.character(food_des.dat$Long_Desc[which(food_des.dat$NDB_No==GreenBeanCasserole.1936$NDB_No[1])]),
+  as.character(food_des.dat$Long_Desc[which(food_des.dat$NDB_No==GreenBeanCasserole.1936$NDB_No[2])]),
+  as.character(food_des.dat$Long_Desc[which(food_des.dat$NDB_No==GreenBeanCasserole.1936$NDB_No[3])]),
+  as.character(food_des.dat$Long_Desc[which(food_des.dat$NDB_No==GreenBeanCasserole.1936$NDB_No[4])])
+)
+```
+
+*We can check the new columns before create the new data frame*
+
+```{r}
+GreenBeanCasserole.1936
+```
+
+*Finally using the created function $finaltable$ we reconfigure the table as required as export it*
+
+```{r}
+GreenBeanCasserole.1936 <- finaltable(GreenBeanCasserole.1936)
+GreenBeanCasserole.1936
+write.table(GreenBeanCasserole.1936,"GreenBeanCasserole.1936.tab",sep = " ")
+```
+**
+```{r,eval=FALSE}
+NDB_No(GreenBeanCasserole.2006)
+```
+**
+```{r,eval=FALSE}
+GreenBeanCasserole.2006<- NDBvalues(GreenBeanCasserole.2006)
+GreenBeanCasserole.2006
+```
+
+
+*After print the table with the $NDB_No$ and $Long_Desc$ columns with can assing the corresponding values*
+
+```{r}
+GreenBeanCasserole.2006$NDB_No<-c(11052,1211,6043,11284)
+
+GreenBeanCasserole.2006$Long_Desc<-c(
+  as.character(food_des.dat$Long_Desc[which(food_des.dat$NDB_No==GreenBeanCasserole.2006$NDB_No[1])]),
+  as.character(food_des.dat$Long_Desc[which(food_des.dat$NDB_No==GreenBeanCasserole.2006$NDB_No[2])]),
+  as.character(food_des.dat$Long_Desc[which(food_des.dat$NDB_No==GreenBeanCasserole.2006$NDB_No[3])]),
+  as.character(food_des.dat$Long_Desc[which(food_des.dat$NDB_No==GreenBeanCasserole.2006$NDB_No[4])])
+)
+```
+
+*We can check the new columns before create the new data frame*
+
+```{r}
+GreenBeanCasserole.2006
+```
+
+*Finally using the created function $finaltable$ we reconfigure the table as required*
+
+```{r}
+GreenBeanCasserole.2006 <- finaltable(GreenBeanCasserole.2006)
+GreenBeanCasserole.2006
+write.table(GreenBeanCasserole.2006,"GreenBeanCasserole.2006.tab",sep = " ")
+```
+
+
+

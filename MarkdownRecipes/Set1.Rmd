@@ -1,0 +1,545 @@
+---
+title: "Midterm Project"
+author: "Set 1"
+date: "7/20/2018"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+# Problem Description
+
+Two recipes, from a larger dataset, are given in pdf format. These recipes need to be recorded and standardized against the "FOOD_DES.txt" file. Once this is accomplished, it needs to be proofed for errors and written to a tab delimited file. From there, it can be merged with the other tab files for a complete set of recipes to be analyzed.
+
+# Gathering Data
+
+The data is first recorded from the two recipes; "Brownies Cockaigne" and "Sweet Potato Souffle" for both 1936 and 2006. This is done without changing any formatting to the data as it will be standardized in a later step. 
+
+## Brownies Cockaigne
+
+```{r}
+# Grabing all the ingredients, line by line with no alterations from the pdf files
+
+# 1936 Brownies
+amounts <- c(2, 4, 0.5, 4, 1, 1, 1)
+units <- c("cup", "oz", "cup", "lrg", "tsp", "cup", "cup")
+ingredients <- c("sugar, white, granulated, granulated",
+                 "chocolate, dark, 45-59% cacao solids",
+                 "butter, salted",
+                 "egg, raw",
+                 "extract, vanilla",
+                 "flour, bread, white, enriched",
+                 "pecans, chopped")
+
+brownies.1936.dat <- data.frame(Amount=amounts, Unit=units, Ingredient=ingredients)
+
+# 2006 Brownies
+amounts <- c(0.5, 4, 2, 4, 1, 1)
+units <- c("cup", "oz", "cup", "lrg", "tsp", "cup")
+ingredients <- c("butter, salted",
+                 "baking chocolate, square, unsweetened",
+                 "sugar, white, granulated, granulated",
+                 "egg, raw",
+                 "extract, vanilla",
+                 "flour, all purpose, self rising, enriched")
+
+brownies.2006.dat <- data.frame(Amount=amounts, Unit=units, Ingredient=ingredients)
+```
+
+## Sweet Potato Souffle
+
+```{r}
+# Grabing all the ingredients, line by line with no alterations from the pdf files
+
+# 1936 Souffle
+amounts <- c(3, 3, 2, 0.5)
+units <- c("cup", "tbsp", "lrg", "cup")
+ingredients <- c("sweet potatoes, boiled, peeled, mashed, with salt",
+                 "butter, salted",
+                 "egg, raw",
+                 "pineapple, canned, crushed, in juice, drained")
+ 
+souffle.1936.dat <- data.frame(Amount=amounts, Unit=units, Ingredient=ingredients)
+
+# 2006 Souffle
+amounts <- c(0.25, 3, 3, 2, 0.5)
+units <- c("cup", "cup", "tbsp", "lrg", "cup")
+ingredients <- c("flour, all purpose, self rising, enriched",
+                 "sweet potatoes, boiled, peeled, mashed, with salt",
+                 "butter, salted",
+                 "egg, raw",
+                 "pineapple, canned, crushed, in juice, drained")
+
+souffle.2006.dat <- data.frame(Amount=amounts, Unit=units, Ingredient=ingredients)
+```
+
+## Beef Stroganoff
+
+In addition to the two assigned recipes, the beef stroganoff recipes will also be used later on in the project. To read these in properly, I had to alter the files that the quotes could be read in (from \\\" to \"\"). I could not get this to work without changing the files this way.
+
+```{r}
+#beef.1997.dat <- read.table("BeefStroganoff.1997.tab", header=T, sep="\t", quote="\"")
+#beef.2006.dat <- read.table("BeefStroganoff.2006.tab", header=T, sep="\t", quote="\"")
+#PMC - this worked for me, but I needed to programmatically change
+#column names for this file so that unit.compare would work
+beef.1997.dat <- read.table("BeefStroganoff.1997.tab", header=T)
+beef.2006.dat <- read.table("BeefStroganoff.2006.tab", header=T)
+names(beef.1997.dat)[1] <- "Unit"
+names(beef.2006.dat)[1] <- "Unit"
+```
+
+# Standardize Data
+
+When looking at all the data from multiple recipe files, it is clear that some ingredients are the same, but described differently. In order to combat this problem and standardize the ingredient text, the FOOD_DES.txt file is used as a baseline. First this file needs to be read in.
+
+```{r}
+# Reading in the food description table to standardize ingredients
+food_des.dat <- read.table("FOOD_DES.txt", header=FALSE, sep="^", quote="~")
+names(food_des.dat) <- c("NDB_No", "FdGrp_Cd", "Long_Desc", "Shrt_Desc",
+                         "ComName", "ManufacName", "Survey", "Ref_desc",
+                         "Refuse", "SciName", "N_Factor", "Pro_Factor",
+                         "Fat_Factor","CHO_Factor")
+```
+
+Then take a look at all the ingredients used in the 4 recipes. These were written out exactly (word for word) as depicted in their corresponding pdf recipe files.
+
+Notice that a lot of the ingredients are used multiple times. Lets find the set of unique ingredients by taking the union of the 6 ingredient lists to minimize the work needed.
+
+```{r}
+print(unique.ingredients <- Reduce(union, list(brownies.1936.dat$Ingredient,
+                                               brownies.2006.dat$Ingredient,
+                                               souffle.1936.dat$Ingredient,
+                                               souffle.2006.dat$Ingredient,
+                                               beef.1997.dat$Ingredient,
+                                               beef.2006.dat$Ingredient)))
+```
+
+It seems like an automated function could genericly extract the best match in the FOOD_Des.txt file, but for simplicity this is done one ingredient at a time, manually selecting the best match. For better readability, only the relevant grep() functions are shown that include the best match. Also, any additional comments about match selection can be found in the code comments.
+
+```{r}
+# "sugar, white, granulated, granulated"
+
+# A search for '(W|w)hite' & '(S|s)ugar' produces no results... Search instead for granulated suger
+paste(matches <- food_des.dat$Long_Desc[grepl("(G|g)ranulated", food_des.dat$Long_Desc) &
+                                        grepl("(S|s)ugar", food_des.dat$Long_Desc)])
+
+# Create two new lists for the standardized ingregient names and NDB numbers
+best_match <- as.character(matches[1])
+std.ingredients <- c(best_match)
+NDB_Numbers <- c(food_des.dat$NDB_No[which(food_des.dat$Long_Desc==best_match)])
+
+# And just to verify it was the best match, I looked through all the hits for just '(S|s)ugar'
+```
+
+```{r}
+# "chocolate, dark, 45-59% cacao solids"
+paste(matches <- food_des.dat$Long_Desc[grepl("(C|c)hocolate", food_des.dat$Long_Desc) &
+                                        grepl("(D|d)ark", food_des.dat$Long_Desc)])
+
+# Found an exact match, add it to the updated standardized ingredient list
+best_match <- as.character(matches[4])
+std.ingredients <- append(std.ingredients, best_match)
+NDB_Numbers <- append(NDB_Numbers, food_des.dat$NDB_No[which(food_des.dat$Long_Desc==best_match)])
+```
+
+```{r}
+# "butter, salt"
+paste(matches <- food_des.dat$Long_Desc[grepl("(B|b)utter, (S|s)alt", food_des.dat$Long_Desc)])
+
+# Found an exact match, add it to the updated standardized ingredient list
+best_match <- as.character(matches[1])
+std.ingredients <- append(std.ingredients, best_match)
+NDB_Numbers <- append(NDB_Numbers, food_des.dat$NDB_No[which(food_des.dat$Long_Desc==best_match)])
+```
+
+```{r}
+# "egg, raw"
+paste(matches <- food_des.dat$Long_Desc[grepl("(E|e)gg", food_des.dat$Long_Desc) &
+                                        grepl("(R|r)aw", food_des.dat$Long_Desc)])
+
+# Choosing whole eggs since you can always get the whites and yolks from the whole egg
+best_match <- as.character(matches[1])
+std.ingredients <- append(std.ingredients, best_match)
+NDB_Numbers <- append(NDB_Numbers, food_des.dat$NDB_No[which(food_des.dat$Long_Desc==best_match)])
+```
+
+```{r}
+# "extract, vanilla"
+paste(matches <- food_des.dat$Long_Desc[grepl("(E|e)xtract", food_des.dat$Long_Desc) &
+                                        grepl("(V|v)anilla", food_des.dat$Long_Desc)])
+
+# Pretty close to exact match, take it
+best_match <- as.character(matches[1])
+std.ingredients <- append(std.ingredients, best_match)
+NDB_Numbers <- append(NDB_Numbers, food_des.dat$NDB_No[which(food_des.dat$Long_Desc==best_match)])
+```
+
+```{r}
+# "flour, bread, white, enriched"
+paste(matches <- food_des.dat$Long_Desc[grepl("(F|f)lour", food_des.dat$Long_Desc) &
+                                        grepl("(B|b)read", food_des.dat$Long_Desc)])
+
+# Not sure how flour can be 'white' and 'wheat' but its the closest match
+best_match <- as.character(matches[1])
+std.ingredients <- append(std.ingredients, best_match)
+NDB_Numbers <- append(NDB_Numbers, food_des.dat$NDB_No[which(food_des.dat$Long_Desc==best_match)])
+```
+
+```{r}
+# "pecans, chopped"
+paste(matches <- food_des.dat$Long_Desc[grepl("(P|p)ecans", food_des.dat$Long_Desc)])
+
+# No chopeed pecans, so "Nuts, pecans" is the closest match
+best_match <- as.character(matches[1])
+std.ingredients <- append(std.ingredients, best_match)
+NDB_Numbers <- append(NDB_Numbers, food_des.dat$NDB_No[which(food_des.dat$Long_Desc==best_match)])
+```
+
+```{r}
+# "baking chocolate, square, unsweetened"
+paste(matches <- food_des.dat$Long_Desc[grepl("(C|c)hocolate", food_des.dat$Long_Desc) &
+                                        grepl("(U|u)nsweetened", food_des.dat$Long_Desc)])
+
+# Third match is best, same but in different order
+best_match <- as.character(matches[3])
+std.ingredients <- append(std.ingredients, best_match)
+NDB_Numbers <- append(NDB_Numbers, food_des.dat$NDB_No[which(food_des.dat$Long_Desc==best_match)])
+```
+
+```{r}
+# "flour, all purpose, self rising, enriched"
+paste(matches <- food_des.dat$Long_Desc[grepl("(F|f)lour", food_des.dat$Long_Desc) &
+                                        grepl("(R|r)ising", food_des.dat$Long_Desc)])
+
+# Closest is the second one, add it to the list
+best_match <- as.character(matches[2])
+std.ingredients <- append(std.ingredients, best_match)
+NDB_Numbers <- append(NDB_Numbers, food_des.dat$NDB_No[which(food_des.dat$Long_Desc==best_match)])
+```
+
+```{r}
+# "sweet potatoes, boiled, peeled, mashed, with salt"
+paste(matches <- food_des.dat$Long_Desc[grepl("(S|s)weet", food_des.dat$Long_Desc) & 
+                                        grepl("(P|p)otato", food_des.dat$Long_Desc) &
+                                        grepl("(B|b)oil", food_des.dat$Long_Desc)])
+
+# Closest is the second one, add it to the list (None relevant with 'mashed')
+best_match <- as.character(matches[2])
+std.ingredients <- append(std.ingredients, best_match)
+NDB_Numbers <- append(NDB_Numbers, food_des.dat$NDB_No[which(food_des.dat$Long_Desc==best_match)])
+```
+
+```{r}
+# "pineapple, canned, crushed, in juice, drained" 
+paste(matches <- food_des.dat$Long_Desc[grepl("(P|p)ineapple", food_des.dat$Long_Desc) &
+                                        grepl("(D|d)rained", food_des.dat$Long_Desc)])
+
+# Doesn't specify crushed, but its the closest match
+best_match <- as.character(matches[1])
+std.ingredients <- append(std.ingredients, best_match)
+NDB_Numbers <- append(NDB_Numbers, food_des.dat$NDB_No[which(food_des.dat$Long_Desc==best_match)])
+```
+
+```{r}
+# "beef roast, tenderloin, raw, 0" trim" 
+paste(matches <- food_des.dat$Long_Desc[grepl("(B|b)eef", food_des.dat$Long_Desc) &
+                                        grepl("(R|r)oast", food_des.dat$Long_Desc) &
+                                        grepl("(R|r)aw", food_des.dat$Long_Desc) &
+                                        grepl("(T|t)enderloin", food_des.dat$Long_Desc) &
+                                        grepl("(T|t)rim", food_des.dat$Long_Desc)])
+
+# Chose the one with fat and all grades since selecting anything else is too specific
+best_match <- as.character(matches[1])
+std.ingredients <- append(std.ingredients, best_match)
+NDB_Numbers <- append(NDB_Numbers, food_des.dat$NDB_No[which(food_des.dat$Long_Desc==best_match)])
+```
+
+```{r}
+# "stock, beef, prepared from recipe"
+paste(matches <- food_des.dat$Long_Desc[grepl("(B|b)eef", food_des.dat$Long_Desc) &
+                                        grepl("(S|s)tock", food_des.dat$Long_Desc)])
+
+# So even though this one is prepared from the recipe itself and not an external ingredient, it will be added
+# It matches closely to the "home-prepared" version of beef stock
+best_match <- as.character(matches[2])
+std.ingredients <- append(std.ingredients, best_match)
+NDB_Numbers <- append(NDB_Numbers, food_des.dat$NDB_No[which(food_des.dat$Long_Desc==best_match)])
+```
+
+```{r}
+# "sour cream, cultured"
+paste(matches <- food_des.dat$Long_Desc[grepl("(S|s)our", food_des.dat$Long_Desc) &
+                                        grepl("(C|c)ream", food_des.dat$Long_Desc) & 
+                                        grepl("(C|c)ulture", food_des.dat$Long_Desc)])
+
+# So even though this one is prepared from the recipe itself and not an external ingredient, it will be added
+# It matches closely to the "home-prepared" version of beef stock
+best_match <- as.character(matches[2])
+std.ingredients <- append(std.ingredients, best_match)
+NDB_Numbers <- append(NDB_Numbers, food_des.dat$NDB_No[which(food_des.dat$Long_Desc==best_match)])
+```
+
+```{r}
+# "mustard, dijon"
+paste(matches <- food_des.dat$Long_Desc[grepl("(M|m)ustard", food_des.dat$Long_Desc)])
+
+# As discussed, this one can be the prepared yellow mustard since there is no dijon mustard.
+best_match <- as.character(matches[2])
+std.ingredients <- append(std.ingredients, best_match)
+NDB_Numbers <- append(NDB_Numbers, food_des.dat$NDB_No[which(food_des.dat$Long_Desc==best_match)])
+```
+
+```{r}
+# "oil, canola"
+paste(matches <- food_des.dat$Long_Desc[grepl("(C|c)anola", food_des.dat$Long_Desc)])
+
+# Exact match as the first hit, take it
+best_match <- as.character(matches[1])
+std.ingredients <- append(std.ingredients, best_match)
+NDB_Numbers <- append(NDB_Numbers, food_des.dat$NDB_No[which(food_des.dat$Long_Desc==best_match)])
+```
+
+```{r}
+# "onion, yellow, fresh, medium, 2 1/2""
+paste(matches <- food_des.dat$Long_Desc[grepl("(O|o)nion", food_des.dat$Long_Desc) &
+                                        grepl("(R|r)aw", food_des.dat$Long_Desc)])
+
+# Only have sauted yellow onions, so onions raw probably fits better
+best_match <- as.character(matches[1])
+std.ingredients <- append(std.ingredients, best_match)
+NDB_Numbers <- append(NDB_Numbers, food_des.dat$NDB_No[which(food_des.dat$Long_Desc==best_match)])
+```
+
+```{r}
+# "mushrooms, fresh"
+paste(matches <- food_des.dat$Long_Desc[grepl("(M|m)ushrooms", food_des.dat$Long_Desc) &
+                                        grepl("(W|w)hite", food_des.dat$Long_Desc)])
+
+# Seems like raw white mushrooms fit best here...
+best_match <- as.character(matches[1])
+std.ingredients <- append(std.ingredients, best_match)
+NDB_Numbers <- append(NDB_Numbers, food_des.dat$NDB_No[which(food_des.dat$Long_Desc==best_match)])
+```
+
+# Create Recipe Files
+
+Now that we have all of the standardized descriptions and the NDB_No's for the ingredients, we can merge this back into our original recipes.
+
+```{r}
+# Reference data frame with new standardized ingredient descriptions and NDB numbers
+reference.dat <- data.frame(Original=unique.ingredients, Standardized=std.ingredients, NDB_No=NDB_Numbers)
+
+brownies.1936.dat <- merge(brownies.1936.dat, reference.dat, by.x="Ingredient", by.y="Original")
+brownies.2006.dat <- merge(brownies.2006.dat, reference.dat, by.x="Ingredient", by.y="Original")
+souffle.1936.dat <- merge(souffle.1936.dat, reference.dat, by.x="Ingredient", by.y="Original")
+souffle.2006.dat <- merge(souffle.2006.dat, reference.dat, by.x="Ingredient", by.y="Original")
+beef.1997.dat <- merge(beef.1997.dat, reference.dat, by.x="Ingredient", by.y="Original")
+beef.2006.dat <- merge(beef.2006.dat, reference.dat, by.x="Ingredient", by.y="Original")
+```
+
+Furthermore, to keep consistent with the rest of the class, the 'unstandardized' column must be removed and the new column ("Standardized") must be renamed to "Ingredient".
+
+```{r}
+# Remove the extra column
+brownies.1936.dat <- subset(brownies.1936.dat, select = -c(Ingredient))
+brownies.2006.dat <- subset(brownies.2006.dat, select = -c(Ingredient))
+souffle.1936.dat <- subset(souffle.1936.dat, select = -c(Ingredient))
+souffle.2006.dat <- subset(souffle.2006.dat, select = -c(Ingredient))
+beef.1997.dat <- subset(beef.1997.dat, select = -c(Ingredient))
+beef.2006.dat <- subset(beef.2006.dat, select = -c(Ingredient))
+
+# And rename the "Standardized" column back to "Ingredient"
+names(brownies.1936.dat)[names(brownies.1936.dat)=="Standardized"] <- "Ingredient"
+names(brownies.2006.dat)[names(brownies.2006.dat)=="Standardized"] <- "Ingredient"
+names(souffle.1936.dat)[names(souffle.1936.dat)=="Standardized"] <- "Ingredient"
+names(souffle.2006.dat)[names(souffle.2006.dat)=="Standardized"] <- "Ingredient"
+names(beef.1997.dat)[names(beef.1997.dat)=="Standardized"] <- "Ingredient"
+names(beef.2006.dat)[names(beef.2006.dat)=="Standardized"] <- "Ingredient"
+```
+
+Now we can write these out into their own tab delimited files. And this is probably a good time to point out that the 'unit' column could be composed of inconsistent (or 'non-standardized') entries. This will probably be dealt with in the final using the weight.txt file.
+
+First I'll create a directory for these tab files to keep them all in one place.
+
+```{r, setup, include=FALSE}
+# Writing the tables into to a new directory
+#PMC working in shared directory
+#dir.create(file.path(".", "Tab_Files"), showWarnings = FALSE)
+```
+
+And then actually write the standardized data frames to tab delimited files.
+
+```{r}
+write.table(brownies.1936.dat, "BrowniesCockaigne.1936.tab", sep="\t", row.names=FALSE)
+write.table(brownies.2006.dat, "BrowniesCockaigne.2006.tab", sep="\t", row.names=FALSE)
+write.table(souffle.1936.dat, "SweetPotatoSouffle.1936.tab", sep="\t", row.names=FALSE)
+write.table(souffle.2006.dat, "SweetPotatoSouffle.2006.tab", sep="\t", row.names=FALSE)
+```
+
+Unfortunately, R does not handle escaped quotes very well in tables, so I'm just going to remove them.
+
+```{r}
+beef.1997.dat$Ingredient = gsub("[\",]", "", beef.1997.dat$Ingredient)
+beef.2006.dat$Ingredient = gsub("[\",]", "", beef.2006.dat$Ingredient)
+```
+
+And now we can write the tables to the tab delimited files as we did with the other recipes.
+
+```{r}
+write.table(beef.1997.dat, ".\\Tab_Files\\BeefStroganoff.1997.tab", sep="\t", row.names=FALSE)
+write.table(beef.2006.dat, ".\\Tab_Files\\BeefStroganoff.2006.tab", sep="\t", row.names=FALSE)
+```
+
+# Proof Data
+
+Some additional steps to verify the data was all typed in and standardized correctly. This step seems to make more since to do before merging, since the verification between recipes by year will be easier to do this way. First we can plot the units from the separate years to see where they are not consistent.
+
+## Ingredient Units
+
+```{r}
+
+units.compare <- function(d1, d2) {
+  tmp.merge <- merge(d1, d2, by="Ingredient")
+  subset(tmp.merge, select = c(Ingredient, Unit.x, Unit.y))
+}
+
+# Compare the units per ingredient in the beef stroganoff recipes
+units.compare(beef.1997.dat, beef.2006.dat)
+```
+
+The biggest thing to point out here in the beef stroganoff recipes, is the change in the unit for sour cream. This changed from tablespoon to cup, a huge change. This was already discovered in the midterm project write-up however, no action required.
+
+The other difference here is the change in unit for mustard, but this is a much smaller change from teaspoon to tablespoon. This is a reasonable change if we look at the amounts, it changed from 1 teaspoon to 1 tablespoon.
+
+```{r}
+# Compare the units per ingredient in the brownie recipes
+units.compare(brownies.1936.dat, brownies.2006.dat)
+```
+
+A good result for the brownies, none of the units changed, so relatively the amounts remained the same.
+
+```{r}
+# Compare the units per ingredient in the brownie recipes
+units.compare(souffle.1936.dat, souffle.2006.dat)
+```
+
+Again, a good result, this time for the sweet potato souffle, none of the units changed, so relatively the amounts remained the same.
+
+## Ingredient Amounts
+
+```{r}
+# Function to plot and compare the amount values by ingredient name between the two recipes
+amounts.compare <- function(d1, d2){
+  tmp.merge <- merge(d1, d2, by="Ingredient")
+  plot(factor(tmp.merge$Ingredient), tmp.merge$Amount.x, las=2, ylab="Amount")
+  points(factor(tmp.merge$Ingredient), tmp.merge$Amount.y, las=2, col="red")
+  
+  title("Ingredient Amount Differences")
+}
+
+# Comparing the ingredient amounts in the beef stroganoff recipes
+amounts.compare(beef.1997.dat, beef.2006.dat)
+```
+
+Very reasonable, as it looks like just the amount of beef used was increased and the amount of butter was decreased a little.
+
+```{r}
+# Comparing the ingredient amounts in the brownies cockaigne recipes
+amounts.compare(brownies.1936.dat, brownies.2006.dat)
+```
+
+Surprising, but the ingredient amounts used in the two brownie recipes remained the same.
+
+```{r}
+# Comparing the ingredient amounts in the sweet potato souffle recipes
+amounts.compare(souffle.1936.dat, souffle.2006.dat)
+```
+
+Again, an interesting result, the ingredient amounts used in the two sweet potato souffle recipes remained the same.
+
+## Ingredients
+
+One thing we have to note here is that the above plots did not point out the differences in ingredients used. So although the amounts same ingredients used remained the same, some of the ingredients themselves changed. Here I attempt to illustrate the changes in ingredients used over the two recipes.
+
+```{r}
+# Function returning the ingredients found in one recipe, but not the other one
+differing.ingredients <- function(d1, d2) {
+  # Ingredients in the first recipe, but not in the second recipe
+  different.names <- (!d1$Ingredient %in% d2$Ingredient)
+  differing.ingredients <- as.character(d1$Ingredient[different.names])
+
+  # Ingredients in the second recipe, but not in the first recipe
+  different.names <- (!d2$Ingredient %in% d1$Ingredient)
+  return(append(differing.ingredients, as.character(d2$Ingredient[different.names])))
+}
+
+# Checking the ingredient changes in the beef stroganoff recipes
+paste(differing.ingredients(beef.1997.dat, beef.2006.dat))
+```
+
+Not much to be said about the differing ingredients in the two beef stroganoff recipes. We see that the recipe really did change.
+
+```{r}
+# And for the brownies cockaigne
+paste(differing.ingredients(brownies.1936.dat, brownies.2006.dat))
+```
+
+We see the type of flour changed, nuts were either added or removed, and the type of chocolate changed in the two brownie cockaigne recipes.
+
+```{r}
+paste(differing.ingredients(souffle.1936.dat, souffle.2006.dat))
+```
+
+Interesting, looks like the only difference in the sweet potato souffle recipe was the addition of flour.
+
+# Recipe Merging
+
+After generating the tab delimited files for the specified recipes and the updated beef ones, they need to be merged. Additionally, once this is done, two additional columns need to be added to the merged results; the year and the recipe name.
+
+```{r}
+# Get a list of all the tab files
+tab.files <- list.files(path=".\\Tab_Files\\", pattern="*.tab")
+
+merged.dat <- NULL  # Placeholder to help merge all the tab files
+for (tab.file in tab.files) {
+  
+  file_path <- paste(".\\Tab_Files\\", tab.file, sep='')  # Append path to tab file name
+  tmp.dat <- read.table(file_path, header=T, sep="\t")    # Read in the tab file to a data frame
+  
+  recipe <- strsplit(tab.file, '\\.')[[1]][1]  # Grab the recipe name from the file name
+  year <- strsplit(tab.file, '\\.')[[1]][2]    # Grab the year from the file name
+  
+  tmp.dat$Year <- year      # Add a recipe name column
+  tmp.dat$Recipe <- recipe  # Add a year column
+  
+  merged.dat <-rbind(merged.dat, tmp.dat)  # Merge all the tab files
+}
+```
+
+Above, we see that all the tables were successfully merged together and the year and recipe name were added to each recipe.
+
+# Recipes.csv
+
+Here I'm just adding the assigned two recipes to the Recipes.csv file with the appropriate serving sizes. It seems like the serving size differences (as in the amount per serving) will be handled in the final project.
+
+```{r}
+# Read in the recipes.csv file
+recipes.dat <- read.csv("Recipes.csv")
+
+# If the two assigned recipes are not in the file, add them
+if (!any(grepl("Brownies Cockaigne", recipes.dat$Recipe))) {
+  # Manually enter the data from the pdf files
+  added.recipes.dat <- data.frame(Recipe = c("Brownies Cockaigne", "Brownies Cockaigne",
+                                             "Sweet Potato Souffle", "Sweet Potato Souffle"),
+                                  Year = c(1936, 2006, 1936, 2006),
+                                  MinServings = c(48, 30, 6, 6),
+                                  MaxServings = c(48, 30, 6, 6))
+
+  # Add the data to the Recipes data frame
+  recipes.dat <- rbind(recipes.dat, added.recipes.dat)
+  
+  # And write it out back to the Recipes.csv file
+  write.csv(recipes.dat, "Recipes.csv", row.names=FALSE)
+}
+
+```

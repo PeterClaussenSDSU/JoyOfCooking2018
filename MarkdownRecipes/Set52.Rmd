@@ -1,0 +1,337 @@
+---
+title: "Midterm Project"
+author: "Set 52"
+date: "July 24, 2018"
+output:
+  word_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Read the weight table, nut_data and food_desc table.
+I copy pasted texts to notepad and saved it as text file in my home directory.
+```{r} 
+weight.dat <- read.table("WEIGHT.txt",header=FALSE,sep="^",quote="~")
+names(weight.dat) <- c("NDB_No","Seq","Amount","Msre_Desc","Gm_Wgt","Num_Data_Pts","Std_Dev")
+head(weight.dat)
+summary(weight.dat)
+```
+
+```{r}
+food_des.dat <- read.table("FOOD_DES.txt",header=FALSE,sep="^",quote="~")
+names(food_des.dat) <- c("NDB_No","FdGrp_Cd","Long_Desc","Shrt_Desc",
+"ComName","ManufacName","Survey","Ref_desc","Refuse","SciName",
+"N_Factor","Pro_Factor","Fat_Factor","CHO_Factor")
+dim(food_des.dat)
+head(food_des.dat)
+summary(food_des.dat)
+```
+
+1. Create data tables for your assigned recipes, with columns Amount, Unit and Ingredient.
+```{r}
+
+#Create data table for Vanilla Souffle 1936
+
+#Create a list of ingredient for  Vanilla Souffle 1936
+#Ingredient_1 = ('flour', 'Sugar', 'Milk', 'unsalted butter', 'Egg yolk,', 'Vanilla', 'Egg white', 'Salt')
+
+#To match the ingredients as per FOOD_DESC, use grepl function to list the matching ingredients.
+#Perform this on each element of 'Ingredients'. 
+food_des.dat$Long_Desc[grepl("(F|f)lour,", food_des.dat$Long_Desc)]
+
+#Out of all matches, "Wheat flour, white, all-purpose, enriched, bleached" looks to be most fitting
+
+#Access the corresponding NBD_No of ingredients, and assign it to a variable NBD
+NBD1 <- food_des.dat[food_des.dat$Long_Desc == "Wheat flour, white, all-purpose, enriched, bleached", "NDB_No"]
+#Create a vector NBD_No, and add the NBD to it. perform same process to other ingredients
+NBD_No<- c()
+append(NBD_No, NBD1, after =length(NBD_No))
+
+
+food_des.dat$Long_Desc[grepl("(S|s)ugar*", food_des.dat$Long_Desc)]
+#Most fitting, "Sugars, powdered"
+NBD2 <- food_des.dat[food_des.dat$Long_Desc == "Sugars, powdered", "NDB_No"]
+append(NBD_No, NBD2, after =length(NBD_No))
+
+#The recipe specifies 'cold milk'. I assumed it meant whole milk. So used it as searching parameter.
+food_des.dat$Long_Desc[grepl("Milk, whole", food_des.dat$Long_Desc)]
+#Most fitting, "Milk, whole, 3.25% milkfat, with added vitamin D"
+NBD3 <- food_des.dat[food_des.dat$Long_Desc == "Milk, whole, 3.25% milkfat, with added vitamin D", "NDB_No"]
+append(NBD_No, NBD3, after =length(NBD_No))
+
+food_des.dat$Long_Desc[grepl("Butter", food_des.dat$Long_Desc)]
+#Most fitting: "Butter, without salt "
+NBD <- food_des.dat[food_des.dat$Long_Desc == "Milk, whole, 3.25% milkfat, with added vitamin D", "NDB_No"]
+append(NBD_No, NBD)
+
+
+#Instead of "egg yolk" or "egg", I searched for "yolk" as it might give narrower result.
+food_des.dat$Long_Desc[grepl("yolk", food_des.dat$Long_Desc)]
+#Most fitting:Egg, yolk, raw, fresh
+
+food_des.dat$Long_Desc[grepl("Vanilla", food_des.dat$Long_Desc)]
+#Most fitting: "Vanilla Extract"
+
+food_des.dat$Long_Desc[grepl("Egg, white", food_des.dat$Long_Desc)]
+#Most fitting: "Egg, white, raw, fresh"
+
+food_des.dat$Long_Desc[grepl("Salt", food_des.dat$Long_Desc)]
+#When I used "Salt", it gave me only one result which is "Salt, table"
+
+#Replace the ingredients' name with matches from food_des.dat
+Ingredient_1 = c('Wheat flour, white, all-purpose, enriched, bleached', 'Sugars, powdered', 'Milk, whole, 3.25% milkfat, with added vitamin D', 'Butter, without salt', 'Egg, yolk, raw, frozen, salted, pasteurized', 'Vanilla extract', 'Egg, white, raw, fresh', 'Salt, table')
+
+#There is NBD_No associated with each ingredient in food_desc.dat.
+#Using for loop, determine the NBD_No of the ingredeints and add it the vector NBD_No_1
+NBD_No_1 <-c()
+for (i in (1:length(Ingredient_1))){
+  NBD[i] <- food_des.dat[food_des.dat$Long_Desc == Ingredient_1[i], 'NDB_No']
+  NBD_No_1 <-c(NBD_No_1, NBD[i] )
+}
+#NBD_No_1
+
+#Create a data frame of VanillaSouffle.1936 with all the information
+VanillaSouffle.1936<- data.frame(
+  Amount= c(1/2, 1/4, 2.5, 1/4, 5, 1, 5, 1/4 ),
+  Measure= c('cup', 'cup', 'cup', 'cup', 'ea', 'tsp', 'ea', 'tsp'),
+  Ingredient = c('Wheat flour, white, all-purpose, enriched, bleached', 'Sugars, powdered', 'Milk, whole, 3.25% milkfat, with added vitamin D', 'Butter, without salt', 'Egg, yolk, raw, frozen, salted, pasteurized', 'Vanilla extract', 'Egg, white, raw, fresh', 'Salt, table'),
+  NBD_No = NBD_No_1
+)
+VanillaSouffle.1936
+
+
+#Similary create a list of ingredients of Vanilla Souffle 2006
+#Ingredient_2 = (unsalted butter, all purpose flour, heavy cream, sugar, egg yolks, vanilla,egg whites, cream of tartar, salt)
+#Ingredients different different from 1936 are: heavy cream and cream of tartar
+
+#To match the ingredients as per FOOD_DESC, use grepl function to list the matching ingredients.
+food_des.dat$Long_Desc[grepl("cream|heavy", food_des.dat$Long_Desc)]
+#Most fitting:Cream, fluid, heavy whipping
+
+food_des.dat$Long_Desc[grepl("tartar", food_des.dat$Long_Desc)]
+#Most fitting: "Leavening agents, cream of tartar"
+
+
+#Replace the ingredients with standard long descriptions
+Ingredient_2 = c('Butter, without salt', 'Wheat flour, white, all-purpose, enriched, bleached', 'Cream, fluid, heavy whipping', 'Sugars, powdered', 'Egg, yolk, raw, frozen, salted, pasteurized', 'Vanilla extract', 'Egg, white, raw, fresh', 'Leavening agents, cream of tartar', 'Salt, table')
+
+#Using for loop, determine the NBD_No of the ingredeints and add it the vector NBD_No_2
+NBD_No_2 <-c()
+for (i in (1:length(Ingredient_2))){
+  NBD[i] <- food_des.dat[food_des.dat$Long_Desc == Ingredient_2[i], 'NDB_No']
+  NBD_No_2 <-c(NBD_No_2, NBD[i] )
+}
+#NBD_No_2
+
+#create data table fro Vanilla Souffle 2006
+VanillaSouffle.2006<- data.frame(
+  Amount= c(3 ,2 ,1, 1/3, 4, 5, 5, 1/2, 1/8),
+  Measure= c('Tbs', 'Tbs', 'cup', 'cup', 'ea', 'tsp', 'ea', 'tsp', 'tsp'),
+  Ingredient = c('Butter, without salt', 'Wheat flour, white, all-purpose, enriched, bleached', 'Cream, fluid, heavy whipping', 'Sugars, powdered', 'Egg, yolk, raw, frozen, salted, pasteurized', 'Vanilla extract', 'Egg, white, raw, fresh', 'Leavening agents, cream of tartar', 'Salt, table'),
+  NBD_No = NBD_No_2
+)
+VanillaSouffle.2006
+
+
+```
+
+```{r}
+#Create data table for Lobster Mousse 1936
+
+#Create a list of ingredient
+#Ingredient_3 = (unflavored gelatin, water,celery, lobster meat, minced apple, salt, paprika, mayonnaise,
+#lemon juice, hot pepper sauce, heavy cream, watercress, lemon slices)
+
+#To match the ingredients as per FOOD_DESC, use grepl function to list the matching ingredients.
+#Perform this on each element of 'Ingredients'.
+
+food_des.dat$Long_Desc[grepl("Gelatins", food_des.dat$Long_Desc)]   #Had to use "Gelatins" instead of "Gelatin"
+#Most fitting:Gelatins, dry powder, unsweetened
+
+food_des.dat$Long_Desc[grepl("Water", food_des.dat$Long_Desc)] 
+#Most fitting:  Beverages, water, tap, drinking
+
+food_des.dat$Long_Desc[grepl("Celery", food_des.dat$Long_Desc)]
+#Most fitting: Celery, raw 
+
+food_des.dat$Long_Desc[grepl("lobster", food_des.dat$Long_Desc)]
+#Most fitting: Crustaceans, lobster, northern, raw   
+
+food_des.dat$Long_Desc[grepl("apple", food_des.dat$Long_Desc)]
+# Out of all options, most fitting: Babyfood, apples, dices, toddler
+
+food_des.dat$Long_Desc[grepl("paprika", food_des.dat$Long_Desc)]
+# Only finding: Spices, paprika
+
+food_des.dat$Long_Desc[grepl("(M|m)ayonnaise", food_des.dat$Long_Desc)]
+#Most fitting: Mayonnaise, reduced fat, with olive oil
+
+food_des.dat$Long_Desc[grepl("(L|l)emon juice", food_des.dat$Long_Desc)]
+#Most fitting: Lemon juice, raw  
+
+food_des.dat$Long_Desc[grepl("(W|w)atercress", food_des.dat$Long_Desc)]
+#Most fitting: Watercress, raw
+
+#Ingredients that are different from LobsterMousse 1936 and 2006 is "marinated cucumber"
+food_des.dat$Long_Desc[grepl("(C|c)ucumber.", food_des.dat$Long_Desc)]
+#Most fitting: Pickles, cucumber, dill or kosher dill   
+
+#Replace the ingredients with the ones from FOOD_DESC
+Ingredient_3 = c('Gelatins, dry powder, unsweetened', 'Beverages, water, tap, drinking', 'Celery, raw', 'Crustaceans, lobster, northern, raw', 'Babyfood, apples, dices, toddler', 'Mayonnaise, reduced fat, with olive oil', 'Lemon juice, raw', 'Salt, table', 'Spices, paprika', 'Cream, fluid, heavy whipping', 'Watercress, raw', 'Pickles, cucumber, dill or kosher dill' )
+
+#Using for loop, determine the NBD_No of the ingredeints and add it the vector NBD_No_3
+NBD_No_3 <-c()
+for (i in (1:length(Ingredient_3))){
+  NBD[i] <- food_des.dat[food_des.dat$Long_Desc == Ingredient_3[i], 'NDB_No']
+  NBD_No_3 <-c(NBD_No_3, NBD[i] )
+}
+#NBD_No_3
+
+
+#create a data frame
+LobsterMousse.1936<- data.frame(
+  Amount= c(1 ,1/4 ,3/4, 1.5, 2/3, 3/4,3, 1, 1, 1/3, 1, 1),
+  Measure= c('Tbs', 'cup', 'cup', 'cup', 'cup', 'cup', 'tsp', 'ea', 'ea','cup', 'ea', 'ea'),
+  Ingredient = c('Gelatins, dry powder, unsweetened', 'Beverages, water, tap, drinking', 'Celery, raw', 'Crustaceans, lobster, northern, raw, canned or cooked', 'Babyfood, apples, dices, toddler', 'Mayonnaise, reduced fat, with olive oil', 'Lemon juice, raw', 'Salt, table', 'Spices, paprika', 'Cream, fluid, heavy whipping', 'Watercress, raw', 'Pickles, cucumber, dill or kosher dill' ),
+  NBD_No = NBD_No_3
+)
+LobsterMousse.1936
+
+```
+
+```{r}
+#Ingredients that are different from LobsterMousse 1936 and 2006 is "marinated cucumber"
+food_des.dat$Long_Desc[grepl("Sauce.*pepper", food_des.dat$Long_Desc)]  #Searching for ingredient with both Sauce and pepper
+#Most fitting: Sauce, ready-to-serve, pepper or hot 
+
+food_des.dat$Long_Desc[grepl("(L|l)emon.", food_des.dat$Long_Desc)]
+#Most fitting: Lemons, raw, without peel
+
+##Replace the ingredients with the ones from FOOD_DESC
+Ingredient_4 = c('Gelatins, dry powder, unsweetened', 'Beverages, water, tap, drinking', 'Celery, raw', 'Crustaceans, lobster, northern, raw', 'Babyfood, apples, dices, toddler', 'Mayonnaise, reduced fat, with olive oil', 'Lemon juice, raw', 'Sauce, ready-to-serve, pepper or hot', 'Salt, table', 'Spices, paprika', 'Cream, fluid, heavy whipping', 'Watercress, raw', 'Lemons, raw, without peel' )
+
+#Using for loop, determine the NBD_No of the ingredeints and add it the vector NBD_No_3
+NBD_No_4 <-c()
+for (i in (1:length(Ingredient_4))){
+  NBD[i] <- food_des.dat[food_des.dat$Long_Desc == Ingredient_4[i], 'NDB_No']
+  NBD_No_4 <-c(NBD_No_4, NBD[i] )
+}
+#NBD_No_4
+
+#create data table fro Lobster Mousse 2006
+LobsterMousse.2006<- data.frame(
+  Amount= c(2.25 ,1/4 ,3/4, 1.5, 2/3 , 1 ,1, 3/4 ,3 , 1, 1/3 , 1, 1),
+  Measure= c('tsp', 'cup', 'cup', 'cup', 'cup','ea', 'ea', 'cup', 'tbs','ea', 'cup', 'ea', 'ea'),
+  Ingredient = c('Gelatins, dry powder, unsweetened', 'Beverages, water, tap, drinking', 'Celery, raw', 'Crustaceans, lobster, northern, raw, canned or cooked', 'Babyfood, apples, dices, toddler', 'Salt, table', 'Spices, paprika', 'Mayonnaise, reduced fat, with olive oil','Lemon juice, raw', 'Sauce, ready-to-serve, pepper or hot','Cream, fluid, heavy whipping', 'Watercress, raw', 'Lemons, raw, without peel' ),
+  NBD_No = NBD_No_4
+)
+LobsterMousse.2006
+```
+
+```{r}
+#write these files to a tab delimited file. Name them in the format of Recipe Name and Year
+write.table(VanillaSouffle.1936, file ="Vanilla.Souffle.1936.txt", sep="\t")
+
+write.table(VanillaSouffle.2006, file = "Vanilla.Souffle.2006.txt", sep="\t")
+
+write.table(LobsterMousse.1936, file = "Lobster.Mousse.1936.txt", sep="\t")
+
+write.table(LobsterMousse.2006, file = "Lobster.Mousse.2006.txt", sep="\t")
+
+```
+
+
+```{r}
+#Read each of the tab delimited file into R 
+VanillaSouffle.1936.tab <- read.table("Vanilla.Souffle.1936.txt", sep = '\t', header =TRUE)
+VanillaSouffle.1936.tab
+
+VanillaSouffle.2006.tab <- read.table("Vanilla.Souffle.2006.txt", sep = '\t', header =TRUE)
+
+LobsterMousse.1936.tab <- read.table("Lobster.Mousse.1936.txt", sep = '\t', header =TRUE)
+
+LobsterMousse.2006.tab <- read.table("Lobster.Mousse.2006.txt", sep = '\t', header =TRUE)
+
+#Merge it with bBeef Stroganoff tables
+
+```
+
+```{r}
+#Read Beef Stroganoff tables from 1997 and 2006
+BeefStroganoff.1997.tab <- read.table("BeefStroganoff.1997.tab", sep = "", header =TRUE)
+BeefStroganoff.1997.tab
+
+
+BeefStroganoff.2006.tab <- read.table("BeefStroganoff.2006.tab", sep = '', header =TRUE)
+BeefStroganoff.2006.tab
+```
+```{r}
+
+
+#Use merge function to merge all recipes tables, two recipess at a time. Use 'all=TRUE" to make sure merged table contains all the columns. 
+
+combined <- merge(BeefStroganoff.1997.tab,BeefStroganoff.2006.tab, all=TRUE)
+combined <- merge(combined, VanillaSouffle.1936.tab, all=TRUE)
+combined <- merge(combined, VanillaSouffle.2006.tab, all=TRUE)
+combined <- merge(combined, LobsterMousse.1936.tab, all=TRUE)
+combined <- merge(combined, LobsterMousse.2006.tab, all=TRUE)
+combined
+
+
+```
+
+*Proof check data for errors
+```{r}
+#VanillaSouffle1936 has one less # of ingredient than VanillaSouffle.2006. so I could not plot their measures.
+#Print Measure columns of both VanillaSouffle recipes
+VanillaSouffle.1936.tab$Measure 
+VanillaSouffle.2006.tab$Measure
+#After checking it visually, it looks good to me.
+
+#computing lengths of  Lobster Mousse recipes to see if they are consistent.
+length(LobsterMousse.1936.tab$Measure)
+length(LobsterMousse.2006.tab$Measure)
+#2006 recipe had more ingrdients than 1997 recipe
+
+#Looks like 2006 recipe did not have any ingredients with Tbs measure. 
+#Checked the recipe, and verified it is true
+```
+
+
+
+
+
+
+```{r}
+Recipes.path = "Recipes.csv"
+Recipes <- read.csv(Recipes.path, header=TRUE)
+Recipes
+```
+
+```{r}
+
+#Create a dataframe of Vanilla Souffle and Lobster Mousse in Recipes data table format. the data frame will be merged with Recipes table later.
+
+list.recipe2 <- data.frame (
+  Recipe= c("Vanilla Souffle", "Vanilla Souffle", "Lobster Mousse", "Lobster Mousse"),
+  Year=c(1936, 2006, 1936, 2006), 
+  MinServings= c(8, 6, 8, 8), 
+  MaxServings= c(8, 8, 8, 10)
+)
+
+#use rbind merge list.recipe2 with Recipes data table.
+Recipes <- rbind(Recipes, list.recipe2, stringsAsFactors=FALSE)
+Recipes
+
+
+```
+
+
+
+
+
+
+

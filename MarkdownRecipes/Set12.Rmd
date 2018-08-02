@@ -1,0 +1,158 @@
+---
+title: "Joy Of Cooking Midterm Project Prep"
+author: "Set 12"
+date: "7/21/2018"
+output:
+  word_document: default
+  html_document: default
+---
+
+
+```{r}
+weight.dat <- read.table("WEIGHT.txt",header=FALSE,sep="^",quote="~")
+names(weight.dat) <- c("NDB_No","Seq","Amount","Msre_Desc","Gm_Wgt","Num_Data_Pts","Std_Dev")
+head(weight.dat)
+summary(weight.dat)
+```
+
+```{r}
+food_des.dat <- read.table("FOOD_DES.txt",header=FALSE,sep="^",quote="~")
+names(food_des.dat) <- c("NDB_No","FdGrp_Cd","Long_Desc","Shrt_Desc",
+"ComName","ManufacName","Survey","Ref_desc","Refuse","SciName",
+"N_Factor","Pro_Factor","Fat_Factor","CHO_Factor")
+dim(food_des.dat)
+head(food_des.dat)
+summary(food_des.dat)
+```
+
+```{r}
+nut_data.dat <- read.table("NUT_DATA.txt",header=FALSE,sep="^",quote="~")
+names(nut_data.dat) <- c("NDB_No","Nutr_No","Nutr_Val","Num_Data_Pts","Std_Error",
+"Src_Cd","Deriv_Cd","Ref_NDB_No","Add_Nutr_Mark","Num_Studies",
+"Min","Max","DF","Low_EB","Up_EB","Stat_cmt","AddMod_Date")
+head(nut_data.dat)
+summary(nut_data.dat)
+```
+
+```{r}
+
+#My thought process was to load the dataset into R and then  use a simple function to find similar names.
+#However, the function did not have exact matches, as when I ran the function many similar names popped up. However - the function did help me go through the list quite quickly and figurd out the matches
+
+FindSimilar <- function(x) 
+  {
+food_des.dat[grep(x, food_des.dat$Long_Desc), c(1,3)]
+  }
+
+#For example I would use this to figure out the most similar ingredient, and then correspond their descriptions/nbd_no to my table
+#FindSimilar("(S|s)pinach")
+#My reasoning for doing this is because it's a faster process than to go through it manually. R filters the work for me and I can pick the correct function and grab the nbd_no.
+
+CreamedSpinach.1936 <- data.frame("Amount" = c(2,3,2.5,1,1), "Measure" = c("lb","tsp","tsp","cup","lrg"), "Ingredient" = c("Spinach,fresh,leaf","butter, salted","flour,all purpose,self rising, enriched","cream,whipping,heavy","egg,raw"), "NBD_No" = c("11459","1001","20082","1053","1123"))
+
+CreamedSpinach.2006 <- data.frame("Amount" = c(1,2,2,1,0.5,0.5,1,2), "Measure" = c("lb","tsp","tsp","tsp","tbsp","cup","lrg","slice"), "Ingredient" = c("Spinach,fresh,leaf","butter, salted","onion,yellow,fresh,chopped","flour,all purpose,self rising, enriched","cream,whipping,heavy","sugar,white,granulated","egg,raw","bacon,raw,cured"), "NBD_No" = c("11459","1001","11287","20082","1053","19335","1123","10123"))
+
+#Spinach,fresh,leaf ->  Spinach, raw. Figured Fresh Spinich Leaves could only mean raw spinach. 
+#butter, salted -> Butter, salted . Had a capital B
+#flour,all purpose,self rising, enriched -> Wheat flour, white, all-purpose, self-rising, enriched. Has all the qualities that we are looking for, except it says Wheat/white. Closest ingredient.
+#cream,whipping,heavy -> Cream, fluid, heavy whipping. Cups are the measurement, I assume it's fluid.
+#egg,raw -> Egg, whole, raw, fresh. Closest ingredient, only difference is it's "whole"
+#onion,yellow,fresh,chopped-> Onions, frozen, chopped, unprepared. This was the closest "onion, chopped" option we have.
+#sugar,white,granulated -> Sugars, granulated. Granulated Sugars - which is white unless brown specified.
+#bacon,raw,cured -> Pork, cured, bacon, unprepared. Closest option.
+
+CurryEggs.1936 <- data.frame("Amount" = c(4,1.5,1.5,1), "Measure" = c("lrg","tsp","tsp","cup"), "Ingredient" = c("Egg, raw","butter, salted","flour, all purpose, self rising, enriched","Milk, whole, 3.25%"), "NBD_No" = c("1123","1001","20082","1211"))
+
+CurryEggs.2006 <- data.frame("Amount" = c(1,1,0.25,4,2,2,1,1,0.5,0.75,1,2), "Measure" = c("tbsp","tbsp","cup","lrg","tbsp","tbsp","cup","tsp","tsp","cup","tbsp","tbsp"), "Ingredient" = c("butter, salted","oil, olive","onion, yellow, fresh, chopped","egg, raw","butter, salted","flour, all purpose, self rising, enriched","Milk, whole, 3.25%","mustard, country dijon","Garlic, minced","bread crumbs, plain, dry, grated","butter, salted","almonds, sliced"), "NBD_No" = c("1001","4053","11287","1123","1001","20082","1211","2046","2584","18079","1001","12061"))
+
+# butter, salted -> Butter, salted
+# oil, olive -> Oil, olive, salad or cooking
+# onion, yellow, fresh, chopped -> Onions, frozen, chopped, unprepared
+# egg, raw -> Egg, whole, raw, fresh
+# butter, salted-> Butter, salted
+# flour, all purpose, self rising, enriched -> Wheat flour, white, all-purpose, self-rising, enriched
+# Milk, whole, 3.25% -> Milk, whole, 3.25% milkfat, without added vitamin A and vitamin D
+# mustard, country dijon -> Mustard, prepared, yellow
+# Garlic, minced -> Garlic, raw
+# bread crumbs, plain, dry, grated -> Bread, crumbs, dry, grated, plain
+# butter, salted -> Butter, salted
+# almonds, sliced -> Nuts, almonds
+
+```
+
+```{r}
+#writing the tables to a local directory so i can call them. 
+write.table(CreamedSpinach.1936, "CreamedSpinach.1936", sep="\t")
+write.table(CreamedSpinach.2006, "CreamedSpinach.2006", sep="\t")
+write.table(CurryEggs.1936, "CurryEggs.1936", sep="\t")
+write.table(CurryEggs.2006, "CurryEggs.2006", sep="\t")
+
+#calling the local files and naming them.
+CS_1936 = "CreamedSpinach.1936"
+CS_2006 = "CreamedSpinach.2006"
+CE_1936 = "CurryEggs.1936"
+CE_2006 = "CurryEggs.2006"
+BS_1997 = "BeefStroganoff.1997.tab"
+BS_2006 = "BeefStroganoff.2006.tab"
+
+#reading in the files to r
+CS_1936 <- read.table(CS_1936, sep="", header=TRUE, stringsAsFactors = FALSE) 
+CS_2006 <- read.table(CS_2006, sep="", header=TRUE, stringsAsFactors = FALSE) 
+CE_1936 <- read.table(CE_1936, sep="", header=TRUE, stringsAsFactors = FALSE) 
+CE_2006 <- read.table(CE_2006, sep="", header=TRUE, stringsAsFactors = FALSE) 
+BS_1997 <- read.table(BS_1997, sep="", header=TRUE, stringsAsFactors = FALSE) 
+BS_2006 <- read.table(BS_2006, sep="", header=TRUE, stringsAsFactors = FALSE)
+
+#Adding nbd numbers to BS.
+BS_1997$NBD_No <- c("23366","1001","20082","6170","1056","2046")
+BS_2006$NBD_No <- c("23366","4582","1001","11282","11260","6170","1056","2046")
+
+#checking for inconsistencies
+Creamed_Spinach2 <- merge(CS_1936, CS_2006, by ="Ingredient")
+Creamed_Spinach2
+x <- Creamed_Spinach2$Amount.x
+y <- Creamed_Spinach2$Amount.y
+plot(x,y)
+x <- factor(Creamed_Spinach2$Measure.x)
+y <- factor(Creamed_Spinach2$Measure.y)
+plot(x ~ y,main="Measure 1936 vs Measure 2006") 
+#The main inconsistency is cream,whipping,heavy. In 1936 this was 1.0 Cup and in 2006 this became 0.5 tablespoon.
+
+#checking for inconsistencies
+Curry_Eggs2 <- merge(CE_1936, CE_2006, by ="Ingredient")
+Curry_Eggs2
+x <- Curry_Eggs2$Amount.x
+y <- Curry_Eggs2$Amount.y
+plot(x,y)
+x <- factor(Curry_Eggs2$Measure.x)
+y <- factor(Curry_Eggs2$Measure.y)
+plot(x ~ y,main="Measure 1936 vs Measure 2006") 
+
+#There are inconsistencies here. They are as:
+# Butter, salted was 1.5,1.5,1.5 (3 times) tsp in 1936. In 2006 it is now (1,1,2) 
+#tablespoons.
+# flour was 1.5 tsp in 1936 and in 2006 it is now 2 tbsp.
+Creamed_Spinach <- rbind(CS_1936,CS_2006)
+Curry_Eggs <- rbind(CE_1936, CE_2006)
+Beef_Stroganoff <- rbind(BS_1997, BS_2006)
+CS_CE_BS <- rbind(Creamed_Spinach, Curry_Eggs,Beef_Stroganoff)
+CS_CE_BS
+#PMC - file choose does not allow Rmd to be typeset
+#write.table(CS_CE_BS, file=file.choose(), row.names=FALSE, sep="\t", 
+#          col.names=TRUE)
+```
+
+```{r}
+rcp = "Recipes.csv" #calling path fastest and setting path
+Recipes <- read.csv(rcp,header=TRUE) #reading dataset as motorcycles
+
+CreamedSpinach <- data.frame("Recipe" = c("Creamed Spinach", "Creamed Spinach"), "Year" = c("1936","2006"), "MinServings" = c("4","4"), "MaxServings" = c("4","4"))
+
+CurryEggs <- data.frame("Recipe" = c("Curry Eggs", "Curry Eggs"), "Year" = c("1936","2006"), "MinServings" = c("3","4"), "MaxServings" = c("3","4"))
+
+Recipes <- rbind(Recipes,CreamedSpinach,CurryEggs)
+#PMC - file choose does not allow Rmd to be typeset
+#write.table(Recipes, file=file.choose(), row.names=FALSE, sep=',', 
+write.table(Recipes, file='Recipes.csv', row.names=FALSE, sep=',',
+          col.names=TRUE)
+```

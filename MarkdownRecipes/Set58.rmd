@@ -1,0 +1,791 @@
+---
+title: "MIDTERM PROJECT"
+author: "Set 58"
+date: "7/23/2018"
+output:
+  word_document: default
+  html_document: default
+  pdf_document: default
+---
+
+
+##STEP-I//RETRIEVNG THE GIVEN RECIPES FROM THE PDF
+
+-In the First step,Each and every student was assigned two recipes to work on that.
+
+-The Recipe data was given in the form of PDF Files.
+
+-The two Recipes assigned to me are "Seafood Salad","Creamed Eggs with Asparagus Tips Cockaigne"
+
+-So,each of this were given for two years.So we have like 
+
+     1.Seafood Salad for 1936
+     2.Seafood Salad for 2006
+     3.Creamed Eggs with Asparagus Tips Cockaigne for 1936
+     4.Creamed Eggs with Asparagus Tips Cockaigne for 2006
+     
+
+
+-As it is complicated and error prone to read the PDF files directly through machine,each and every recipe was entered manually into the data frame in RStudio.
+
+-The Recipe data in the PDF Files consists of "Amount","Measure","Ingredients" columns.
+
+-This data was entered into pdf files directly with no change in the data.
+
+-The code to enter the data into data frame was wriiten in the below code section.
+
+-Each and every step in the code was explained very clearly.
+
+
+##RECIPE-1
+
+     1.Creamed Eggs with Asparagus Tips Cockaigne for 1936
+     2.Creamed Eggs with Asparagus Tips Cockaigne for 2006
+
+
+```{r}
+
+
+## This is the initial step for creating the data frame
+
+## Creamed Eggs with Asparagus Tips Cockaigne for 1936 was named as Creamed.eggs.Asparagus.36 to make the coding easier. 
+
+
+## The syntax used here was data.frame to construct the data frames
+
+## As discussed earlier ,each data frame consists of "Amount","Measure","Ingredients"
+
+
+## In Ingredients column,the names of each Ingredient are same as Ingredients in the FOOD.DES because while I started the project,the first I step created was correcting of the Ingredients using grep and grep1 functions.I'll explain much about the grep function in the further exercises.
+
+Creamed.eggs.Asparagus.36 <- data.frame(
+  
+  
+  Amount = c(5,1,6,4,2,0.5),
+  Measure = c("lrg","lb","Tbs","Tbs","cup","cup"),
+  Ingredient = c("Egg,whole,raw,fresh","Asparagus,canned,drained solids","Butter,salted","Wheat flour,white, all-purpose,self-rising,enriched","Cream, fluid,heavy whipping","Bread,crumbs,dry,grated, plain")
+  
+)
+## The above steps contributed in creating Creamed.eggs.Asparagus.36 data frame
+
+## In the next step,I'm printing the Creamed.eggs.Asparagus.36 data frame.
+Creamed.eggs.Asparagus.36 
+
+
+
+## Creamed Eggs with Asparagus Tips Cockaigne for 2006 was named as Creamed.eggs.Asparagus.06 to make the coding easier. 
+
+
+## The syntax used here was data.frame to construct the data frames
+
+## As discussed earlier ,each data frame consists of "Amount","Measure","Ingredients"
+
+## In Ingredients column,the names of each Ingredient are same as Ingredients in the FOOD.DES because while I started the project,the first I step created was correcting of the Ingredients using grep and grep1 functions.I'll explain much about the grep function in the further exercises.
+
+Creamed.eggs.Asparagus.06 <- data.frame( Amount = c(4,1,0.25,4,2,1,1,0.5,0.75,0.75),
+               Measure=c("Tbs","Tbs","cup","lrg","Tbs","cup","tsp","tsp","cup","cup"),
+                             Ingredient = c("Butter,Salted","Oil, olive, salad or cooking","Onions, raw","egg,raw","Wheat flour,white, all-purpose,self-rising,enriched","Milk, whole, 3.25% milkfat, with added vitamin D","Mustard, prepared, yellow","Garlic, raw","Bread,crumbs,dry,grated, plain","Asparagus, raw")
+  
+)
+
+## The above steps contributed in creating Creamed.eggs.Asparagus.06 data frame
+
+## In the next step,I'm printing the Creamed.eggs.Asparagus.06 data frame.
+
+Creamed.eggs.Asparagus.06
+``` 
+
+
+
+
+
+##RECIPE-2
+
+   1.Seafood Salad for 1936
+   2.Seafood Salad for 2006
+
+-The Recipe data in the PDF Files consists of "Amount","Measure","Ingredients" columns.
+
+-This data was entered into pdf files directly with no change in the data.
+
+-The code to enter the data into data frame was wriiten in the below code section.
+
+-Each and every step in the code was explained very clearly.
+
+
+
+```{r}
+
+## This is the initial step for creating the data frame
+
+## Creamed Eggs with Seafood Salad for 1936 was named as Seafood.salad36 to make the coding easier. 
+
+
+## The syntax used here was data.frame to construct the data frames
+
+## As discussed earlier ,each data frame consists of "Amount","Measure","Ingredients"
+
+
+## In Ingredients column,the names of each Ingredient are same as Ingredients in the FOOD.DES because while I started the project,the first I step created was correcting of the Ingredients using grep and grep1 functions.I'll explain much about the grep function in the further exercises.
+
+
+Seafood.salad36 <- data.frame(Amount = c(4,1,0.5),
+                        Measure = c("oz","cup","cup"),
+                        Ingredient = c("Crustaceans, crab, blue, canned","Apples, raw, with skin","Salad dressing, mayonnaise, regular")
+                  
+)
+
+## The above steps contributed in creating Seafood.salad36 data frame
+
+## In the next step,I'm printing the Seafood.salad36 data frame.
+
+Seafood.salad36
+
+
+
+
+## Creamed Eggs with Seafood Salad for 2006 was named as Seafood.salad06 to make the coding easier. 
+
+
+## The syntax used here was data.frame to construct the data frames
+
+## As discussed earlier ,each data frame consists of "Amount","Measure","Ingredients"
+
+## In Ingredients column,the names of each Ingredient are same as Ingredients in the FOOD.DES because while I started the project,the first I step created was correcting of the Ingredients using grep and grep1 functions.I'll explain much about the grep function in the further exercises.
+
+Seafood.salad06 <- data.frame(Amount=c(1,0.5,2,2),
+                        Measure = c("lb","cup","tbs","tbs"),
+                        Ingredient = c("Crustaceans, crab, blue, canned","mayonnaise, regular","Lemon juice, raw","Capers, canned")
+                          
+
+                        
+                                                 )
+
+
+## The above steps contributed in creating Seafood.salad06 data frame
+
+## In the next step,I'm printing the Seafood.salad06 data frame.
+                         
+Seafood.salad06
+
+```
+
+##STEP-II/ Writing each individual recipe to a tab delimited file. 
+
+-The four tables created in the above step are again return to a txt file.
+
+-This step is to ensure that all the students outputs are in the same format.
+
+-In the code chunk below,I'm creating four txt files with the names as 
+            
+           1. Creamed.eggs.Asparagus.1936.txt    
+            
+           2. Creamed.eggs.Asparagus.2006.txt 
+            
+           3. Seafood.salad1936.txt
+            
+           4. Seafood.salad2006.txt
+
+
+
+```{r}
+
+## In this code chunck,the data frames are being written to .txt files using the write.table command.
+
+##The syntax of the write.table is write.table(File,Filename,sep = "\t")
+
+## In the above syntax,file is which the data frame to converted to .txt file and file name is the name which is to be assigned to the .txt file.sep is by which the content in the file is separated
+
+
+## In the below commands
+
+##writing Creamed.eggs.Asparagus.36 to a txt file and naming it as Creamed.eggs.Asparagus.1936.txt
+write.table(Creamed.eggs.Asparagus.36,"Creamed.eggs.Asparagus.1936.txt",sep = "\t")
+
+##writing Creamed.eggs.Asparagus.06 to a txt file and naming it as Creamed.eggs.Asparagus.2006.txt
+write.table(Creamed.eggs.Asparagus.06,"Creamed.eggs.Asparagus.2006.txt",sep = "\t")
+
+##writing Seafood.salad36 to a txt file and naming it as Seafood.salad1936.txt
+write.table(Seafood.salad36,"Seafood.salad1936.txt",sep = "\t")
+
+##writing Creamed.eggs.Asparagus.06 to a txt file and naming it as Creamed.eggs.Asparagus.06.txt
+write.table(Seafood.salad06,"Seafood.salad2006.txt",sep = "\t")
+
+
+
+
+```
+
+##  STEP-III/Readin in each tab file
+
+-In the below code chunk,reading the tab delimited files which are created in the above step.
+
+-To read those files,the function read.table is used.
+
+-The syntax of the read.table is simple.We need to add the file path to the function.
+
+-In the below step the additional step performed is assigning name to each of this read function.So I will be creating four new names and assign the tab delimited files to them.The files are
+                          1.Creamed.eggs.Asparagus.1936.txt
+                          2.Creamed.eggs.Asparagus.2006.txt
+                          3.Seafood.salad1936.txt
+                          4.Seafood.salad2006.txt
+
+
+
+
+
+```{r}
+
+## Here the read operation is performed using the read.table function
+
+
+##Here,
+##Creamed.eggs.Asparagus.1936.txt tab delimeted file is read in to the Creamed.eggs.Asparagus.1936.txt
+Creamed.eggs.Asparagus.1936.txt<-read.table("Creamed.eggs.Asparagus.1936.txt")
+
+
+##Creamed.eggs.Asparagus.2006.txt tab delimeted file is read in to the Creamed.eggs.Asparagus.2006.txt
+Creamed.eggs.Asparagus.2006.txt<-read.table("Creamed.eggs.Asparagus.2006.txt")
+
+
+##Seafood.salad1936.txt tab delimeted file is read in to the Seafood.salad1936.txt
+Seafood.salad1936.txt<- read.table("Seafood.salad1936.txt")
+
+
+##Seafood.salad2006.txt tab delimeted file is read in to the Seafood.salad2006.txt
+Seafood.salad2006.txt<-  read.table("Seafood.salad2006.txt")
+
+
+
+## Printing all the tables.
+Creamed.eggs.Asparagus.1936.txt
+Creamed.eggs.Asparagus.2006.txt
+Seafood.salad1936.txt
+Seafood.salad2006.txt
+
+```
+
+##STEP-III/Reading BEEFSTROGANOFF TABLES
+
+-The BeefStroganoff tables were given in assignment.
+
+-This tables were read into the RStudio using the read.table function
+
+```{r}
+
+
+##BeefStroganoff.1997 tab delimeted file is read in to the BeefStroganoff.1997
+
+BeefStroganoff.1997<- read.table("BeefStroganoff.1997.tab", sep="", header=TRUE, stringsAsFactors = FALSE)
+
+##Printing BeefStroganoff.1997
+BeefStroganoff.1997
+
+
+##BeefStroganoff.2006 tab delimeted file is read in to the BeefStroganoff.2006
+
+BeefStroganoff.2006 <- read.table("BeefStroganoff.2006.tab", sep="", header=TRUE, stringsAsFactors = FALSE)
+
+##Printing BeefStroganoff.2006
+BeefStroganoff.2006
+
+
+
+```
+
+##STEP-III/Merging all the six tables.
+
+-In this step,the merging the data is performed.
+
+-Merging in R has many different types.We are performing a basic merging here.
+
+-This merge type is also called as rbind and will be using the function called rbind.
+
+-rbind stackup all the rows of the given tables.
+
+-The tables merged here are -
+                            1.BeefStroganoff.1997,
+                            2.BeefStroganoff.2006,
+                            3.Creamed.eggs.Asparagus.1936.txt,
+                            4.Creamed.eggs.Asparagus.2006.txt,
+                            5.Seafood.salad1936.txt,
+                            6.Seafood.salad2006.txt
+
+
+
+
+```{r}
+
+## In this code chunk,basic merging is performed using rbind.
+
+## The Merged data is tored into a new table called Merged_Data_Tables.
+
+## the tables which are merged here are
+
+Merged_Data_Tables<-rbind(BeefStroganoff.1997,BeefStroganoff.2006,Creamed.eggs.Asparagus.1936.txt,Creamed.eggs.Asparagus.2006.txt,Seafood.salad1936.txt,Seafood.salad2006.txt)
+
+
+##Printing the Merged_Data_Tables 
+Merged_Data_Tables
+
+```
+
+## READING FOOD DES DATA
+
+-There was a tab delimited file called FOOD DES DATA given in the content of the mid term.
+
+-We will be using this data to check the long description of the Ingredients name mentioned in the PDF.
+
+-The main aim of next two steps is to ensure that the names listed in the ingredient column data frames are matching with the names mentioned in FOOD DES DATA
+
+
+
+```{r}
+
+##FOOD_DES.txt tab delimeted file is read in to the FOOD_DES.DAT
+
+FOOD_DES.DAT<-read.table("FOOD_DES.txt",header = FALSE,sep = "^",quote = "~")
+
+## Naming the required columns in the data frame
+names(FOOD_DES.DAT) <- c("NBD_NO","Numerical","Ingredients")
+
+
+
+
+##Here,I'm not printing the FOOD_DES.DAT because it is taking many pages in the final output document.
+##FOOD_DES.DAT
+```
+
+
+##PATERN MATCHING PROCESS
+
+-This is one of the the crucial step in this project.
+
+-The main aim of this step is to match the names of the ingredients with the listed names in the FOOD_DES.DAT
+
+-We can do it manually if there are like 5 or 6 rows but FOOD_DES.DAT has like thousands of rows.
+
+-The best method to do the pattern matching is using the grep ang grepl function.
+
+-What I did in this step was to take the each and every name from the ingredients list and search it manually using the grep or grep 1 functions.
+
+-Generally I preferred was grepl function,because using this function I use search for the pattern then subset that index to the actual FOOD_DES.DAT tables.So it returns description of the rows only with matching pattern.Then I noted down the NBD_NO and correct name of the Ingredient.
+
+I used trial and error method to check for the pattern matching process.
+
+for the "egg raw"- I searched fot the egg and got the choosed to enter the closest match.
+
+So,For every Ingredients,I'm going to mention as trials and closest match
+
+
+Ingredient name mentioned in the PDF file-egg,raw
+**trials-egg
+ ##closest match - Egg,whole,raw
+ 
+
+Ingredient name mentioned in the PDF file-aspagarus spears canned 5" long drained
+ **trials - aspagarus,spears,canned
+ ##Closest match - Asparagus,canned,drained solids
+ 
+
+
+Ingredient name mentioned in the PDF file-butter,salted
+ **trials-Butter
+ ##closest match-Butter,Salted
+ 
+
+Ingredient name mentioned in the PDF file-flour,all purpose,self rising,enrinched
+ **trials-flour,rising -Wheat flour,white, all-purpose,self-rising,enriched
+ ##closest match
+ 
+Ingredient name mentioned in the PDF file-Cream,whipping,heavy
+ **trials-cream,whipping
+ ##closest match - Cream, fluid,heavy whipping
+ 
+Ingredient name mentioned in the PDF file-bread crumbs,plain,dry,grated
+ **trials-bread,crumbs
+ ##closest match - Bread,crumbs,dry,grated, plain
+
+
+2006
+
+Ingredient name mentioned in the PDF file-butter,salted
+**trials-butter
+ ##closest match - Butter,Salted
+
+
+Ingredient name mentioned in the PDF file-oil,olive
+**trials-olive
+ ##closest match - Oil, olive
+
+
+
+Ingredient name mentioned in the PDF file-onions,yellow,fresh,chopped
+**trials-yellow,onions
+ ##closest match - Onions, raw
+
+
+Ingredient name mentioned in the PDF file-egg,raw
+**trials-egg
+ ##closest match - Egg,whole,raw
+
+
+
+Ingredient name mentioned in the PDF file-flour,all purpose,self rising,enrinched
+**trials-flour,purpose,rising
+ ##closest match - Wheat flour,white, all-purpose,self-rising,enriched
+
+
+
+Ingredient name mentioned in the PDF file-milk,whole,3.25%
+**trials-milk,3.25%
+ ##closest match - Milk, whole, 3.25% milkfat, with added vitamin D
+
+
+Ingredient name mentioned in the PDF file-mustard,country dijon
+**trials-mustard
+ ##closest match - Mustard, prepared, yellow
+
+
+Ingredient name mentioned in the PDF file-garlic,minced
+**trials-minced,garlic
+ ##closest match - Garlic, raw
+
+
+Ingredient name mentioned in the PDF file-bread crumbs,plain,dry,grated
+**trials-crumbs
+ ##closest match-Bread,crumbs,dry,grated, plain
+
+
+
+Ingredient name mentioned in the PDF file-asparagus,tips,fresh
+**trials- asparagus
+ ##closest match - Asparagus, raw
+ 
+ 
+ 1936
+ 
+Ingredient name mentioned in the PDF file-crab,blue,canned,drained,6.5 oz can
+**trials-blue,canned,crab
+ ##closest match - Crustaceans, crab, blue, canned
+
+
+Ingredient name mentioned in the PDF file-apple,fresh,chopped
+**trials-chopped,apple
+ ##closest match - Apples, raw, with skin
+ 
+ 
+
+Ingredient name mentioned in the PDF file-mayonnaise
+**trials-mayonnaise
+ ##closest match - mayonnaise, regular
+ 
+ 
+
+2006
+
+Ingredient name mentioned in the PDF file-crab,blue,canned,drained,6.5 oz can
+**trials-blue,canned,crab
+ ##closest match - Crustaceans, crab, blue, canned
+
+
+
+
+Ingredient name mentioned in the PDF file-mayonnaise
+**trials-mayonnaise
+ ##closest match - mayonnaise, regular
+
+
+
+Ingredient name mentioned in the PDF file-juice,lemon,fresh
+**trials-juice,lemon
+ ##closest match - Lemon juice, raw
+ 
+ 
+
+Ingredient name mentioned in the PDF file-capers,canned,drained
+**trials-capers
+ ##closest match - Capers, canned
+
+ 
+ 
+
+```{r}
+
+
+##This is the example code to show that how did I use the pattern matching for all the above ingredient names.
+
+grep1 <- grepl('(C|c)apers',FOOD_DES.DAT$Ingredients)
+
+
+## This step only returns only closest matches.
+subset(FOOD_DES.DAT,c(grep1))
+
+
+
+
+```
+
+
+##Generating NBD_No COLUMN
+
+-In the above,we found the closest match to ingredients listed in the PDF file by comparing with the FOOD_DES_DAT
+
+
+-The one more important step,we are replacing each and every name with the closest matches found and also noting that corresponding NBD_NO.This number will be much useful for the final project.
+
+-SO as mentioned earlier,one new column called NBD_NO will be added to the data frame .
+
+
+
+```{r}
+
+## DATAFRAMES AFTER ADDING NBD_NO AND REPLACING THE INGREDIENT NAMES
+
+## This is the initial step for creating the data frame
+
+## Creamed Eggs with Asparagus Tips Cockaigne for 1936 was named as Creamed.eggs.Asparagus.1936 to make the coding easier. 
+
+
+## The syntax used here was data.frame to construct the data frames
+
+## As discussed earlier ,each data frame consists of "Amount","Measure","Ingredients","NBD_NO"
+
+
+
+
+Creamed.eggs.Asparagus.1936 <- data.frame(
+  
+  
+  Amount = c(5,1,6,4,2,0.5),
+  Measure = c("lrg","lb","Tbs","Tbs","cup","cup"),
+  Ingredient = c("Egg,whole,raw,fresh","Asparagus,canned,drained solids","Butter,salted","Wheat flour,white, all-purpose,self-rising,enriched","Cream, fluid,heavy whipping","Bread,crumbs,dry,grated, plain"),
+  NBD_NO = c(1123,11015,01001,20082,1053,18079)
+  
+)
+  
+  
+
+Creamed.eggs.Asparagus.1936 
+
+
+
+
+## DATAFRAMES AFTER ADDING NBD_NO AND REPLACING THE INGREDIENT NAMES
+
+## This is the initial step for creating the data frame
+
+## Creamed Eggs with Asparagus Tips Cockaigne for 2006 was named as Creamed.eggs.Asparagus.2006 to make the coding easier. 
+
+
+## The syntax used here was data.frame to construct the data frames
+
+## As discussed earlier ,each data frame consists of "Amount","Measure","Ingredients","NBD_NO"
+
+
+Creamed.eggs.Asparagus.2006 <- data.frame( Amount = c(4,1,0.25,4,2,1,1,0.5,0.75,0.75),
+               Measure=c("Tbs","Tbs","cup","lrg","Tbs","cup","tsp","tsp","cup","cup"),
+                             Ingredient = c("Butter,Salted","Oil, olive, salad or cooking","Onions, raw","Egg,whole,raw","Wheat flour,white, all-purpose,self-rising,enriched","Milk, whole, 3.25% milkfat, with added vitamin D","Mustard, prepared, yellow","Garlic, raw","Bread,crumbs,dry,grated, plain","Asparagus, raw"),
+               
+               NBD_NO = c(01001,1123,4053,11282,20082,1077,2046,11215,18079,11011)
+  
+  
+  
+  
+  
+)
+
+Creamed.eggs.Asparagus.2006
+
+
+
+
+
+## DATAFRAMES AFTER ADDING NBD_NO AND REPLACING THE INGREDIENT NAMES
+
+## This is the initial step for creating the data frame
+
+## Seafood.salad1936 was named as Seafood.salad1936 to make the coding easier. 
+
+
+## The syntax used here was data.frame to construct the data frames
+
+## As discussed earlier ,each data frame consists of "Amount","Measure","Ingredients","NBD_NO"
+
+
+Seafood.salad1936 <- data.frame(Amount = c(4,1,0.5),
+                        Measure = c("oz","cup","cup"),
+                        Ingredient = c("Crustaceans, crab, blue, canned","Apples, raw, with skin","Salad dressing, mayonnaise, regular"),
+                        NBD_NO=c(15141,9003,4025)
+)
+
+Seafood.salad1936
+
+
+
+## DATAFRAMES AFTER ADDING NBD_NO AND REPLACING THE INGREDIENT NAMES
+
+## This is the initial step for creating the data frame
+
+## Seafood.salad2006 was named as Seafood.salad2006 to make the coding easier. 
+
+
+## The syntax used here was data.frame to construct the data frames
+
+## As discussed earlier ,each data frame consists of "Amount","Measure","Ingredients","NBD_NO"
+
+Seafood.salad2006 <- data.frame(Amount=c(1,0.5,2,2),
+                        Measure = c("lb","cup","tbs","tbs"),
+                        Ingredient = c("Crustaceans, crab, blue, canned","mayonnaise, regular","Lemon juice, raw","Capers, canned"),
+                         NBD_NO = c(15141,4025,9152,2054)  
+                         )
+                         
+Seafood.salad2006
+
+```
+
+## STEP-IV/Proof the data to check for errors. 
+
+Proof the data to check for errors. Considering,
+
+-Here Measure of Creamed.eggs.Asparagus.1936 plotted against Measure of Creamed.eggs.Asparagus.2006
+
+-we observe the measures are inconsistent.One has the cups and other has tbs.
+
+-Here Amount of Creamed.eggs.Asparagus.1936 plotted against Amount of     Creamed.eggs.Asparagus.2006
+
+-As the measures are inconsistent then the Amount also will be inconsistent.
+
+
+
+-Here Measure of Seafood.salad1936 plotted against Measure of Seafood.salad1936
+
+-we observe the measures are inconsistent.One has the cups and other has tbs.
+
+-Here Amount of Seafood.salad1936 plotted against Amount of Seafood.salad2006
+
+-As the measures are inconsistent then the Amount also will be inconsistent.
+
+
+```{r}
+
+
+
+## Merging the Creamed.eggs.Asparagus.1936 and Creamed.eggs.Asparagus.2006 by Ingredient and naming merged data frame as Creamed.eggs.Asparagus.1936_2006
+Creamed.eggs.Asparagus.1936_2006 <- merge(Creamed.eggs.Asparagus.1936,Creamed.eggs.Asparagus.2006, by= "Ingredient" )
+
+##Printing Creamed.eggs.Asparagus.1936_2006
+Creamed.eggs.Asparagus.1936_2006
+
+##Here Measure of Creamed.eggs.Asparagus.1936 plotted against Measure of Creamed.eggs.Asparagus.2006
+plot(Creamed.eggs.Asparagus.1936_2006$Measure.x,Creamed.eggs.Asparagus.1936_2006$Measure.y,main = "Creamed.eggs.Asparagus_Measure")
+##Here Amount of Creamed.eggs.Asparagus.1936 plotted against Amount of     Creamed.eggs.Asparagus.2006
+plot(Creamed.eggs.Asparagus.1936_2006$Amount.x,Creamed.eggs.Asparagus.1936_2006$Amount.y,main = "Creamed.eggs.Asparagus_Amount")
+
+
+
+
+
+## Merging the Seafood.salad1936 and Seafood.salad2006 by Ingredient and naming merged data frame as Seafood.salad1936_2006
+Seafood.salad1936_2006 <- merge(Seafood.salad1936,Seafood.salad2006,by = "Ingredient")
+
+##Printing Seafood.salad1936_2006 
+Seafood.salad1936_2006
+
+##we observe the measures are inconsistent.One has the cups and other has tbs.
+plot(Seafood.salad1936_2006$Measure.x,Seafood.salad1936_2006$Measure.y,main="Seafood.salad_Measure")
+
+
+##Here Amount of Seafood.salad1936 plotted against Amount of Seafood.salad2006
+plot(Seafood.salad1936_2006$Amount.x,Seafood.salad1936_2006$Amount.y,main = "Seafood.salad_Amount")
+
+
+
+
+
+```
+
+
+
+
+
+
+
+
+
+```{r}
+
+
+
+
+
+
+```
+
+##Merging all the tables which are newly created with NBD_NO column
+
+-Performing the basic merge function using rbind function
+
+-Here,I'm merging all the newly created data frames.This data frames also have a NBD_NO column
+
+-The data frames merged are 
+1.Creamed.eggs.Asparagus.1936, 
+2.Creamed.eggs.Asparagus.2006,
+3.Seafood.salad1936,
+4.Seafood.salad2006
+
+
+
+
+```{r}
+
+## Meging all the newly created data frames and naming it as All_Recipes_With_NBD_Column_merged 
+
+All_Recipes_With_NBD_Column_merged <- rbind(Creamed.eggs.Asparagus.1936,Creamed.eggs.Asparagus.2006,Seafood.salad1936,Seafood.salad2006) 
+
+
+## Printing All_Recipes_With_NBD_Column_merged
+All_Recipes_With_NBD_Column_merged
+
+```
+
+## Reading the Recipes.csv, appending rows for your recipes, then writing the table back to Recipes.csv.
+
+-The main aim of this step is documentation of the Recipe names into given Recipes file.
+
+-For this step,there are multiple ways of appending rows to the existing csv data frame.But I choosed to create one new data frame with all data tables which I worked on and then I used rbind function to merge them to the CSV data.
+
+-We would be able to determine the file names for the recipes by concatentating Recipe and Year, removing white space if necessary.
+
+
+
+
+
+
+```{r}
+
+## Reading the data from the given CSV file into Recipes_csv
+Recipes_csv <- read.csv("Recipes.csv",header = TRUE)
+
+##Printing Recipes_csv
+Recipes_csv
+
+
+##creating a new data frame with Recipe tables which I worked on and naming it as adding_rows_in.csv
+adding_rows_in.csv <- data.frame(Recipe = c("Seafood Salad","Seafood Salad","Creamed Eggs with Asparagus Tips Cockaigne","Creamed Eggs with Asparagus Tips Cockaigne"),
+                                 Year = c(1936,2006,1936,2006),
+                                 MinServings = c(4,6,6,4),
+                                 MaxServings = c(4,6,6,4)
+                                 
+)      
+
+## Adding newly created data frame "adding_rows_in.csv" to the Recipes_csv using rbind function.
+Recipes_csv  <- rbind(Recipes_csv,adding_rows_in.csv)
+
+
+## Printing Recipes_csv
+Recipes_csv
+                                 
+                           
+
+```

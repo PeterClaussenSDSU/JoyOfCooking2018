@@ -1,0 +1,143 @@
+---
+title: "Joy Of Cooking Midterm Project Prep"
+author: "Set 62"
+date: "07/24/2018"
+output:
+  word_document: default
+  html_document: default
+---
+
+# Part 1 - Assign Recipes
+
+First, generate a list of all files in the Recipes folder.
+```{r,eval=FALSE}
+recipes <- list.files(path = "./data/Recipes", pattern = '*.pdf')
+recipes[1:10]
+```
+
+Make this reproducible.
+```{r,eval=FALSE}
+set.seed(10010)
+```
+
+Create two randomly sampled list of recipe files and cycle this list through 80 rows
+
+```{r,eval=FALSE}
+recipe.pairs <- matrix(c(sample(recipes,80),sample(recipes,80)),ncol=2,nrow=80)
+#recipe.pairs
+```
+
+Are there any pairs across rows?
+
+```{r,eval=FALSE}
+sum(recipe.pairs[,1]==recipe.pairs[,2])
+```
+
+Write to a table
+
+```{r,eval=FALSE}
+write.csv(recipe.pairs, file="Recipe.Table.csv",row.names = FALSE)
+```
+
+```{r}
+SP.1936.vec1 = c(2, 'cup', 'mashed potatoes, prepared from recipe with whole milk and butter')
+SP.1936.vec2 = c(2, 'lrg', 'egg,raw')
+SP.1936.vec3 = c(1, 'lb', 'veal, ground, raw')
+SP.1936.vec4 = c(.5, 'cup', 'celery, fresh, diced')
+SP.1936.vec5 = c(.5, 'cup', 'gravy, beef, canned')
+SP.1936.vec6 = c(2, 'Tbsp', 'butter, salted')
+ShepherdsPie.1936.dat = data.frame(rbind(SP.1936.vec1, SP.1936.vec2, SP.1936.vec3, SP.1936.vec4, SP.1936.vec5, SP.1936.vec6))
+colnames(ShepherdsPie.1936.dat) = c('Amount', 'Measure', 'Ingredient')
+
+SP.2006.vec1 = c(1.5, 'lb', "potato, cooked, peeled, medium, 2 1/4 to 3 1/4 inch")
+SP.2006.vec2 = c(1, 'Tbsp', 'butter, salted')
+SP.2006.vec3 = c(3, 'Tbsp', 'oil, canola')
+SP.2006.vec4 = c(1, 'ea', "onion, yellow, fresh, medium, 2 1/2 inch")
+SP.2006.vec5 = c(1, 'ea', 'carrots, fresh, medium')
+SP.2006.vec6 = c(1, 'ea', "celery stalk, fresh, medium, 7.5 to 8 inch")
+SP.2006.vec7 = c(1, 'lb', "lamb, ground, Australian, raw, 15% fat")
+SP.2006.vec8 = c(1, 'Tbsp', 'flour, all pupose, self rising, enriched')
+SP.2006.vec9 = c(.75, 'cup', 'stock, chicken, prepared from recipe')
+SP.2006.vec10 = c(2, 'Tbsp', 'butter, salted')
+ShepherdsPie.2006.dat = data.frame(rbind(SP.2006.vec1, SP.2006.vec2, SP.2006.vec3, SP.2006.vec4, SP.2006.vec5, SP.2006.vec6, SP.2006.vec7, SP.2006.vec8, SP.2006.vec9, SP.2006.vec10))
+colnames(ShepherdsPie.2006.dat) = c('Amount', 'Measure', 'Ingredient')
+
+HG.1936.vec1 = c(2, 'lb', "beef steak, bottom round, raw, 1/8 inch trim, URMIS 1466")
+HG.1936.vec2 = c(4, 'Tbsp', 'butter, salted')
+HG.1936.vec3 = c(1.5, 'cup', 'onion, yellow, fresh, chopped')
+HG.1936.vec4 = c(1, 'cup', 'stock, beef, prepared from recipe')
+HG.1936.vec5 = c(3, 'Tbsp', 'butter, salted')
+HG.1936.vec6 = c(2, 'Tbsp', 'flour, all purpose, self rising, enriched')
+HungarianGoulash.1936.dat = data.frame(rbind(HG.1936.vec1,HG.1936.vec2,HG.1936.vec3,HG.1936.vec4,HG.1936.vec5,HG.1936.vec6))
+colnames(HungarianGoulash.1936.dat) = c('Amount', 'Measure', 'Ingredient')
+
+HG.2006.vec1 = c(2, 'lb', 'beef, chuck, stew meat, raw, choice, URMIS 1100')
+HG.2006.vec2 = c(.25, 'cup', 'butter, salted')
+HG.2006.vec3 = c(1.5, 'cup', 'onion, yellow, fresh, chopped')
+HG.2006.vec4 = c(1, 'cup', 'stock, beef, prepared from recipe')
+HG.2006.vec5 = c(.25, 'cup', 'flour, all purpose, self rising, enriched')
+HungarianGoulash.2006.dat = data.frame(rbind(HG.2006.vec1,HG.2006.vec2,HG.2006.vec3,HG.2006.vec4,HG.2006.vec5))
+colnames(HungarianGoulash.2006.dat) = c('Amount', 'Measure', 'Ingredient')
+
+write.table(ShepherdsPie.1936.dat, "Shepherds Pie.1936.tab", sep = "\t", row.names = FALSE)
+write.table(ShepherdsPie.2006.dat, "Shepherds Pie.2006.tab", sep = "\t", row.names = FALSE)
+write.table(HungarianGoulash.1936.dat, "Hungarian Goulash.1936.tab", sep = "\t", row.names = FALSE)
+write.table(HungarianGoulash.2006.dat, "Hungarian Goulash.2006.tab", sep = "\t", row.names = FALSE)
+
+```
+
+Read the table in and print:
+
+```{r,eval=FALSE}
+recipes.tab <- list.files(path = ".", pattern = '*.tab')
+
+recipe.all = data.frame()
+for(f in recipes.tab)
+{
+  recipe.name = sapply(strsplit(basename(f), ".", fixed = TRUE), '[', 1)
+  recipe.year = sapply(strsplit(basename(f), ".", fixed = TRUE), '[', 2)
+
+  recipe = read.table(f, sep = "\t", skip = 1)
+
+  recipe.name.col = data.frame(rep(recipe.name, (nrow(recipe))))
+  recipe.year.col = data.frame(rep(recipe.year, (nrow(recipe))))
+  
+  recipe.final = cbind(recipe.name.col, recipe.year.col, recipe)
+  recipe.all = rbind(recipe.final, recipe.all)
+}
+
+print("Beef Stroganoff delimiters changed to <TAB> following the discussion thread consensus. The following recipes were merged successfully:")
+recipes.tab
+
+colnames(recipe.all) = c('Recipe', 'Year', 'Amount', 'Measure', 'Ingredient')
+head(recipe.all)
+
+```
+
+# Part 2 - Check Nutrient Data.
+
+We will be using the USDA food nutrient database, found at https://www.ars.usda.gov/northeast-area/beltsville-md-bhnrc/beltsville-human-nutrition-research-center/nutrient-data-laboratory/docs/usda-national-nutrient-database-for-standard-reference/
+
+Run this to make sure your system can read the required nutrient database tables.
+```{r}
+weight.dat <- read.table("WEIGHT.txt",header=FALSE,sep="^",quote="~")
+names(weight.dat) <- c("NDB_No","Seq","Amount","Msre_Desc","Gm_Wgt","Num_Data_Pts","Std_Dev")
+head(weight.dat)
+```
+
+```{r}
+food_des.dat <- read.table("FOOD_DES.txt",header=FALSE,sep="^",quote="~")
+names(food_des.dat) <- c("NDB_No","FdGrp_Cd","Long_Desc","Shrt_Desc",
+"ComName","ManufacName","Survey","Ref_desc","Refuse","SciName",
+"N_Factor","Pro_Factor","Fat_Factor","CHO_Factor")
+dim(food_des.dat)
+head(food_des.dat)
+```
+
+```{r}
+nut_data.dat <- read.table("NUT_DATA.txt",header=FALSE,sep="^",quote="~")
+names(nut_data.dat) <- c("NDB_No","Nutr_No","Nutr_Val","Num_Data_Pts","Std_Error",
+"Src_Cd","Deriv_Cd","Ref_NDB_No","Add_Nutr_Mark","Num_Studies",
+"Min","Max","DF","Low_EB","Up_EB","Stat_cmt","AddMod_Date")
+head(nut_data.dat)
+```

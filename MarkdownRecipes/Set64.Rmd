@@ -1,0 +1,330 @@
+---
+title: "Midterm project"
+author: "Set 64"
+date: "6/25/2018"
+output:
+  word_document: default
+  html_document: default
+---
+
+# Part 1 - Assign Recipes
+
+First, generate a list of all files in the Recipes folder.
+```{r,echo=FALSE}
+#Downloaded the pdf files from the midterm project and imported with length we get the number of recieps
+recipes <- list.files(path = "~/Downloads/reciepe", pattern = '*.pdf')
+length(recipes)
+
+```
+
+
+
+Make this reproducible.
+```{r,echo=FALSE}
+#setting the seed
+set.seed(10010)
+```
+
+
+
+Create two randomly sampled list of recipe files and cycle this list through 80 rows
+
+```{r,echo=FALSE}
+#randomly sampled the reciepss
+recipe.pairs <- matrix(c(sample(recipes),sample(recipes)),ncol=2,nrow=108)
+recipe.pairs
+```
+
+Are there any pairs across rows?
+
+```{r,echo=FALSE}
+#checking number of pairs across
+sum(recipe.pairs[,1]==recipe.pairs[,2])
+```
+
+Write to a table
+
+```{r,echo=FALSE}
+#creating the samples into the csv files and exporting
+write.csv(recipe.pairs, file="~/Downloads/Recipe.Table.csv",row.names = FALSE)
+```
+
+Read the table in and print:
+
+```{r,echo=FALSE}
+#reading the table exported and printing it
+Recipe.Table <- read.csv("~/Downloads/Recipe.Table.csv",header=FALSE,skip=1)
+print(Recipe.Table)
+```
+
+
+# Part 2 - Check Nutrient Data.
+
+We will be using the USDA food nutrient database, found at https://www.ars.usda.gov/northeast-area/beltsville-md-bhnrc/beltsville-human-nutrition-research-center/nutrient-data-laboratory/docs/usda-national-nutrient-database-for-standard-reference/
+
+Run this to make sure your system can read the required nutrient database tables.
+```{r}
+
+#using the nutirnt database to get the information of the foods and their nutrient vaues
+weight.dat <- read.table("WEIGHT.txt",header=FALSE,sep="^",quote="~")
+names(weight.dat) <- c("NDB_No","Seq","Amount","Msre_Desc","Gm_Wgt","Num_Data_Pts","Std_Dev")
+head(weight.dat)
+
+```
+
+```{r}
+#summary statistics of the nutrient data 
+summary(weight.dat)
+```
+
+```{r}
+#food _des data is imported is having the information of the foods and the nutrient values of the foods 
+food_des.dat <- read.table("FOOD_DES.txt",header=FALSE,sep="^",quote="~")
+names(food_des.dat) <- c("NDB_No","FdGrp_Cd","Long_Desc","Shrt_Desc",
+"ComName","ManufacName","Survey","Ref_desc","Refuse","SciName",
+"N_Factor","Pro_Factor","Fat_Factor","CHO_Factor")
+dim(food_des.dat)
+
+```
+
+```{r}
+#header gives to information of the first few rows of the table 
+head(food_des.dat)
+```
+
+```{r}
+#summary statustics
+
+summary(food_des.dat)
+```
+
+
+```{r}
+#nutrients data of the food have the nutrient values downoaded from the database 
+nut_data.dat <- read.table("NUT_DATA.txt",header=FALSE,sep="^",quote="~")
+names(nut_data.dat) <- c("NDB_No","Nutr_No","Nutr_Val","Num_Data_Pts","Std_Error",
+"Src_Cd","Deriv_Cd","Ref_NDB_No","Add_Nutr_Mark","Num_Studies",
+"Min","Max","DF","Low_EB","Up_EB","Stat_cmt","AddMod_Date")
+head(nut_data.dat)
+
+```
+
+```{r}
+summary(nut_data.dat)
+```
+
+
+
+
+
+```{r}
+#Creating for the reciepes given to me swiss steak 1936 and scaulopped cauliflower,
+#creating table for the swiss steak 1936
+SwissSteak.1936.dat <- data.frame(
+    Amount = c(2.00, 0.25, 0.25, 0.50, 2.00 , 3.00),
+    Measure = c('lb','cup','cup','cup','cup','Tbs'),
+    Ingredient = c('beefsteak, bottom round, raw, 1/8 trim , URMIS 1466','flour, allpurpose, selfrising,enriched', 'fat, bacon, cooked, rendered', 'onion, yellow, fresh,chopped', 'juice, tomato, canned , unsalted', 'flour, allpurpose, self rising,enriched')
+)
+SwissSteak.1936.dat
+
+```
+```{r}
+##Creating for the reciepes given to me swiss steak2006
+SwissSteak.2006.dat <- data.frame(
+    Amount = c(2.00, 0.25,2.00, 0.5, 0.33, 0.33 , 0.33,1.00,1.00),
+    Measure = c('lb','cup','Tbs','cup','cup','cup','cup', 'cup' ,'Tbs'),
+    Ingredient = c('beef steak, bottom round, raw, 1/8 trim , URMIS 1466','flour, allpurpose, selfrising, enriched','oil ,canola', 'onion, yellow, fresh,chopped','carrots,fresh, chopped','bell-pepper, green, fresh,chopped', 'celery,fresh,diced','stock, beef, prepared from reciepe','flour, all purpose , self rising , enriched ')
+)
+SwissSteak.2006.dat
+
+```
+
+
+
+```{r}
+##Creating for the reciepes given to me scalloped cauliflower
+ScallopedCauliflower.1936.dat <- data.frame(
+    Amount = c(1.00, 2.00, 1.50, 1.00, 0.25, 2.00),
+    Measure = c('ea','Tbs','Tbs','cup','cup','Tbs'),
+    Ingredient = c('cauliflower, fresh, medium head, 5 to 6','butter,salted','flour, allpurpose,self rising, enriched', 'milk, whole, 3.25%', 'bread crumbs, plain, dry, grated', 'butter, salted'  )
+)
+ScallopedCauliflower.1936.dat
+
+```
+
+
+
+
+```{r}
+##Creating for the reciepes given to me scalloped cauliflower
+ScallopedCauliflower.2006.dat <- data.frame(
+    Amount = c(1.00, 4.00, 4.00, 2.00, 0.50,0.33),
+    Measure = c('ea','Tbs','Tbs','cup','cup','cup'),
+    Ingredient = c('cauliflower, fresh, medium head, 5 to 6','butter,salted','flour, allpurpose,self rising, enriched', 'milk, whole, 3.25%', 'bread crumbs, plain, dry, grated', 'cheese, parmesan, grated'  )
+)
+ScallopedCauliflower.2006.dat
+
+```
+
+```{r}
+# grep to find out the closest of the ingredients and trying to replace with standrad ingredients but i was unable to do i get an error
+grep('(S|s)teak', food_des.dat$Long_Desc, value = TRUE)
+
+```
+
+```{r}
+# grep to find out the closest of the ingredients for the scualopped cauliflower 
+grep('(C|c)auliflower', food_des.dat$Long_Desc, value = TRUE)
+
+```
+
+```{r}
+#exporting the dataset to the tab swisssteak1936
+write.table(SwissSteak.1936.dat, "SwissSteak.1936.tab", row.names=FALSE, sep=' \t')
+```
+
+
+```{r}
+#exporting the dataset to the tab swisssteak2006
+write.table(SwissSteak.2006.dat, "SwissSteak.2006.tab", row.names=FALSE, sep=' \t')
+```
+
+
+```{r}
+#exporting the dataset to the tab ScallopedCauliflower1936
+write.table(ScallopedCauliflower.1936.dat, "ScallopedCauliflower.1936.tab", row.names=FALSE, sep=' \t')
+```
+
+
+```{r}
+#exporting the dataset to the tab ScallopedCauliflower2006
+write.table(ScallopedCauliflower.2006.dat, "ScallopedCauliflower.2006.tab", row.names=FALSE, sep=' \t')
+```
+
+```{r}
+#Reading the tab files exported to bring back and add to the reciepes files 
+SwissSteak1936 <- read.table("SwissSteak.1936.tab", header = TRUE, sep = "\t")
+SwissSteak1936
+```
+
+```{r}
+#Reading the tab files exported to bring back and add to the reciepes files 
+SwissSteak2006 <- read.table("SwissSteak.2006.tab", header = TRUE, sep = "\t")
+SwissSteak2006
+```
+```{r}
+#Reading the tab files exported to bring back and add to the reciepes files 
+ScallopedCauliflower1936 <- read.table("ScallopedCauliflower.1936.tab", header = TRUE, sep = "\t")
+ScallopedCauliflower1936
+```
+
+
+
+```{r}
+#Reading the tab files exported to bring back and add to the reciepes files 
+ScallopedCauliflower2006<- read.table("ScallopedCauliflower.2006.tab", header = TRUE, sep = "\t")
+ScallopedCauliflower2006
+```
+
+
+
+```{r}
+#Reading the tab files exported to bring back and add to the reciepes files 
+ScallopedCauliflower2006<- read.table("ScallopedCauliflower.2006.tab", header = TRUE, sep = "\t")
+ScallopedCauliflower2006
+```
+
+
+```{r}
+#adding year and reciepe to the tab file for scalloped cauliflower
+ScallopedCauliflower1936$Recipe <- "ScallopedCauliflower"
+ScallopedCauliflower1936$Year <- 1936
+ScallopedCauliflower1936
+```
+```{r}
+#adding year and reciepe to the tab file for scalloped cauliflowe 2006
+ScallopedCauliflower2006$Recipe <- "ScallopedCauliflower"
+ScallopedCauliflower2006$Year <- 2006
+ScallopedCauliflower2006
+
+```
+
+```{r}
+#adding year and reciepe to the tab file for swiss steak 1936
+SwissSteak1936$Recipe <- "SwissSteak"
+SwissSteak1936$Year <- 1936
+SwissSteak1936
+
+```
+
+
+```{r}
+#adding year and reciepe to the tab file for swiss steak 2006
+SwissSteak2006$Recipe <- "SwissSteak"
+SwissSteak2006$Year <- 2006
+SwissSteak2006
+
+```
+
+```{r}
+#importing the beef strongoff reciepe into the R
+BeefStroganoff2006<- read.table("BeefStroganoff.2006.tab", header = TRUE, sep = '\t')
+BeefStroganoff2006
+```
+```{r}
+#FROM THE RECIEPES TABLE PULLING INFORMATION ABOUT THE BEEF STRONGOFF
+Recipes <- read.table("Recipes.csv", header = TRUE, sep = ',')
+Recipes
+```
+
+```{r}
+#Creating a swiss steak dataframe with minimum and maximum servings 
+Swisssteak<- data.frame(
+Recipe = c('SwissSteak','SwissSteak'),
+Year = c('1936','2006'),
+MinServings = c('4','4'),
+MaxServings = c('4','4'))
+Swisssteak
+```
+```{r}
+#binding swiss steak with beef strongoff
+Recipes<- rbind(Recipes, Swisssteak )
+Recipes
+```
+
+```{r}
+
+#creating a dataframe scalloped cauliflower with the maximum and minimum servings 
+ScallopedCauliflower<- data.frame(
+Recipe = c('ScallopedCauliflower','ScallopedCauliflower'),
+Year = c('1936','2006'),
+MinServings = c('4','4'),
+MaxServings = c('4','4'))
+ScallopedCauliflower
+```
+```{r}
+#Sbinding the BeefStroganoff,swisssteak and scalloped caulifliwer
+Recipes <- rbind(Recipes, ScallopedCauliflower )
+Recipes
+```
+```{r}
+#Comparison of amount of ingredients SwissSteak.1936 vs 2006
+plot(SwissSteak.2006.dat$Amount, col="blue", main="Comparison of amount of ingredients SwissSteak.1936 vs 2006", xlab = "Ingredient", ylab = "Amount")
+points(SwissSteak.1936.dat$Amount, col="green")
+
+```
+
+
+```{r}
+#Comparison of amount of ingredients ScallopedCauliflower 1936 vs 2006
+plot(ScallopedCauliflower.2006.dat$Amount, col="blue", main="Comparison of amount of ingredients ScallopedCauliflowern1936 vs 2006", xlab = "Ingredient ", ylab = "Amount")
+points(ScallopedCauliflower.1936.dat$Amount, col="green")
+
+```
+
+
+
+
+
+
+

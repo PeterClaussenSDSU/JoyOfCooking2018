@@ -1,0 +1,286 @@
+---
+title: "Midterm Project"
+author: "Set 54"
+date: "July 20, 2018"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r}
+setwd("./")
+```
+
+# Data
+
+We begin by creating four data frames which include the ingredients, their amounts, and their measurements (units) for Mushroom Souffle and Meat Loaf, from the 1936 and 2006 editions of The Joy of Cooking. These recipes were transcribed from the PDF formatted documents. 
+
+```{r}
+mushroom.souffle.36 <- data.frame(
+  Amount = c(1.5, .75, .25, 2, 3, 1, 3), 
+  Measure = c("Tbs", "lb", "cup", "Tbs", "Tbs", "cup", "lrg"), 
+  Ingredient = c("butter, salted", "mushrooms, fresh", "celery, cooked, drained, diced", "butter, salted", "flour, all purpose, self rising, enriched", "milk, whole, 3.25%%", "egg, raw")
+)
+
+mushroom.souffle.06 <- data.frame(
+  Amount = c(0.25, 4.5, 4.5, 1.5, 6, .5, 1.5, 2), 
+  Measure = c("cup", "Tbs", "Tbs", "cup", "lrg", "cup", "cup", "Tbs"), 
+  Ingredient = c("bread crumbs, plain, dry, grated", "butter, salted", "flour, all purpose, self rising, enriched", "milk, whole, 2.5%", "egg, raw", "cheese, gruyere, shredded", "mushrooms, cooked, drained", "butter, salted")
+)
+
+meat.loaf.36 <- data.frame(
+  Amount = c(1, 1, 1, .25, 2),
+  Measure = c("lb", "ea", "Tbs", "cup", "Tbs"),
+  Ingredient = c("beef, ground, raw, 20% fat", "egg yolk, raw, large", "butter, salted", "butter, salted", "flour, all purpose, self rising, enriched")
+)
+
+meat.loaf.06 <- data.frame(
+  Amount = c(12, 12, 1.5, 1, .67, 3),
+  Measure = c("oz", "oz", "cup", "cup", "cup", "lrg"),
+  Ingredient = c("beef, ground, raw, 20% fat", "beef, ground, raw, 10% fat", "onion, yellow, fresh, chopped", "bread crumbs, plain, dry, grated", "catsup", "egg, raw")
+)
+
+```
+
+
+#Exporting and Importing 
+
+Next, each data frame is saved as a tab delimited file with the filename format "[RecipeName].[YYYY].tab".
+
+```{r}
+write.table(mushroom.souffle.36, "MushroomSouffle.1936.tab", row.names = FALSE, sep = " ")
+write.table(mushroom.souffle.06, "MushroomSouffle.2006.tab", row.names = FALSE, sep = " ")
+write.table(meat.loaf.36, "MeatLoaf.1936.tab", row.names = FALSE, sep = " ")
+write.table(meat.loaf.06, "MeatLoaf.2006.tab", row.names = FALSE, sep = " ")
+```
+
+
+The Mushroom Souffle and Meat Loaf files are read back into R as data frames to verify the import format. The Beef Stroganoff recipes for 1997 and 2006 are also read-in. All data frames were manually reviewed for consistency of format.
+
+```{r}
+MeatLoaf.2006 <- read.table("MeatLoaf.2006.tab", header = TRUE, sep = " ")
+MeatLoaf.1936 <- read.table("MeatLoaf.1936.tab", header = TRUE, sep = " ")
+MushroomSouffle.2006 <- read.table("MushroomSouffle.2006.tab", header = TRUE, sep = " ")
+MushroomSouffle.1936 <- read.table("MushroomSouffle.1936.tab", header = TRUE, sep = " ")
+BeefStroganoff.1997 <- read.table("BeefStroganoff.1997.tab", header = TRUE)
+BeefStroganoff.2006 <- read.table("BeefStroganoff.2006.tab", header = TRUE)
+```
+
+
+Two data files from the USDA National Nutrient Database for Standard Reference are imported to allow cross-referencing of the recipe's units and ingredients. The purpose of this is to ensure consistency in our data so that it can be properly analyzed and summarized. Column names from both of these files are transcribed from the database's Documentation and User Guide. (https://www.ars.usda.gov/northeast-area/beltsville-md-bhnrc/beltsville-human-nutrition-research-center/nutrient-data-laboratory/docs/usda-national-nutrient-database-for-standard-reference/)
+
+```{r}
+weight.dat <- read.table("WEIGHT.txt", sep = "^", quote = "~")
+names(weight.dat) <-c("NDB_No",	"Seq",	"Amount",	"Msre_Desc",	"Gm_Wgt",	"Num_Data_Pts",	"Std_Dev")
+
+food_desc.dat <- read.table("FOOD_DES.txt", sep = "^", quote = "~")
+names(food_desc.dat) <- c("NDB_No",	"FdGrp_Cd",	"Long_Desc",	"Shrt_Desc",	"ComName",	"ManufacName",	"Survey",	"Ref_desc",	"Refuse",	"SciName",	"N_Factor",	"Pro_Factor",	"Fat_Factor",	"Cho_Factor")
+```
+
+
+#Merging
+
+We merge all of the recipe data together to form a single data frame. This is acheived by creating a list of all of the recipes, and then using do.call and rbind to merge them. 
+
+```{r}
+recipes <- c(MeatLoaf.1936, MeatLoaf.2006, MushroomSouffle.1936, MushroomSouffle.2006, BeefStroganoff.1997, BeefStroganoff.2006)
+
+recipe_table <- do.call("rbind", list(MeatLoaf.1936, MeatLoaf.2006, MushroomSouffle.1936, MushroomSouffle.2006, BeefStroganoff.1997, BeefStroganoff.2006))
+```
+
+
+#Cross referencing the ingredients
+
+In order to cross-reference the ingredients used in our recipes with the table from the USDA website, we first capitalize all of the first letters in our ingredients to simplify searching. Then, we create a list of unique ingredient names. 
+```{r}
+#Create a list of unique ingredients from recipe_table
+firstup <- function(x) {
+   substr(x, 1, 1) <- toupper(substr(x, 1, 1))
+x
+}
+
+recipe_table$Ingredient <- sapply(as.character(recipe_table$Ingredient), firstup)
+unique_ingredients <- unique(sort(recipe_table$Ingredient))
+unique_ingredients
+```
+
+Next, we create a for loop to try and find exact matches between our ingredients and the USDA table. We save the NBD_No to a vector, "USDA_matched". 
+```{r}
+#Create empty list for USDA matched ingredients
+USDA_matched <- c()
+
+for (i in unique_ingredients) {
+  if (i %in% food_desc.dat$Long_Desc) {
+  print(paste("Match found for ", i, ". NDB_No ", food_desc.dat[food_desc.dat$Long_Desc == i, 1]))  
+} else {
+  print(paste(i, " is not matched."))
+}
+}
+
+USDA_matched
+```
+
+This method shows that there are only three exact matches between any of the ingredients in recipe_table and the Long_Desc column in food_desc.dat. We must next look for partial matches. Two functions are created to simplify the partial search of ingredient names and the retrieval of the associated NBD_no. 
+```{r}
+#Create new column in recipe table for NDB_No
+recipe_table$NDB_No <- 0
+
+#Create function to partial search 
+USDAref <- function(x) {
+  food_desc.dat[grep(x, food_desc.dat$Long_Desc), c(1,3)]
+}
+
+#Function to simplify return of values for NBD_no
+r <- function(x, y) {
+  ifelse(recipe_table$Ingredient == x, y, recipe_table$NDB_No)
+}
+```
+
+
+Next, we must manually create partial searches for all of the recipe ingredients that did not have an exact match, and use our best judgement to determine which USDA ingredient is the closest match. We add the NBD_no for this ingredient to recipe_table. 
+```{r}
+#Butter, salted
+recipe_table$NDB_No <- r("Butter, salted", 1001)
+
+#Oil, canola
+recipe_table$NDB_No <- r("Oil, canola", 4582)
+
+#Catsup
+recipe_table$NDB_No <- r("Catsup", 11935)
+
+#"Beef roast, tenderloin, raw, 0\" trim"
+USDAref("(B|b)eef.*tenderloin.*0.*raw.*") #23336
+recipe_table$NDB_No <- r("Beef roast, tenderloin, raw, 0\" trim", 23336)
+
+#"Beef, ground, raw, 10% fat" 
+USDAref("(B|b)eef.*(G|g)round.*10.*") #23562
+recipe_table$NDB_No <- r("Beef, ground, raw, 10% fat", 23562)
+
+#"Beef, ground, raw, 20% fat""
+USDAref("(B|b)eef.*(G|g)round.*20.*") #23572
+recipe_table$NDB_No <- r("Beef, ground, raw, 20% fat", 23572)
+
+#"Bread crumbs, plain, dry, grated"
+USDAref("(B|b)read.*(C|c)rumb.*") #18079
+recipe_table$NDB_No <- r("Bread crumbs, plain, dry, grated", 18079)      
+
+#"Celery, cooked, drained, diced"            
+USDAref("Celery") #11144
+recipe_table$NDB_No <- r("Celery, cooked, drained, diced", 11144)
+
+#"Egg yolk, raw, large", "Egg, raw"                         
+USDAref("Egg") #whole-1123, yolk-1125
+recipe_table$NDB_No <- r("Egg yolk, raw, large", 1125)
+recipe_table$NDB_No <- r("Egg, raw", 1123)
+
+#"Flour, all purpose, self rising, enriched" 
+USDAref("(F|f)lour.*rising.*(E|e)nriched.*") #20082
+recipe_table$NDB_No <- r("Flour, all purpose, self rising, enriched", 20082)
+  
+#"Cheese, gruyere, shredded"                
+USDAref("(G|g)ruyere") #1023
+recipe_table$NDB_No <- r("Cheese, gruyere, shredded", 1023)
+  
+#"Milk, whole, 2.5%"                        
+USDAref("Milk.*whole.*") #No match, using 3.25 as closest-1077
+recipe_table$NDB_No <- r("Milk, whole, 2.5%", 1077)
+
+#"Milk, whole, 3.25%%"                       
+USDAref("Milk.*whole.*3.*") #1077
+recipe_table$NDB_No <- r("Milk, whole, 3.25%", 1077)
+
+#"Mushrooms, cooked, drained"               
+USDAref("Mushroom.*cooked.*") #type of mushroom unspecified in recipe, selected white-11261
+recipe_table$NDB_No <- r("Mushrooms, cooked, drained", 11261)
+
+#"Mushrooms, fresh"                          
+USDAref("Mushroom.*raw.*") #type of mushroom unspecified in recipe, selected white-11260
+recipe_table$NDB_No <- r("Mushrooms, fresh", 11260)
+
+#"Onion, yellow, fresh, chopped", "Onion, yellow, fresh, medium, 2 1/2\"" 
+USDAref("Onion.*") #No raw yellow onions, selected "Onions, raw"-11282
+recipe_table$NDB_No <- r("Onion, yellow, fresh, chopped", 11282)
+recipe_table$NDB_No <- r("Onion, yellow, fresh, medium, 2 1/2\"", 11282)
+
+#"Mustard, dijon"
+USDAref("(M|m)ustard") #Dijon mustard not found, selected yellow-2046
+recipe_table$NDB_No <- r("Mustard, dijon", 2046)
+
+#"Sour cream, cultured" 
+USDAref("(S|s)our.*(C|c)ream.*") #Fat content not specified in recipe, selected "reduced fat"-1178
+recipe_table$NDB_No <- r("Sour cream, cultured", 1178)
+
+#"Stock, beef, prepared from recipe#
+USDAref("(S|s)tock.*(B|b)eef.*") #6170
+recipe_table$NDB_No <- r("Stock, beef, prepared from recipe", 6170)
+
+```
+
+
+After the manual review and selection of appropriate USDA ingredients, we create a new data frame which includes just the NBD_no and the Long_Desc columns from the USDA dataframe. Next we merge this with recipe_table
+```{r}
+food_ndb <- food_desc.dat[,c(1,3)]
+recipe_table <- merge(recipe_table, food_ndb, by.x = "NDB_No")
+
+```
+
+
+We can view recipe_table to make sure that the Long_Desc column and the Ingredient column match as expected, then delete the "old" Ingredient column and re-name Long_Desc to Ingredient. 
+```{r}
+#view recipe_table to make sure that the Long_Desc column and Ingredient column match as expected
+recipe_table
+
+#Delete current ingredient column, and re-name Long_Desc as new "Ingredient" column
+recipe_table$Ingredient <- NULL
+colnames(recipe_table)[4] <- "Ingredient"
+```
+
+#Checking for errors
+
+In order to check for errors in our recipe data, either from transcription or from the original source, we create new data frames which will merge each old and new recipe by ingredient. We view these data frames and determine what corrections need to be made.
+```{r}
+compare_beefstr <- merge(BeefStroganoff.1997, BeefStroganoff.2006, by = "Ingredient", all = TRUE)
+compare_beefstr
+#The merged table for beef stroganoff shows an obvious error in the amount of sour cream in the 2006 recipe. Instead of 3 cups, it should be 1 cup. It should also be noted that because these ingredients use different units, they will need to be converted to be compared. 
+
+compare_meatloaf <- merge(MeatLoaf.1936, MeatLoaf.2006, by = "Ingredient", all = TRUE)
+compare_meatloaf
+#The meat loaf recipes from 1936 and 2006 share very few ingredients. In fact, they have no common ingredients besides the ground beef. In addition, the units for the ground beef are pounds in 1936 and oz in 2006. These will need to be converted in order to be commpared. 
+
+compare_mushroomsouf <- merge(MushroomSouffle.1936, MushroomSouffle.2006, by = "Ingredient", all = TRUE)
+compare_mushroomsouf
+#An increase in amount for almost all similar is consistent with the increase in the number of servings for this recipe from 4 in 1936 to 6 in 2006.
+```
+
+
+By looking at weight.dat, we can see that most of the units are written in all lower-case letters. By changing our column to all lower-case as well, it will make it easier to cross-reference the data. We can also fix the error in the beef stroganoff recipe. 
+```{r}
+recipe_table$Measure <- tolower(recipe_table$Measure)
+
+#Fix amount of sour cream in the beef stroganoff recipe
+recipe_table[recipe_table$Ingredient == "Sour cream, reduced fat" & recipe_table$Measure == "cup", 2] <- 1
+```
+
+
+#Servings per recipe
+
+Lastly, we add our recipes and their minimum and maximum number of servings to the recipes.csv file and export. 
+```{r}
+#Read recipes.csv
+#PMC changed case to match sample file.
+recipes.csv <- read.csv("Recipes.csv")
+
+#create df for meat loaf and mushroom souffle
+rec2 <- data.frame( Recipe = c("MeatLoaf", "MeatLoaf", "Mushroom Souffle", "Mushroom Souffle"),
+Year = c("1936", "2006", "1936", "2006"),
+MinServings = c(6, 8, 4, 6),
+MaxServings = c(6, 8, 4, 6))
+
+#bind recipes.csv and rec2 by row
+recipes.csv <- rbind(recipes.csv, rec2)
+
+#Export recipes.csv
+#PMC - OK to overwrite
+write.csv(recipes.csv, "Recipes.csv")
+```
+

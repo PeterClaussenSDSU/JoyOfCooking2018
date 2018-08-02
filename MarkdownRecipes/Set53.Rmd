@@ -1,0 +1,538 @@
+---
+title: "Midterm Project Project"
+author: "Set 53"
+date: "7/21/2018"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+#Create Data table for Herring Salad and Sukiyaki recipes: Step - 1
+
+
+```{r}
+HerringSalad.1936.dat<-data.frame (Amount=c(12.00,1.00,6 ,2 ,1.5 ,0.50 ,0.50 ,2.00 ,
+                                            0.50 ,3.00 ,1.00 ,1.00 ,2.00 ),
+Measure=c('lb', 'cup','oz','lrg','cup','cup','cup','ea','cup','cup','cup','cup','Tbs'),
+Ingredient=c('herring, atlantic, raw, fillet','wine, red',
+'veal, cooked','egg,raw','beets, pickled, caanned, sliced, in liquid',
+'onion, yellow, fresh, chopped','pickles, dill, chopped',
+'celery stalk, fresh, medium, 7.5\" to 8\" ','potato, cooked, peeled, diced',
+'apple, refesh, sliced','almonds, dry roastd, whole, unsalted',
+'sugar,  white, granulated, granulated',' horseradish, prepared'))
+
+HerringSalad.1936.dat
+
+
+
+
+
+```
+
+```{r}
+sukiyaki.2006.dat<-data.frame (
+Amount=c(2.00,0.50,6.00,2.00,2.00,2.00,0.50,.025,0.50,1.00,3.00,4.00),
+Measure=c('lb','cup','ea','cup','cup','cup','cup','cup','cup','tsp','Tbs','cup' ),
+Ingredient=c('beef roast, tenderloin, raw, 0\" trim','onion, yellow, fresh, sliced',
+'green onion, fresh, tops & bulb, medium,4 1/8\" ','mushrooms, fresh, sliced',
+'cabbage, napa, fresh','bamboo shoots, canned, sliced, drained',
+'tofu, regular, with calcium sulfate, 1/4 block','soy sauce, from soy & wheat',
+'stock, chicken, prepared from recipe','sugar, white, granulated, granulated',
+'oil, canola','rice, white, cooked, long grain, unriched')
+)
+
+sukiyaki.2006.dat
+```
+
+```{r}
+
+sukiyaki.1936.dat<-data.frame (
+Amount=c(0.25,2.50,2.50,2.00,20.00,2.00,2.00,0.50,0.25,2.00,5.00),
+Measure=c('lb','lb','cup','cup','ea','ea','ea','lb','cup','Tbs','cup'),
+Ingredient=c(
+'suet, beef, raw','beef roast, tenderloin, raw, 0\" trim',
+'stock, beef, prepared from recipe','bamboo shoots, canned, sliced, drained',
+'green onion, fresh, tops & bulb, medium,4 1/8\" ',
+'bell pepper, green, fresh, medium, 2 1/2\" ',
+'celery stalk, fresh, medium, 7.5\" to 8\" ',
+'mushrooms,fresh',
+'soy sauce, from soy & wheat',
+'sugar, white, granulated, granulated',
+'rice, white, cooked, long grain, unriched'))
+
+sukiyaki.1936.dat
+
+```
+
+```{r}
+HerringSalad.2006.dat<-data.frame(
+Amount=c(36.00,3.00,1.50,1.00,0.50,0.50,0.50,2,2.00,1.00,1.00,2.00),
+Measure=c('oz','cup','cup','cup','cup','cup','cup','lrg','ea','cup','cup','Tbs'),
+Ingredient=c('herring, atlantic, raw, fillet','apple, refesh, sliced',
+'beets, pickled, caanned, sliced, in liquid',
+'almonds, dry roastd, whole, unsalted',
+'onion, yellow, fresh, chopped','pickles, dill, chopped',
+'potato, cooked, peeled, diced','egg,raw',
+'celery stalk, fresh, medium, 7.5\" to 8\" ',
+'wine, red','sugar,  white, granulated, granulated','horseradish, prepared')
+)
+
+HerringSalad.2006.dat
+```
+
+```{r}
+
+```
+
+
+_My recipes with NDB_No for both herring salad and sukiyaki select from FOOD_DES.txt whereever not found exact match closest Long_Desc was chosen_
+
+
+
+```{r}
+my.HerringSalad.1936.dat<-data.frame (Amount=c(12.00,1.00,6 ,2 ,1.5 ,0.50 ,0.50 ,
+                                               2.00 ,0.50 ,3.00 ,1.00 ,1.00 ,2.00 ),
+Measure=c(
+'lb', 
+'cup',
+'oz',
+'lrg',
+'cup',
+'cup',
+'cup',
+'ea',
+'cup',
+'cup',
+'cup',
+'cup',
+'Tbs'),
+Ingredient=c(
+"Fish, herring, Atlantic, raw" ,
+"Vinegar, red wine",
+"Veal, sirloin, separable lean and fat, cooked, braised",
+"Egg, whole, raw, fresh",
+"Beets, pickled, canned, solids and liquids",
+"Onions, yellow, sauteed",
+"Pickles, cucumber, dill or kosher dill",
+"Celery, raw",
+"Sweet potato, cooked, boiled, without skin",
+"Apples, raw, without skin",
+"Nuts, almonds",
+"Sugars, granulated",
+"Horseradish, prepared"),
+NDB_No=c(15039,2068,17135,1123,11609,11286,11937,11143,11510,9004,12061,19335,2055)
+)
+my.HerringSalad.1936.dat
+
+
+
+
+```
+
+```{r}
+my.sukiyaki.2006.dat<-data.frame (
+Amount=c(2.00,0.50,6.00,2.00,2.00,2.00,0.50,.025,0.50,1.00,3.00,4.00),
+Measure=c('lb','cup','ea','cup','cup','cup','cup','cup','cup','tsp','Tbs','cup' ),
+Ingredient=c(
+"Beef, round, tip round, roast, separable lean only, trimmed to 0\" fat, all grades, raw" ,
+"Onions, yellow, sauteed",
+"Onions, young green, tops only",
+"Mushrooms, white, raw",
+"Cabbage, raw",
+"Bamboo shoots, canned, drained solids",
+"Tofu, raw, regular, prepared with calcium sulfate",
+"Soy sauce made from soy and wheat (shoyu)",
+"Soup, stock, chicken, home-prepared" ,
+"Sugars, granulated" ,
+"Oil, canola",
+"Rice, white, long-grain, parboiled, unenriched, cooked"),
+NDB_No=c(23651,11286,11292,11260,11109,11028,16427,16123,6172,19335,4582,20447)
+)
+my.sukiyaki.2006.dat
+
+```
+
+```{r}
+
+my.sukiyaki.1936.dat<-data.frame (
+Amount=c(0.25,2.50,2.50,2.00,20.00,2.00,2.00,0.50,0.25,2.00,5.00),
+Measure=c('lb','lb','cup','cup','ea','ea','ea','lb','cup','Tbs','cup'),
+Ingredient=c(
+"Beef, variety meats and by-products, suet, raw",
+"Beef, round, tip round, roast, separable lean only, trimmed to 0\" fat, all grades, raw" ,
+"Soup, stock, beef, home-prepared",
+"Bamboo shoots, canned, drained solids",
+"Onions, young green, tops only" ,
+"Peppers, sweet, green, raw" ,
+"Celery, raw",
+"Mushrooms, white, raw" ,
+"Soy sauce made from soy and wheat (shoyu)" , 
+"Sugars, granulated" ,
+"Rice, white, long-grain, parboiled, unenriched, cooked"),
+NDB_N0=c(13335,23651,6170,11028,11292,11333,11143,11260,16123,19335,20447)
+)
+
+my.sukiyaki.1936.dat
+
+```
+
+```{r}
+
+my.HerringSalad.2006.dat<-data.frame(
+Amount=c(36.00,3.00,1.50,1.00,0.50,0.50,0.50,2,2.00,1.00,1.00,2.00),
+Measure=c(
+'oz',
+'cup',
+'cup',
+'cup',
+'cup',
+'cup',
+'cup',
+'lrg',
+'ea',
+'cup',
+'cup',
+'Tbs'),
+Ingredient=c(
+"Fish, herring, Atlantic, raw" ,
+"Apples, raw, without skin",
+"Beets, pickled, canned, solids and liquids",
+"Nuts, almonds",
+"Onions, yellow, sauteed",
+"Pickles, cucumber, dill or kosher dill",
+"Sweet potato, cooked, boiled, without skin",
+"Egg, whole, raw, fresh",
+"Celery, raw",
+"Vinegar, red wine",
+"Sugars, granulated",
+"Horseradish, prepared"),
+NDB_No=c(15039,9004,11609,12061,11286,11937,11510,1123,11143,2068,19335,2055)
+)
+
+my.HerringSalad.2006.dat
+
+```
+
+
+#Write each individual recipe to a tab delimited file : Step - 2 
+
+```{r}
+#Adding columns Recipe and Year from the file name, initialized with 0
+#Populating Recipe name and Year
+
+recipeyear<-strsplit("HerringSalad.1936.dat","\\.")[[1]]
+HerringSalad.1936.dat["Recipe"]<-0
+HerringSalad.1936.dat["Year"]<-0
+HerringSalad.1936.dat<-HerringSalad.1936.dat[c('Recipe','Year','Amount','Measure','Ingredient')]
+HerringSalad.1936.dat$Recipe <-recipeyear[1]
+HerringSalad.1936.dat$Year<- recipeyear[2] 
+
+recipeyear<-strsplit("HerringSalad.2006.dat","\\.")[[1]]
+HerringSalad.2006.dat["Recipe"]<-0
+HerringSalad.2006.dat["Year"]<-0
+HerringSalad.2006.dat<-HerringSalad.2006.dat[c('Recipe','Year','Amount','Measure','Ingredient')]
+HerringSalad.2006.dat$Recipe <-recipeyear[1]
+HerringSalad.2006.dat$Year<- recipeyear[2] 
+
+recipeyear<-strsplit("sukiyaki.1936.dat","\\.")[[1]]
+sukiyaki.1936.dat["Recipe"]<-0
+sukiyaki.1936.dat["Year"]<-0
+sukiyaki.1936.dat<-sukiyaki.1936.dat[c('Recipe','Year','Amount','Measure','Ingredient')]
+sukiyaki.1936.dat$Recipe <-recipeyear[1]
+sukiyaki.1936.dat$Year<- recipeyear[2] 
+
+recipeyear<-strsplit("sukiyaki.2006.dat","\\.")[[1]]
+sukiyaki.2006.dat["Recipe"]<-0
+sukiyaki.2006.dat["Year"]<-0
+sukiyaki.2006.dat<-sukiyaki.2006.dat[c('Recipe','Year','Amount','Measure','Ingredient')]
+sukiyaki.2006.dat$Recipe <-recipeyear[1]
+sukiyaki.2006.dat$Year<- recipeyear[2] 
+
+write.table(HerringSalad.1936.dat,"HerringSalad.1936.tab",row.names = FALSE)
+write.table(HerringSalad.2006.dat,"HerringSalad.2006.tab",row.names = FALSE)
+write.table(sukiyaki.1936.dat,"sukiyaki.1936.tab",row.names = FALSE)
+write.table(sukiyaki.2006.dat,"sukiyaki.2006.tab",row.names = FALSE)
+
+```
+
+```{r}
+recipeyear<-strsplit("my.HerringSalad.1936.dat","\\.")[[1]]
+my.HerringSalad.1936.dat["Recipe"]<-0
+my.HerringSalad.1936.dat["Year"]<-0
+my.HerringSalad.1936.dat<-my.HerringSalad.1936.dat[c('Recipe','Year','Amount','Measure','Ingredient')]
+my.HerringSalad.1936.dat$Recipe <-recipeyear[1]
+my.HerringSalad.1936.dat$Year<- recipeyear[2] 
+
+recipeyear<-strsplit("my.HerringSalad.2006.dat","\\.")[[1]]
+my.HerringSalad.2006.dat["Recipe"]<-0
+my.HerringSalad.2006.dat["Year"]<-0
+my.HerringSalad.2006.dat<-my.HerringSalad.2006.dat[c('Recipe','Year','Amount','Measure','Ingredient')]
+my.HerringSalad.2006.dat$Recipe <-recipeyear[1]
+my.HerringSalad.2006.dat$Year<- recipeyear[2] 
+
+recipeyear<-strsplit("my.sukiyaki.1936.dat","\\.")[[1]]
+my.sukiyaki.1936.dat["Recipe"]<-0
+my.sukiyaki.1936.dat["Year"]<-0
+my.sukiyaki.1936.dat<-my.sukiyaki.1936.dat[c('Recipe','Year','Amount','Measure','Ingredient')]
+my.sukiyaki.1936.dat$Recipe <-recipeyear[1]
+my.sukiyaki.1936.dat$Year<- recipeyear[2] 
+
+recipeyear<-strsplit("my.sukiyaki.2006.dat","\\.")[[1]]
+my.sukiyaki.2006.dat["Recipe"]<-0
+my.sukiyaki.2006.dat["Year"]<-0
+my.sukiyaki.2006.dat<-sukiyaki.2006.dat[c('Recipe','Year','Amount','Measure','Ingredient')]
+my.sukiyaki.2006.dat$Recipe <-recipeyear[1]
+my.sukiyaki.2006.dat$Year<- recipeyear[2] 
+
+write.table(my.HerringSalad.1936.dat,"my.HerringSalad.1936.tab",row.names = FALSE)
+write.table(my.HerringSalad.2006.dat,"my.HerringSalad.2006.tab",row.names = FALSE)
+write.table(my.sukiyaki.1936.dat,"my.sukiyaki.1936.tab",row.names = FALSE)
+write.table(my.sukiyaki.2006.dat,"my.sukiyaki.2006.tab",row.names = FALSE)
+
+
+```
+
+
+# Read in each tab files and merge the tables : Step - 3
+
+```{r}
+PATHofHerringSalad.1936="my.HerringSalad.1936.tab"
+PATHofHerringSalad.2006="my.HerringSalad.2006.tab"
+PATHofsukiyaki.1936="my.sukiyaki.1936.tab"
+PATHofsukiyaki.2006="my.sukiyaki.2006.tab"
+PATHofBGS.1997="BeefStroganoff.1997.tab"
+PATHofBGS.2006="BeefStroganoff.2006.tab"
+
+PATHofHerringSalad.1936="HerringSalad.1936.tab"
+PATHofHerringSalad.2006="HerringSalad.2006.tab"
+PATHofsukiyaki.1936="sukiyaki.1936.tab"
+PATHofsukiyaki.2006="sukiyaki.2006.tab"
+
+
+BeefStroganoff.1997<-read.table(file=PATHofBGS.1997,header = TRUE)
+BeefStroganoff.2006<-read.table(file=PATHofBGS.2006,header = TRUE)
+
+HerringSalad.1936<-read.table(PATHofHerringSalad.1936,header = TRUE)
+HerringSalad.2006<-read.table(PATHofHerringSalad.2006,header = TRUE)
+
+sukiyaki.1936<-read.table(PATHofsukiyaki.1936,header = TRUE)
+sukiyaki.2006<-read.table(PATHofsukiyaki.2006,header = TRUE)
+
+my.HerringSalad.1936<-read.table(PATHofHerringSalad.1936,header = TRUE)
+my.HerringSalad.2006<-read.table(PATHofHerringSalad.2006,header = TRUE)
+
+my.sukiyaki.1936<-read.table(PATHofsukiyaki.1936,header = TRUE)
+my.sukiyaki.2006<-read.table(PATHofsukiyaki.2006,header = TRUE)
+
+#BeefStroganoff.1997
+#sukiyaki.2006
+
+
+```
+
+
+
+# Merge with Beef Stroganoff i.e. stacking on the top of each other_
+
+```{r}
+#Stacking on the top of each other recipes
+rbind(BeefStroganoff.1997,BeefStroganoff.2006,HerringSalad.1936[3:5],
+      HerringSalad.2006[3:5],sukiyaki.1936[3:5],sukiyaki.2006[3:5])
+
+#Merging recipes by Ingredient
+merge(BeefStroganoff.1997,sukiyaki.1936,by="Ingredient")
+merge(BeefStroganoff.2006,sukiyaki.2006,by="Ingredient")
+merge(BeefStroganoff.1997,HerringSalad.1936,by="Ingredient")
+merge(BeefStroganoff.2006,HerringSalad.2006,by="Ingredient")
+
+
+```
+
+#The data to check for errors proof reading 
+```{r}
+#Proof reading for Beef Stroganoff
+merged_file<-merge(BeefStroganoff.1997,BeefStroganoff.2006,by="Ingredient")
+merged_file
+plot(merged_file$Amount.x,merged_file$Amount.y)
+plot(merged_file$Measure.x,merged_file$Measure.y)
+```
+
+
+```{r}
+
+#Finding the change in amount and measurements in Herring salad between 2006 and 1936 recipes
+merged_file<-merge(my.HerringSalad.2006,my.HerringSalad.1936,by="Ingredient")
+merged_file
+plot(merged_file$Amount.x,merged_file$Amount.y)
+plot(merged_file$Measure.x,merged_file$Measure.y)
+
+```
+
+
+
+
+```{r}
+#Finding the change in amount and measurements in sukiyaki between 2006 and 1936 recipes
+merged_file<-merge(my.sukiyaki.2006,my.sukiyaki.1936,by="Ingredient")
+merged_file
+plot(merged_file$Amount.x,merged_file$Amount.y)
+plot(merged_file$Measure.x,merged_file$Measure.y)
+```
+
+
+
+
+_Reading recipe files contingency table_
+
+```{r}
+#Tables showing measurements in 1936 and 2006
+
+table(sukiyaki.1936$Ingredient,sukiyaki.1936$Measure)
+table(sukiyaki.2006$Ingredient,sukiyaki.2006$Measure)
+
+table(HerringSalad.1936$Ingredient,HerringSalad.1936$Measure)
+table(HerringSalad.2006$Ingredient,HerringSalad.2006$Measure)
+   
+
+```
+
+_Ingredients changed since 1936 to 2006 in Sukiyaki _
+```{r}
+table(my.sukiyaki.1936$Ingredient,my.sukiyaki.1936$Measure)
+table(my.sukiyaki.2006$Ingredient,my.sukiyaki.2006$Measure)
+
+table(my.HerringSalad.1936$Ingredient,my.HerringSalad.1936$Measure)
+table(my.HerringSalad.2006$Ingredient,my.HerringSalad.2006$Measure)
+   
+```
+
+
+Added ingredients for sukiyaki on 2006 recipe:
+ "onion, yellow, fresh, sliced"
+ "cabbage, napa, fresh"
+ "tofu, regular, with calcium sulfate, 1/4 block"
+ "oil, canola"
+and removed ingredients from 1936 recipe:
+"suet, beef, raw"
+"stock, beef, prepared from recipe"
+"bell pepper, green, fresh, medium, 2 1/2\" "
+
+_Ingredients changed since 1936 to 2006 in Herring Salad _
+Only change in Herring salad since 1936 to 2006 is the removal of 
+"veal, cooked"
+from 2006 recipe ingredient.
+
+```{r}
+#Reading Recipe.csv and write back
+PATH="Recipes.csv"
+Recipes.csv<-read.csv(PATH,header = TRUE)
+#PMC need to write back to CSV
+write.csv(Recipes.csv,"Recipes.csv",row.names = FALSE)
+
+
+```
+
+#Reading FOOD_DES txt files
+```{r}
+PATH="FOOD_DES.txt"
+food_des.dat<-read.table(PATH,header=FALSE, sep="^",quote="~")
+names(food_des.dat)<-c("NDB_No","FdGrp_Cd","Long_Desc","Shrt_Desc","ComName",
+                       "ManufacName","Survey","Ref_desc","Refuse","SciName",
+                       "N_Factor","Pro_Factor","Fat_Factor","CHO_Factor")
+
+
+dim(food_des.dat)
+head(food_des.dat)
+summary(food_des.dat)
+
+#listOfIngredient<-as.character(food_des.dat$Long_Desc[grep("Mushrooms, white, raw", 
+#food_des.dat$Long_Desc)])
+#listOfIngredient<-as.character(food_des.dat$Long_Desc[grep("Mushrooms*|mushroom*", 
+#food_des.dat$Long_Desc)])
+#as.character(listOfIngredient[grepl("Mushrooms, white, raw", listOfIngredient)])
+#listOfIngredient
+#for ( i in 1:nrow(food_des.dat)){
+  #print (food_des.dat$NDB_No[i])
+ # print (as.character(food_des.dat$Long_Desc[i]))
+#}
+#as.character(food_des.dat$Long_Desc[grep(as.character("^pickles*|Pickles*"), 
+#food_des.dat$Long_Desc)])
+
+
+```
+
+#Reading from WEIGHT.txt 
+```{r}
+PATH="WEIGHT.txt"
+weight.dat<-read.table(PATH,header=FALSE, sep="^",quote="~")
+names(weight.dat)<-c("NDB_No","Seq","Amount","Msre_Desc","Gm_Wgt","Num_Data_Pts","Std_Dev")
+#weight.dat
+
+dim(food_des.dat)
+head(food_des.dat)
+summary(food_des.dat)
+```
+
+
+```{r}
+
+#Capitalize first letter of the word
+simpleCap <- function(x) {
+  s <- strsplit(x, " ")[[1]]
+  paste(toupper(substring(s, 1,1)), substring(s, 2),
+      sep="", collapse=" ")
+}
+```
+```{r}
+#Separate factor into single word
+getWord<-function(x){
+  sub("^([[:alpha:]]*).*", "\\1", x)
+}
+
+```
+```{r}
+
+#Get NDB_No from the long description of FOOD_DES.txt
+get.NDB_No<-function(X,food_des.dat){
+  for (j in 1:length(x)){
+    for (i in 1:nrow(food_des.dat)){
+      if (food_des.dat$Long_Desc[i]==x[j]){
+        print (food_des.dat$NDB_No[i])
+        print (x[j])
+      }
+    }
+  }
+}
+```
+
+
+```{r}
+y<-c("Beef, round, tip round, roast, separable lean only, trimmed to 0\" fat, all grades, raw" ,
+"Onions, yellow, sauteed",
+"Onions, young green, tops only",
+"Mushrooms, white, raw",
+"Cabbage, raw",
+"Bamboo shoots, canned, drained solids",
+"Tofu, raw, regular, prepared with calcium sulfate",
+"Soy sauce made from soy and wheat (shoyu)",
+"Soup, stock, chicken, home-prepared" ,
+"Sugars, granulated" ,
+"Oil, canola",
+"Rice, white, long-grain, parboiled, unenriched, cooked")
+
+x=c(
+"Fish, herring, Atlantic, raw" ,
+"Apples, raw, without skin",
+"Beets, pickled, canned, solids and liquids",
+"Nuts, almonds",
+"Onions, yellow, sauteed",
+"Pickles, cucumber, dill or kosher dill",
+"Sweet potato, cooked, boiled, without skin",
+"Egg, whole, raw, fresh",
+"Celery, raw",
+"Vinegar, red wine",
+"Sugars, granulated",
+"Horseradish, prepared")
+
+```
+
