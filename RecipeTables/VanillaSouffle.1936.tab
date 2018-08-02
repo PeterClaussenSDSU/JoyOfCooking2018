@@ -1,9 +1,9 @@
 "Amount"	"Measure"	"Ingredient"	"NBD_No"
-"1"	0.5	"cup"	"Wheat flour, white, all-purpose, enriched, bleached"	20081
-"2"	0.25	"cup"	"Sugars, powdered"	19336
-"3"	2.5	"cup"	"Milk, whole, 3.25% milkfat, with added vitamin D"	1077
-"4"	0.25	"cup"	"Butter, without salt"	1145
-"5"	5	"ea"	"Egg, yolk, raw, frozen, salted, pasteurized"	1160
-"6"	1	"tsp"	"Vanilla extract"	2050
-"7"	5	"ea"	"Egg, white, raw, fresh"	1124
-"8"	0.25	"tsp"	"Salt, table"	2047
+0.5	"cup"	"Wheat flour, white, all-purpose, enriched, bleached"	20081
+0.25	"cup"	"Sugars, powdered"	19336
+2.5	"cup"	"Milk, whole, 3.25% milkfat, with added vitamin D"	1077
+0.25	"cup"	"Butter, without salt"	1145
+5	"ea"	"Egg, yolk, raw, frozen, salted, pasteurized"	1160
+1	"tsp"	"Vanilla extract"	2050
+5	"ea"	"Egg, white, raw, fresh"	1124
+0.25	"tsp"	"Salt, table"	2047

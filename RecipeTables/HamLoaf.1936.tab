@@ -1,9 +1,9 @@
-"Recipe" "Year" "Amount" "Unit" "Ingredient" "ndb"
-"Ham Loaf" 1936 1 "lb" "HAM,LEAN,SMOKED,GROUND" 7938
-"Ham Loaf" 1936 1.5 "lb" "VEAL,GROUND" 17142
-"Ham Loaf" 1936 2 "tbsp" "ONION,GRATED" 2026
-"Ham Loaf" 1936 1 "tsp" "SAUCE,WORCESTERSHIRE" 6971
-"Ham Loaf" 1936 0.25 "tsp" "PEPPER" 2030
-"Ham Loaf" 1936 0.25 "tsp" "PAPRIKA" 2028
-"Ham Loaf" 1936 0.5 "cup" "TAPIOCA,QUICK,COOKING" 20068
-"Ham Loaf" 1936 2 "cup" "MILK" 1059
+"Amount" "Measure" "Ingredient" "ndb"
+1 "lb" "HAM,LEAN,SMOKED,GROUND" 7938
+1.5 "lb" "VEAL,GROUND" 17142
+2 "tbsp" "ONION,GRATED" 2026
+1 "tsp" "SAUCE,WORCESTERSHIRE" 6971
+0.25 "tsp" "PEPPER" 2030
+0.25 "tsp" "PAPRIKA" 2028
+0.5 "cup" "TAPIOCA,QUICK,COOKING" 20068
+2 "cup" "MILK" 1059

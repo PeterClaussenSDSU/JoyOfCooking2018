@@ -1,6 +1,6 @@
-"Recipe"	"Year"	"Amount"	"Measure"	"Ingredient"	"NDB_No"
-"Lobster Salad or Shrimp"	1936	4	"oz"	"Lobster meat, can or cooked"	NA
-"Lobster Salad or Shrimp"	1936	1	"tbs"	"oil, olive"	NA
-"Lobster Salad or Shrimp"	1936	1	"tbs"	"vinegar"	NA
-"Lobster Salad or Shrimp"	1936	1	"cup"	"celery, fresth,diced"	NA
-"Lobster Salad or Shrimp"	1936	0.5	"cup"	"Mayonnaise"	NA
+"Amount"	"Measure"	"Ingredient"	"NDB_No"
+4	"oz"	"Lobster meat, can or cooked"	NA
+1	"tbs"	"oil, olive"	NA
+1	"tbs"	"vinegar"	NA
+1	"cup"	"celery, fresth,diced"	NA
+0.5	"cup"	"Mayonnaise"	NA

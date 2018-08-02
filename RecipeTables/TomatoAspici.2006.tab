@@ -1,10 +1,10 @@
-"Amount"	"Unit"	"Ingredient"	"NDB_No"
-"1"	4	"cup"	"Tomato juice, canned, without salt added"	11886
-"2"	0.5	"cup"	"Tomato products, canned, puree, without salt added"	11547
-"3"	0.5	"cup"	"Onions, yellow, sauteed"	11286
-"4"	2	"pieces"	"Celery, raw"	11143
-"5"	2	"tbsp"	"Lemon juice, raw"	9152
-"6"	2	"tsp"	"Sugars, granulated"	19335
-"7"	4.5	"tsp"	"Gelatins, dry powder, unsweetened"	19177
-"8"	0.5	"cup"	"Water, bottled, generic"	14555
-"9"	1	"pieces"	"Avocados, raw, California"	9038
+"Amount"	"Measure"	"Ingredient"	"NDB_No"
+4	"cup"	"Tomato juice, canned, without salt added"	11886
+0.5	"cup"	"Tomato products, canned, puree, without salt added"	11547
+0.5	"cup"	"Onions, yellow, sauteed"	11286
+2	"pieces"	"Celery, raw"	11143
+2	"tbsp"	"Lemon juice, raw"	9152
+2	"tsp"	"Sugars, granulated"	19335
+4.5	"tsp"	"Gelatins, dry powder, unsweetened"	19177
+0.5	"cup"	"Water, bottled, generic"	14555
+1	"pieces"	"Avocados, raw, California"	9038
