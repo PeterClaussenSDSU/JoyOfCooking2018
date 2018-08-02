@@ -1,0 +1,364 @@
+---
+title: "Midterm Report"
+author: "Set 22"
+date: "July 21, 2018"
+output:
+  word_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Midterm Report
+
+The recipes assigned are: Bavarian Berry Cream and Shrimp Wiggle for the years 1936 and 2006. Some chunks of the code are deactivaded for making the code flow (they require input values) but they were important for creating the tables and values. 
+
+**Creating the tables**
+The following chunk creates the recipe data frames. As stated a NDB_No column was created and the Long_Desc column was created as a temporal column containing the long description from the food_des.dat file. 
+
+```{r}
+BabarianBerryCream.1936.dat <- data.frame(
+  Amount=c(1.5, 3.0, 1.0, 1.5, 2.0),
+  Unit = c("Tbs", "Tbs", "qt", "cup", "cup"),
+  Ingredient = c("Gelatin, dry, unsweetened", "Water, generic", "Strawberries, fresh",
+                 "Sugar, powdered, unsifted", "Cream, whipping, heavy"),
+  NDB_No=0,
+  Long_Desc=0
+  )
+BabarianBerryCream.2006.dat <- data.frame(
+  Amount=c(1.0,0.50,2.00,6.00,  1.00),
+  Unit = c("qt", "cup", "tsp", "Tbs", "cup"),
+  Ingredient = c("strawberries,vfresh", "sugar, white, granulated, granulated", 
+            "gelatin, dry, unsweetened", "water, generic", "cream, whipping, heavy"),
+ NDB_No=0,
+ Long_Desc=0
+  )
+
+ShrimpWiggle.1936.dat <- data.frame(
+  Amount=c(4.0,2.0,1.25,4,1),
+  Unit = c("Tbs", "Tbs", "cup", "oz", "cup"),
+  Ingredient = c("butter, salted", "flour, all purpose, self rising, enriched", 
+                 "milk, whole, 3.25%", "shrimp, cooked", "peas, green, canned, drained"),
+  NDB_No=0,
+  Long_Desc=0
+  )
+ShrimpWiggle.2006.dat <- data.frame(
+  Amount=c(3,0.25,3,1.5,0.5,2,6,1),
+  Unit = c("Tbs", "cup", "Tbs", "cup", "cup","tbs","oz", "cup"),
+  Ingredient = c("butter, salted","onion, yellow, fresh, chopped",
+                 "flour, all purpose, self rising, enriched", 
+                 "milk, whole, 3.25%", "juice, clam, canned", "catsup",
+                 "shrimp, cooked", "peas, green, frozen"),
+ NDB_No=0,
+ Long_Desc=0
+  )
+```
+
+**Calling the databases **
+
+In the following chunk the weight.dat and food_des.dat files are uploaded and assigned to a variable with a similar name.
+
+```{r}
+weight.dat <- read.table("WEIGHT.txt",header=FALSE,sep="^",quote="~")
+names(weight.dat) <- c("NDB_No","Seq","Amount","Msre_Desc","Gm_Wgt","Num_Data_Pts","Std_Dev")
+
+food_des.dat <- read.table("FOOD_DES.txt",header=FALSE,sep="^",quote="~")
+names(food_des.dat) <- c("NDB_No","FdGrp_Cd","Long_Desc","Shrt_Desc",
+"ComName","ManufacName","Survey","Ref_desc","Refuse","SciName",
+"N_Factor","Pro_Factor","Fat_Factor","CHO_Factor")
+
+```
+**Defining functions**
+
+Three functions were created for this report. The first function NDB_No() searches the ingredients contained in the recipe tables and gives a shorter list that makes easy to find the proper NDB_No number. The second function helps us to input the proper NDB_No values obtained from the list. The third function replace the values from the original recipe with the corresponding value of the food_des.dat database and export the table to a .tab file.
+
+The second function NDBvalues() require us to input the NDB_No values in the console, It was very useful for creating the table, but it wont be useful for you while running the code. The parts were I used this code are deactivated and the NDB_No values and the name of the Ingredients were input manually.
+
+It is important to mention that some of the ingredients in the original recipes have a different description than the ones in the food_des.dat database besides being the same. Those values were manually searched using microsoft excel.
+
+The third function finalFun() replace the original Ingredient's names for their counterparts from the food_des.dat database. 
+
+```{r}
+
+NDB_No<-function(BabarianBerryCream36.dat){ 
+  Z=c()
+  Q=c()
+  for (i in 1:length(BabarianBerryCream36.dat$Ingredient)){
+    a = unlist(c(lapply(strsplit((as.vector(BabarianBerryCream36.dat$Ingredient[i])),","),trimws))) ## tokenize each ingredient
+    toMatch= paste( paste("^",a[1],",",sep=""),
+                    "|",
+                    paste("^",a[1],"s",",",sep=""),
+                    "|",
+                    paste(a[1],a[2],sep=", "),
+                    "|",
+                    paste(a[1], a[2], a[3],sep=", ")
+                    ,sep="") ## Creates a string containing the first word of the ingredient, the first word +s, the first and second word and the three first words of the ingredient.
+    Y=grep(toMatch,food_des.dat$Long_Desc, ignore.case = T, value=F)  ## look for the previous string in the food_des.dat database
+    Z=rbind(as.matrix(Y),Z) ## save the indexes of the values found in this loop
+  }
+  
+  Newfood_des.dat<-food_des.dat[as.vector(Z),] ## Creates a new database containig just the values found in the previous loop, the following code will look for the ingredietns with a little more detail
+
+  Q=c()
+  for (j in 1:length(BabarianBerryCream36.dat$Ingredient)){
+    P=c()
+    b = unlist(c(lapply(strsplit((as.vector(BabarianBerryCream36.dat$Ingredient[j])),","),trimws)))## as in the previous loop tokenize each ingredient
+    toMatch2= paste( b[2],"|",b[3],"|",b[4],sep="")## Creates a string containing the second, third and fourth word of the ingredient,
+    P=grep(toMatch2, Newfood_des.dat$Long_Desc, ignore.case = T, value=F) ## look for the previous string in the new database created from the previous loop
+    Q=rbind(as.matrix(P),Q) ## save the indexes of the values found in this loop
+  }  
+  Lastfood_des.dat<-Newfood_des.dat[Q,] 
+  Lastfood_des.dat<-unique(Lastfood_des.dat) ## from the last loop we obtained some values that were repeated, with this line we just select the unique values
+  ## The following dataframe joins the two tables. Two tables were created since the second table is more precise in looking for the ingredients but some ingredients could be missed, if that the case the first part of the table helps.
+  blank=data.frame(
+    NDB_No="0",
+    Shrt_Desc="########## If the value is not in the following table check above:##########")
+    output= rbind(Newfood_des.dat[,c(1,4)],blank[,c(1,2)], Lastfood_des.dat[,c(1,4)])
+  output
+} 
+
+## The following Function that inputs the NDB_No values and create another Column with the food_des.dat description
+NDBvalues<-function(BabarianBerryCream.1936.dat){
+for (i in 1:length(BabarianBerryCream.1936.dat$Ingredient)){
+n <- readline(prompt=paste("Best NDB_No for:", BabarianBerryCream.1936.dat$Ingredient[i], "\b: "))## print the name of each ingredient and ask for a NDB_No in the console
+BabarianBerryCream.1936.dat[i,4]<-n ##That value is stored in the column 4 called NDB_No for each ingredient
+BabarianBerryCream.1936.dat$Long_Desc[i]<-as.character(food_des.dat$Long_Desc[which(food_des.dat$NDB_No==n)]) ##Assigns the Long description of each ingredient from the food_des.dat database to the temporal row Long_Desc in the recipe table
+}
+return(BabarianBerryCream.1936.dat)
+}
+
+### Fix Ingredients and adds Recipe Name and Year
+finalFun<-function(BabarianBerryCream.1936.dat){
+varname <- deparse(substitute(BabarianBerryCream.1936.dat)) ##Extracs the variable name as a string
+file.name = unlist(c(lapply(strsplit(varname,"[.]"),trimws)))## tokenize the variable name 
+temporal<-data.frame( ## Creates a new data frame for editing the previous one
+  Recipe=file.name[1],## assign the first element of file.name to the name of the recipe
+  Year=file.name[2],## assign the second element of file.name to the name of the recipe
+  Amount=BabarianBerryCream.1936.dat$Amount, ## Keeps the same value of the original table
+  Unit=BabarianBerryCream.1936.dat$Unit,## Keeps the same value of the original table
+  Ingredient=BabarianBerryCream.1936.dat$Long_Desc,##replate the original ingredients of the recipes with the ones obtained from the food_des.dat database
+  NDB_No=BabarianBerryCream.1936.dat$NDB_No ## keeps the same NDB_No number
+  )
+return(temporal)## return the modified table
+}
+```
+**Searching values for the first Recipe: BabarianBerryCream.1936**
+```{r}
+##Appliying the NDB_No function to BabarianBerryCream.1936
+
+NDB_No(BabarianBerryCream.1936.dat)
+```
+**Input NDB_No numbers for BabarianBerryCream.1936**
+```{r, eval=F}
+### Ussing the NDB_No function to input the NDB_No number to the ingredients (input in the console)
+
+BabarianBerryCream.1936.dat<- NDBvalues(BabarianBerryCream.1936.dat)
+BabarianBerryCream.1936.dat
+
+```
+**Values entered manually for the flow of this document**
+```{r}
+## NDB_Np values and Long_Desc columns were assigned manually to make the code flow but it was obtained form the previous chunk.
+BabarianBerryCream.1936.dat$NDB_No<-c(19177,14555,9316,19336,1053)
+BabarianBerryCream.1936.dat$Long_Desc<-c("Gelatins, dry powder, unsweetened", "Water, bottled, generic","Strawberries, raw", "Sugars, powdered","Cream, fluid, heavy whipping" )   
+BabarianBerryCream.1936.dat
+```
+**Searching values for the second Recipe: BabarianBerryCream.2006**
+```{r}
+##Appliying the NDB_No function to BabarianBerryCream.2006
+NDB_No(BabarianBerryCream.2006.dat)
+```
+**Input NDB_No numbers for BabarianBerryCream.2006**
+```{r, eval=F}
+### Ussing the NDB_No function to input the NDB_No number to the ingredients (input in the console)
+BabarianBerryCream.2006.dat<- NDBvalues(BabarianBerryCream.2006.dat)
+BabarianBerryCream.2006.dat
+
+```
+**Values entered manually for the flow of this document**
+```{r}
+## NDB_Np values and Long_Desc columns were assigned manually to make the code flow but it was obtained form the previous chunk.  
+BabarianBerryCream.2006.dat$NDB_No<-c(9316,19335,19177,14555,1053)
+
+BabarianBerryCream.2006.dat$Long_Desc<-c("Strawberries, raw","Sugars, granulated","Gelatins, dry powder, unsweetened","Water, bottled, generic","Cream, fluid, heavy whipping")
+BabarianBerryCream.2006.dat
+
+```
+**Searching values for the third Recipe: ShrimpWiggle.1936.**
+```{r}
+##Appliying the NDB_No function to ShrimpWiggle.1936.
+NDB_No(ShrimpWiggle.1936.dat)
+```
+**Input NDB_No numbers for ShrimpWiggle.1936**
+```{r, eval=F}
+### Ussing the NDB_No function to input the NDB_No number to the ingredients (input in the console)
+ShrimpWiggle.1936.dat<- NDBvalues(ShrimpWiggle.1936.dat)## Input values in the console
+ShrimpWiggle.1936.dat
+
+```
+**Values entered manually for the flow of this document**
+```{r}
+## NDB_Np values and Long_Desc columns were assigned manually to make the code flow but it was obtained form the previous chunk. 
+ShrimpWiggle.1936.dat$NDB_No<-c(1001,20082,1077,15271,11813)
+
+ShrimpWiggle.1936.dat$Long_Desc<-c("Butter, salted","Wheat flour, white, all-purpose, self-rising, enriched", "Milk, whole, 3.25% milkfat, with added vitamin D", "Crustaceans, shrimp, cooked","Peas, green, canned, no salt added, drained solids")
+ShrimpWiggle.1936.dat
+
+```
+**Searching values for the third Recipe: ShrimpWiggle.2006.**
+```{r}
+##Appliying the NDB_No function to BabarianBerryCream.2006
+NDB_No(ShrimpWiggle.2006.dat)
+```
+**Input NDB_No numbers for ShrimpWiggle.2006**
+```{r, eval=F}
+### Ussing the NDB_No function to input the NDB_No number to the ingredients (input in the console)
+
+## runs in promt
+ShrimpWiggle.2006.dat<- NDBvalues(ShrimpWiggle.2006.dat)## Input values in the console
+ShrimpWiggle.2006.dat
+
+```
+**Values entered manually for the flow of this document**
+```{r}
+## NDB_Np values and Long_Desc columns were assigned manually to make the code flow but it was obtained form the previous chunk. 
+ShrimpWiggle.2006.dat$NDB_No <-c(1001,11282,20082,1077,15162,11935,15271,11312)
+
+ShrimpWiggle.2006.dat$Long_Desc<-c("Butter, salted", "Onions, raw", "Wheat flour, white, all-purpose, self-rising, enriched", "Milk, whole, 3.25% milkfat, with added vitamin D", "Mollusks, clam, mixed species, canned, liquid", "Catsup", "Crustaceans, shrimp, cooked", "Peas, green, frozen, unprepared (Includes foods for USDA's Food Distribution Program)")
+ShrimpWiggle.2006.dat
+
+```
+**Replacing the Ingredient's names**
+
+The following section deletes the temporal Long_Desc column and assign those values to the Ingredients column. The new ingredient description matches with the ingredient's description of the food_des.dat file.
+
+```{r}
+##See finalFun description in the defining functions section, finalFun function to every table and printing. In the next step this tables will be exported.
+
+BabarianBerryCream.1936.dat<- finalFun(BabarianBerryCream.1936.dat) 
+BabarianBerryCream.1936.dat
+BabarianBerryCream.2006.dat<-finalFun(BabarianBerryCream.2006.dat)
+BabarianBerryCream.2006.dat
+ShrimpWiggle.1936.dat<-finalFun(ShrimpWiggle.1936.dat)
+ShrimpWiggle.1936.dat
+ShrimpWiggle.2006.dat<-finalFun(ShrimpWiggle.2006.dat)
+ShrimpWiggle.2006.dat
+```
+
+**Exporting tables**
+
+The four recipe tables will be exported in this section using the function write.table().  The files can be found in the working directory.
+
+```{r}
+write.table(BabarianBerryCream.1936.dat, "BabarianBerryCream.1936.tab", sep=" ", row.names=F)
+write.table(BabarianBerryCream.2006.dat, "BabarianBerryCream.2006.tab", sep=" ", row.names=F)
+write.table(ShrimpWiggle.1936.dat, "ShrimpWiggle.1936.tab", sep=" ", row.names=F)
+write.table(ShrimpWiggle.2006.dat, "ShrimpWiggle.2006.tab", sep=" ", row.names=F)
+
+```
+
+**Servings per recipe: creating a new recipes.csv **
+
+Read the Recipes.csv, append rows for my recipes, and write the table back to Recipes.csv. 
+
+
+```{r}
+BabarianBerryCream.1936.Servings.dat <- data.frame(
+  Recipe=c("BabarianBerryCream"),
+  Year =c("1936"), 
+  MinServings = c(8),
+  MaxServings= c(8)
+  )
+BabarianBerryCream.2006.Servings.dat <- data.frame(
+  Recipe=c("BabarianBerryCream"),
+  Year =c("2006"), 
+  MinServings = c(8),
+  MaxServings=c(8)
+  )
+
+ShrimpWiggle.1936.Servings.dat <- data.frame(
+  Recipe=c("ShrimpWiggle"),
+  Year =c("1936"), 
+  MinServings = c(6),
+  MaxServings=c(6)
+  )
+ShrimpWiggle.2006.Servings.dat <- data.frame(
+  Recipe=c("ShrimpWiggle"),
+  Year =c("2006"), 
+  MinServings = c(4),
+  MaxServings=c(4)
+  )
+
+
+recipes.csv<-read.csv("Recipes.csv")
+## Creating a new recipes.csv binding the old recipes.csv with my tables.
+recipes.csv<-rbind(
+  recipes.csv, 
+  BabarianBerryCream.1936.Servings.dat,
+  BabarianBerryCream.2006.Servings.dat,
+  ShrimpWiggle.1936.Servings.dat,
+  ShrimpWiggle.2006.Servings.dat
+)
+##Print recipes.csv
+recipes.csv
+## Creates the new recipes.csv file in the working directory
+write.table(recipes.csv, "recipes.csv", sep=",", row.names=F)
+
+```
+
+**Read and Merge**
+
+As estated the following part read each tab file, and merge the tables with the example Beef Stroganoff tables. The Measure column in the BeefStroganoff tables were changed to Units for presenting the file in a better way. Using the merge function is possible to merge even if the column names doesn't match. As we can observe the tables can be merge without problem.
+
+
+```{r}
+## working directory
+path=getwd()
+## get the .tab files from the working directory
+tabs<-dir(path, pattern=".tab")
+## create the variables from the BeefStroganoff files
+BeefStroganoff.2006.tab<-read.table("BeefStroganoff.2006.tab",header = T)
+BeefStroganoff.1997.tab<-read.table("BeefStroganoff.1997.tab", header=T)
+##Counter to Zero
+table=c()
+##Merge all the tables with a loop in the function merge
+for(i in 1:length(tabs)){
+  table2<-read.table(tabs[i],header = T)
+  table<-merge(table2, table, all=T)
+}
+## PRints the new table
+table
+```
+
+**Plotting the data**
+
+The function graphs() was created for plotting the data for each recipe. 
+
+
+```{r}
+graphs<-function(BabarianBerryCream.1936.dat,BabarianBerryCream.2006.dat){
+par(mfrow=c(3,1)) ##Combines plots
+op<-par(mar=c(2,16,0,1)) ##For setting up the margins
+barplot(BabarianBerryCream.1936.dat$Amount,
+  names.arg=BabarianBerryCream.1936.dat$Ingredient, horiz=T,las=2,xlim=c(0,6), col=seq(1:length(BabarianBerryCream.1936.dat$Ingredient)), args.legend = BabarianBerryCream.1936.dat$Unit)## First horizontal plot, horizontal labels, axis x from zero to 6 since this is the higher unit value in my tables. Colors assinged by a sequence. Legend=Units.
+#PMC - legend is giving be an error - legend(5,length(BabarianBerryCream.1936.dat$Ingredient), legend=BabarianBerryCream.1936.dat$Unit, lwd=2,cex=0.8, col=seq(1:length(BabarianBerryCream.1936.dat$Ingredient)))## Prints the legends for knowing the Unit of each Ingredient
+barplot(BabarianBerryCream.2006.dat$Amount,
+  names.arg=BabarianBerryCream.2006.dat$Ingredient, horiz=T,las=2,xlim=c(0,6), col=seq(1:length(BabarianBerryCream.2006.dat$Ingredient)), args.legend = BabarianBerryCream.2006.dat$Unit, beside = T)## Second horizontal plot, same as the previous one, just the beside=T was added.
+#legend(5,length(BabarianBerryCream.2006.dat$Ingredient), legend=BabarianBerryCream.2006.dat$Unit, lwd=2,cex=0.8, col=seq(1:length(BabarianBerryCream.2006.dat$Ingredient)))##Legend: same as before
+rm(op) ##For setting up the margins
+}
+## plots BabarianBerryCream.1936.dat vs BabarianBerryCream.2006.dat
+graphs(BabarianBerryCream.1936.dat,BabarianBerryCream.2006.dat) 
+## plots ShrimpWiggle.1936.dat vs ShrimpWiggle.2006.dat
+graphs(ShrimpWiggle.1936.dat,ShrimpWiggle.2006.dat)
+## plots BeefStroganoff.1997.dat vs BeefStroganoff.2006.dat
+graphs(BeefStroganoff.1997.tab,BeefStroganoff.2006.tab)
+
+
+
+```
+This report was created in collaboration with Kevin Jerez. We will be working together for the final report and since this is the base for that we shared ideas. 
+
+

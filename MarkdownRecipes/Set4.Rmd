@@ -1,0 +1,664 @@
+---
+title: "Midterm Project"
+author: "Set 4"
+date: "7/21/2018"
+output:
+  pdf_document:
+    toc: 1 
+    df_print: kable
+---
+###Notes: I used the kable function for pdf knit to print more legible data frame tables.
+
+*import WEIGHT and FOOD_DES tables downloaded from the USDA website*
+```{r}
+PathToWEIGHT = "WEIGHT.txt"
+USDA_WEIGHT <- read.table(PathToWEIGHT, 
+                          sep="^", 
+                          quote="~",
+                          header=FALSE, 
+                          stringsAsFactors = FALSE)
+
+names(USDA_WEIGHT) <- c("NDB_No", "Seq", "Amount", "Msre_Desc",
+                        "Gm_Wgt", "Num_Data_pts", "Std_Dev")
+
+PathToFOOD_DES = "FOOD_DES.txt"
+USDA_FOOD_DES <- read.table(PathToFOOD_DES, 
+                            sep="^", 
+                            quote="~",
+                            header=FALSE, 
+                            stringsAsFactors = FALSE)
+
+names(USDA_FOOD_DES) <- c("NDB_No", "FdGrp_Cd", "Long_Desc", "Shrt_Desc","Com_Name",
+                          "ManufacName", "Survey", "Ref_Desc", "Refuse", "Sci_Name", 
+                          "N_Factor", "Pro_Factor_", "Fat_Factor_", "CHO_Factor")
+
+```
+
+#Cottage Pudding 1936
+
+*Create vectors for data frame.*
+```{r}
+Amount_CottPudd.1936 <- c(0.5,0.25,1,1,1.5,2,0.25,0.5)
+Measure_CottPudd.1936 <- c("cup","cup" ,"large","tsp","cup","tsp","tsp", "cup")
+Ingredient_CottPudd.1936 <- c("Sugars, granulated",
+                              "Butter, salted",
+                              "Egg, whole, raw, fresh","Vanilla extract",
+                              "Wheat flour, white, bread, enriched",
+                              "Leavening agents, baking powder, double-acting, straight phosphate",
+                              "Salt, table",
+                              "Milk, whole, 3.25% milkfat, without added vitamin A and vitamin D")
+NDB_No.1936 <- {}
+Gm_Wgt.1936 <- {}
+
+#for loop to populate the ingredient index from USDA FOOD_DES table
+for (i in 1:length(Ingredient_CottPudd.1936)) {
+  x <- USDA_FOOD_DES[Ingredient_CottPudd.1936[i] == USDA_FOOD_DES$Long_Desc, "NDB_No"]
+  NDB_No.1936 <- c(NDB_No.1936, x)
+}
+
+#for loop to populate the weight of ingredients from USDA WEIGHT table 
+for (i in 1:length(NDB_No.1936)) {
+  y <- USDA_WEIGHT[NDB_No.1936[i] == USDA_WEIGHT$NDB_No 
+                   & Measure_CottPudd.1936[i] == USDA_WEIGHT$Msre_Desc, 
+                   "Gm_Wgt"]
+  Gm_Wgt.1936 <- c(Gm_Wgt.1936, y[1])
+}
+
+```
+
+*Verify lengths of all vectors are equivalent.*
+```{r}
+length(Amount_CottPudd.1936)
+length(Measure_CottPudd.1936)
+length(Ingredient_CottPudd.1936)
+length(NDB_No.1936)
+length(Gm_Wgt.1936)
+```
+*Create data frame for Cottage Pudding 1936*
+```{r}
+#column Gm_Wgt was not included as this is not required for the midterm
+CottagePudding.1936.dat <- data.frame(
+  Amount = Amount_CottPudd.1936,
+  Measure = Measure_CottPudd.1936,
+  Ingredient = Ingredient_CottPudd.1936,
+  NDB_No = NDB_No.1936
+)
+CottagePudding.1936.dat
+```
+*To verify units and ingredients match the USDA database, search Msre_Desc column and Long_Desc columns.*
+```{r}
+#match each ingredient in the USDA FOOD_Des table
+CottagePudding.1936.dat$Ingredient %in% USDA_FOOD_DES$Long_Desc
+
+#for loop to match each measure (based on NDB_No) in the USDA WEIGHT table
+for (i in 1:length(CottagePudding.1936.dat$Measure)) {
+  idx <- USDA_WEIGHT[CottagePudding.1936.dat$NDB_No[i] == USDA_WEIGHT$NDB_No, "Msre_Desc"]
+  print(CottagePudding.1936.dat$Measure[i] %in% idx)
+}
+
+```
+*All ingredient and measure values return true and therefore are present in the USDA database.*
+
+#Cottage Pudding 2006
+
+*Create vectors for data frame.*
+```{r}
+Amount_CottPudd.2006 <- c(1.5,1,1.5,0.5,2,0.5,1,0.5,1)
+Measure_CottPudd.2006 <- c("cup","cup","tsp","tsp","large","cup","tsp","cup","cup")
+Ingredient_CottPudd.2006 <- c("Wheat flour, white, all-purpose, enriched, bleached",
+                              "Sugars, granulated",
+                              "Leavening agents, baking powder, double-acting, straight phosphate",
+                              "Salt, table",
+                              "Egg, whole, raw, fresh",
+                              "Milk, whole, 3.25% milkfat, without added vitamin A and vitamin D",
+                              "Vanilla extract",
+                              "Butter, salted",
+                              "Marmalade, orange")
+NDB_No.2006 <- {}
+Gm_Wgt.2006 <- {}
+
+
+#for loop to populate the ingredient index from USDA FOOD_DES table
+for (i in 1:length(Ingredient_CottPudd.2006)) {
+  x <- USDA_FOOD_DES[Ingredient_CottPudd.2006[i] == USDA_FOOD_DES$Long_Desc, "NDB_No"]
+  NDB_No.2006 <- c(NDB_No.2006, x)
+}
+
+#for loop to populate the weight of ingredients from USDA WEIGHT table 
+for (i in 1:length(NDB_No.2006)) {
+  y <- USDA_WEIGHT[NDB_No.2006[i] == USDA_WEIGHT$NDB_No 
+                   & Measure_CottPudd.2006[i] == USDA_WEIGHT$Msre_Desc, 
+                   "Gm_Wgt"]
+  Gm_Wgt.2006 <- c(Gm_Wgt.2006, y[1])
+}
+
+```
+
+*Verify lengths of vectors are equivalent.*
+```{r}
+length(Amount_CottPudd.2006)
+length(Measure_CottPudd.2006)
+length(Ingredient_CottPudd.2006)
+length(NDB_No.2006)
+length(Gm_Wgt.2006)
+```
+*Create data frame for Cottage Pudding 2006*
+```{r}
+#column Gm_Wgt was not included as this is not required for the midterm
+CottagePudding.2006.dat <- data.frame(
+  Amount = Amount_CottPudd.2006,
+  Measure = Measure_CottPudd.2006,
+  Ingredient = Ingredient_CottPudd.2006,
+  NDB_No = NDB_No.2006
+)
+CottagePudding.2006.dat
+```
+*Notes: the recipe from 2006 makes vanilla extract and marmalade optional. I have included both. Furthermore, it calls for unsalted butter. John Becker (as I did) used salted butter in his data because unsalted butter cannot be found in the USDA database. Finally, the recipe uses either cake flour or all-purpose flour. I chose to use all-purpose flour as this is more readily available in stores.*
+
+*To verify units and ingredients match the USDA database, search Msre_Desc column and Long_Desc columns.*
+```{r}
+#match each ingredient in the USDA FOOD_Des table
+CottagePudding.2006.dat$Ingredient %in% USDA_FOOD_DES$Long_Desc
+
+#for loop to match each measure (based on NDB_No) in the USDA WEIGHT table
+for (i in 1:length(CottagePudding.2006.dat$Measure)) {
+  idx <- USDA_WEIGHT[CottagePudding.2006.dat$NDB_No[i] == USDA_WEIGHT$NDB_No, "Msre_Desc"]
+  print(CottagePudding.2006.dat$Measure[i] %in% idx)
+}
+
+```
+*All ingredient and measure values return true and therefore are present in the USDA database.*
+
+*Before exporting, we will check for errors and proofread. Start with by merging the 1936 and 2006 tables.*
+```{r}
+merge_CottPudd <- merge(CottagePudding.1936.dat[,c("Ingredient","Amount","Measure")],
+                        CottagePudding.2006.dat[,c("Ingredient","Amount","Measure")], 
+                        by="Ingredient",
+                        all=TRUE)
+merge_CottPudd
+```
+*Marmalade was added and the type of flour changed in the 2006 recipe.*
+
+*Create a contingency table for Measure.*
+```{r}
+table(merge_CottPudd$Measure.x,merge_CottPudd$Measure.y)
+```
+*Measure units are the same for both years.*
+
+*A graphical representation of the measures from 1936 and 2006 confirms this finding.*
+```{r}
+plot(merge_CottPudd$Measure.x,merge_CottPudd$Measure.y, xlab="1936", ylab="2006")
+```
+*Create a contingency table for Amount*
+```{r}
+table(merge_CottPudd$Amount.x,merge_CottPudd$Amount.y)
+```
+*There are increases in the amounts but nothing significant. After checking the recipes, these amounts did in fact increase.*
+
+*A graphical representation of the amounts from 1936 and 2006 confirms this finding.*
+```{r}
+plot(merge_CottPudd$Amount.x,merge_CottPudd$Amount.y, xlab="1936", ylab="2006", col="blue")
+```
+*Since we are confident that these tables are error free, we output both tables to tab file, using* recipe.year.tab *as the naming convention.*
+```{r}
+write.table(CottagePudding.1936.dat, "CottagePudding.1936.tab") 
+write.table(CottagePudding.2006.dat, "CottagePudding.2006.tab")
+```
+
+#Chantilly Potatoes 1936
+
+*Create vectors for data frame.*
+```{r}
+Amount_ChantPot.1936 <- c(6,3,1,0.33333,0.5,0.5)
+Measure_ChantPot.1936 <- c("medium (2-1/4\" to 3-1/4\" dia.)","tbsp","tsp","cup",
+                           "cup, fluid (yields 2 cups whipped)","cup, shredded")
+Ingredient_ChantPot.1936 <- c("Potatoes, boiled, cooked without skin, flesh, without salt", 
+                              "Butter, salted",
+                              "Salt, table",
+                              "Milk, whole, 3.25% milkfat, without added vitamin A and vitamin D",
+                              "Cream, fluid, heavy whipping",
+                              "Cheese, cheddar (Includes foods for USDA's Food Distribution Program)")
+NDB_No.1936 <- {}
+Gm_Wgt.1936 <- {}
+
+#for loop to populate the ingredient index from USDA FOOD_DES table
+for (i in 1:length(Ingredient_ChantPot.1936)) {
+  x <- USDA_FOOD_DES[Ingredient_ChantPot.1936[i] == USDA_FOOD_DES$Long_Desc, "NDB_No"]
+  NDB_No.1936 <- c(NDB_No.1936, x)
+}
+
+#for loop to populate the weight of ingredients from USDA WEIGHT table 
+for (i in 1:length(NDB_No.1936)) {
+  y <- USDA_WEIGHT[NDB_No.1936[i] == USDA_WEIGHT$NDB_No 
+                   & Measure_ChantPot.1936[i] == USDA_WEIGHT$Msre_Desc, 
+                   "Gm_Wgt"]
+  Gm_Wgt.1936 <- c(Gm_Wgt.1936, y[1])
+}
+
+```
+
+*Verify lengths of vectors are equivalent.*
+```{r}
+length(Amount_ChantPot.1936)
+length(Measure_ChantPot.1936)
+length(Ingredient_ChantPot.1936)
+length(NDB_No.1936)
+length(Gm_Wgt.1936)
+```
+*Create data frame for Chantilly Potatoes 1936*
+```{r}
+#column Gm_Wgt was not included as this is not required for the midterm
+ChantillyPotatoes.1936.dat <- data.frame(
+  Amount = Amount_ChantPot.1936,
+  Measure = Measure_ChantPot.1936,
+  Ingredient = Ingredient_ChantPot.1936,
+  NDB_No = NDB_No.1936
+)
+ChantillyPotatoes.1936.dat
+```
+*To verify units and ingredients match the USDA database, search Msre_Desc column and Long_Desc columns.*
+```{r}
+#match each ingredient in the USDA FOOD_Des table
+ChantillyPotatoes.1936.dat$Ingredient %in% USDA_FOOD_DES$Long_Desc
+
+#for loop to match each measure (based on NDB_No) in the USDA WEIGHT table
+for (i in 1:length(ChantillyPotatoes.1936.dat$Measure)) {
+  idx <- USDA_WEIGHT[ChantillyPotatoes.1936.dat$NDB_No[i] == USDA_WEIGHT$NDB_No, "Msre_Desc"]
+  print(ChantillyPotatoes.1936.dat$Measure[i] %in% idx)
+}
+```
+*All ingredient and measure values return true and therefore are present in the USDA database.*
+
+#Chantilly Potatoes 2006
+
+*Create vectors for data frame.*
+```{r}
+Amount_ChantPot.2006 <- c(6,3,1,0.33333,0.5,0.5)
+Measure_ChantPot.2006 <- c("medium (2-1/4\" to 3-1/4\" dia.)","tbsp", "tsp","cup",
+                           "cup, fluid (yields 2 cups whipped)","cup")
+Ingredient_ChantPot.2006 <- c("Potatoes, boiled, cooked without skin, flesh, without salt",
+                              "Butter, salted",
+                              "Salt, table",
+                              "Milk, whole, 3.25% milkfat, without added vitamin A and vitamin D",
+                              "Cream, fluid, heavy whipping",
+                              "Cheese, parmesan, grated")
+NDB_No.2006 <- {}
+Gm_Wgt.2006 <- {}
+
+
+#for loop to populate the ingredient index from USDA FOOD_DES table
+for (i in 1:length(Ingredient_ChantPot.2006)) {
+  x <- USDA_FOOD_DES[Ingredient_ChantPot.2006[i] == USDA_FOOD_DES$Long_Desc, "NDB_No"]
+  NDB_No.2006 <- c(NDB_No.2006, x)
+}
+
+#for loop to populate the weight of ingredients from USDA WEIGHT table 
+for (i in 1:length(NDB_No.2006)) {
+  y <- USDA_WEIGHT[NDB_No.2006[i] == USDA_WEIGHT$NDB_No 
+                   & Measure_ChantPot.2006[i] == USDA_WEIGHT$Msre_Desc, 
+                   "Gm_Wgt"]
+  Gm_Wgt.2006 <- c(Gm_Wgt.2006, y[1])
+}
+
+```
+
+*Verify lengths of vectors are equivalent.*
+```{r}
+length(Amount_ChantPot.2006)
+length(Measure_ChantPot.2006)
+length(Ingredient_ChantPot.2006)
+length(NDB_No.2006)
+length(Gm_Wgt.2006)
+```
+*Create data frame for Chantilly Potatoes 2006*
+```{r}
+#column Gm_Wgt was not included as this is not required for the midterm
+ChantillyPotatoes.2006.dat <- data.frame(
+  Amount = Amount_ChantPot.2006,
+  Measure = Measure_ChantPot.2006,
+  Ingredient = Ingredient_ChantPot.2006,
+  NDB_No = NDB_No.2006
+)
+ChantillyPotatoes.2006.dat
+```
+*To verify units and ingredients match the USDA database, search Msre_Desc column and Long_Desc columns.*
+```{r}
+#match each ingredient in the USDA FOOD_Des table
+ChantillyPotatoes.2006.dat$Ingredient %in% USDA_FOOD_DES$Long_Desc
+
+#for loop to match each measure (based on NDB_No) in the USDA WEIGHT table
+for (i in 1:length(ChantillyPotatoes.2006.dat$Measure)) {
+  idx <- USDA_WEIGHT[ChantillyPotatoes.2006.dat$NDB_No[i] == USDA_WEIGHT$NDB_No, "Msre_Desc"]
+  print(ChantillyPotatoes.2006.dat$Measure[i] %in% idx)
+}
+
+```
+*All ingredient and measure values return true and therefore are present in the USDA database.*
+
+*Before exporting, we will check for errors and proofread. Start with by merging the 1936 and 2006 tables.*
+```{r}
+merge_ChantPot <- merge(ChantillyPotatoes.1936.dat[,c("Ingredient","Amount","Measure")],
+                        ChantillyPotatoes.2006.dat[,c("Ingredient","Amount","Measure")], 
+                        by="Ingredient",
+                        all=TRUE)
+merge_ChantPot
+```
+*The only difference in ingredients is the type of cheese.*
+
+*Create a contingency table for Measure.*
+```{r}
+table(merge_ChantPot$Measure.x,merge_ChantPot$Measure.y)
+```
+*Measure units are the same for both years.*
+
+*A graphical representation of the measures between 1936 and 2006 confirms this finding.*
+```{r}
+plot(merge_CottPudd$Measure.x,merge_CottPudd$Measure.y, xlab="1936", ylab="2006")
+```
+*Create a contingency table for Amount.*
+```{r}
+table(merge_CottPudd$Amount.x,merge_CottPudd$Amount.y)
+```
+*There are increases and decreases in the amounts but nothing significant. After checking the recipes, these amounts did in fact change*
+
+*A graphical representation of the amounts from 1936 and 2006 confirms this finding.*
+```{r}
+plot(merge_CottPudd$Amount.x,merge_CottPudd$Amount.y, xlab="1936", ylab="2006", col="blue")
+```
+*Since we are confident that these tables are error free, we output both tables to tab file, using* recipe.year.tab *as naming convention.*
+```{r}
+write.table(ChantillyPotatoes.1936.dat, "ChantillyPotatoes.1936.tab") 
+write.table(ChantillyPotatoes.2006.dat, "ChantillyPotatoes.2006.tab") 
+```
+
+#Errors in the Beef Stroganoff files
+
+*Import files.*
+```{r}
+PathToBeefStroganoff.1997 <- "BeefStroganoff.1997.tab"
+BeefStroganoff.1997.dat <- read.table(PathToBeefStroganoff.1997, 
+                                      sep="", 
+                                      header=TRUE, 
+                                      stringsAsFactors = TRUE)
+BeefStroganoff.1997.dat
+
+PathToBeefStroganoff.2006 <- "BeefStroganoff.2006.tab"
+BeefStroganoff.2006.dat <- read.table(PathToBeefStroganoff.2006, 
+                                      sep="", 
+                                      header=TRUE, 
+                                      stringsAsFactors = TRUE)
+BeefStroganoff.2006.dat
+```
+*To verify units and ingredients match the USDA database, search Msre_Desc column and Long_Desc columns.*
+```{r}
+BeefStroganoff.1997.dat$Ingredient %in% USDA_FOOD_DES$Long_Desc
+BeefStroganoff.2006.dat$Ingredient %in% USDA_FOOD_DES$Long_Desc
+BeefStroganoff.1997.dat$Measure %in% USDA_WEIGHT$Msre_Desc
+BeefStroganoff.2006.dat$Measure %in% USDA_WEIGHT$Msre_Desc
+```
+*All values in the Ingredient column return false so we must rephrase the ingredients to match the USDA database.*   
+  
+*Some of the Measure units also return false.*  
+  
+*When checking the specific Amounts in the recipe itself, there are some that do not match up with what is stated in the Joy of Cooking.*  
+  
+*Therefore, corrections in all 3 columns need to be made. Rather than replace data into above data frames, we will create new data frames with correct values.*
+
+#Beef Stroganoff 1997 - Corrected
+
+*Create vectors for data frame.*
+```{r}
+Amount_BeefStrog.1997 <- c(1.5,0.0625,24,2,1,0.1875,1,1)
+Measure_BeefStrog.1997 <- c("tbsp" ,"cup","oz","tbsp" ,"medium (2-1/2\" dia)",
+                            "cup","tsp or 1 packet","cup")
+Ingredient_BeefStrog.1997 <- c("Butter, salted",
+                               "Wheat flour, white, all-purpose, enriched, bleached",
+                               "Beef, loin, tenderloin roast, boneless, separable lean and fat, trimmed to 0\" fat, all grades, raw",
+                               "Butter, salted",
+                               "Onions, raw",
+                               "Cream, sour, cultured",
+                               "Mustard, prepared, yellow",
+                               "Soup, stock, beef, home-prepared")
+
+NDB_No.1997 <- {}
+Gm_Wgt.1997 <- {}
+
+#for loop to populate the ingredient index from USDA FOOD_DES table
+for (i in 1:length(Ingredient_BeefStrog.1997)) {
+  x <- USDA_FOOD_DES[Ingredient_BeefStrog.1997[i] == USDA_FOOD_DES$Long_Desc, "NDB_No"]
+  NDB_No.1997 <- c(NDB_No.1997, x)
+}
+
+#for loop to populate the weight of ingredients from USDA WEIGHT table 
+for (i in 1:length(NDB_No.1997)) {
+  y <- USDA_WEIGHT[NDB_No.1997[i] == USDA_WEIGHT$NDB_No 
+                   & Measure_BeefStrog.1997[i] == USDA_WEIGHT$Msre_Desc, 
+                   "Gm_Wgt"]
+  Gm_Wgt.1997 <- c(Gm_Wgt.1997, y[1])
+}
+```
+
+*Verify lengths of vectors are equivalent.*
+```{r}
+length(Amount_BeefStrog.1997)
+length(Measure_BeefStrog.1997)
+length(Ingredient_BeefStrog.1997)
+length(NDB_No.1997)
+length(Gm_Wgt.1997)
+```
+*Create data frame for Beef Stroganoff 1997*
+```{r}
+#column Gm_Wgt was not included as this is not required for the midterm
+BeefStroganoff.1997.dat<-data.frame(
+  Amount = Amount_BeefStrog.1997,
+  Measure = Measure_BeefStrog.1997,
+  Ingredient = Ingredient_BeefStrog.1997,
+  NDB_No = NDB_No.1997
+)
+BeefStroganoff.1997.dat
+```
+*Notes: some of the measures were converted (lb for beef roast to oz, and tablespoon to cup for sour cream) in order to match USDA database.*
+
+*To verify units and ingredients match the USDA database, search Msre_Desc column and Long_Desc columns.*
+```{r}
+#match each ingredient in the USDA FOOD_Des table
+BeefStroganoff.1997.dat$Ingredient %in% USDA_FOOD_DES$Long_Desc
+
+#for loop to match each measure (based on NDB_No) in the USDA WEIGHT table
+for (i in 1:length(BeefStroganoff.1997.dat$Measure)) {
+  idx <- USDA_WEIGHT[BeefStroganoff.1997.dat$NDB_No[i] == USDA_WEIGHT$NDB_No, "Msre_Desc"]
+  print(BeefStroganoff.1997.dat$Measure[i] %in% idx)
+}
+```
+*All ingredient and measure values return true and therefore are present in the USDA database.*
+
+#Beef Stroganoff 2006 - Corrected
+
+*Create vectors for data frame.*
+```{r}
+Amount_BeefStrog.2006 <- c(32,2,3,1,5,2,1,1)
+Measure_BeefStrog.2006 <- c("oz","tbsp","tbsp","medium (2-1/2\" dia)",
+                            "cup, pieces or slices","cup","cup" ,"tsp or 1 packet")
+Ingredient_BeefStrog.2006 <- c("Beef, loin, tenderloin roast, boneless, separable lean and fat, trimmed to 0\" fat, all grades, raw",
+                               "Oil, canola",
+                               "Butter, salted",
+                               "Onions, raw","Mushrooms, white, raw",
+                               "Soup, stock, beef, home-prepared",
+                               "Cream, sour, cultured",
+                               "Mustard, prepared, yellow")
+NDB_No.2006 <- {}
+Gm_Wgt.2006 <- {}
+
+#for loop to populate the ingredient index from USDA FOOD_DES table
+for (i in 1:length(Ingredient_BeefStrog.2006)) {
+  x <- USDA_FOOD_DES[Ingredient_BeefStrog.2006[i] == USDA_FOOD_DES$Long_Desc, "NDB_No"]
+  NDB_No.2006 <- c(NDB_No.2006, x)
+}
+
+#for loop to populate the weight of ingredients from USDA WEIGHT table 
+for (i in 1:length(NDB_No.2006)) {
+  y <- USDA_WEIGHT[NDB_No.2006[i] == USDA_WEIGHT$NDB_No 
+                   & Measure_BeefStrog.2006[i] == USDA_WEIGHT$Msre_Desc, 
+                   "Gm_Wgt"]
+  Gm_Wgt.2006 <- c(Gm_Wgt.2006, y[1])
+}
+```
+
+*Verify lengths of vectors are equivalent.*
+```{r}
+length(Amount_BeefStrog.2006)
+length(Measure_BeefStrog.2006)
+length(Ingredient_BeefStrog.2006)
+length(NDB_No.2006)
+length(Gm_Wgt.2006)
+```
+*Create data frame for Beef Stroganoff 2006*
+```{r}
+#column Gm_Wgt was not included as this is not required for the midterm
+BeefStroganoff.2006.dat<-data.frame(
+  Amount = Amount_BeefStrog.2006,
+  Measure = Measure_BeefStrog.2006,
+  Ingredient = Ingredient_BeefStrog.2006,
+  NDB_No = NDB_No.2006
+)
+BeefStroganoff.2006.dat
+```
+*Notes: some of the measures were converted (lb for beef roast to oz, and tablespoon to cup for sour cream) in order to match USDA database.*
+
+*To verify units and ingredients match the USDA database, search Msre_Desc column and Long_Desc columns.*
+```{r}
+#match each ingredient in the USDA FOOD_Des table
+BeefStroganoff.2006.dat$Ingredient %in% USDA_FOOD_DES$Long_Desc
+
+#for loop to match each measure (based on NDB_No) in the USDA WEIGHT table
+for (i in 1:length(BeefStroganoff.2006.dat$Measure)) {
+  idx <- USDA_WEIGHT[BeefStroganoff.2006.dat$NDB_No[i] == USDA_WEIGHT$NDB_No, "Msre_Desc"]
+  print(BeefStroganoff.2006.dat$Measure[i] %in% idx)
+}
+```
+*All ingredient and measure values return true and therefore are present in the USDA database.*
+
+*Once again, we will check for errors and proofread. Start with by merging the 1997 and 2006 tables.*
+```{r}
+merge_BeefStrog <- merge(BeefStroganoff.1997.dat[,c("Ingredient","Amount","Measure")],
+                         BeefStroganoff.2006.dat[,c("Ingredient","Amount","Measure")],
+                         by="Ingredient",
+                         all=TRUE)
+merge_BeefStrog
+```
+*From the "NA" values, we see some ingredients were either added or dropped.*
+
+*Create a contingency table for Measure.*
+```{r}
+table(merge_BeefStrog$Measure.x,merge_BeefStrog$Measure.y)
+```
+*Measure units are the same for both years. Ingredients that were dropped or added are also evident in this table.*
+
+*A graphical representation of the measures from 1997 and 2006 confirms this finding.*
+```{r}
+plot(merge_BeefStrog$Measure.x,merge_BeefStrog$Measure.y, xlab="1997", ylab="2006")
+```
+*Create a contingency table for Amount.*
+```{r}
+table(merge_BeefStrog$Amount.x,merge_BeefStrog$Amount.y)
+```
+*There are increases in the amounts but nothing significant. After checking the recipes, these amounts did in fact change*
+
+*A graphical representation of the amounts from 1997 and 2006 confirms this finding.*
+```{r}
+plot(merge_CottPudd$Amount.x,merge_CottPudd$Amount.y, xlab="1997", ylab="2006", col="blue")
+```
+*Since we are confident that these tables are error free, we output both tables to tab file, using* recipe.year.tab *as naming convention.*
+```{r}
+#PMC - other RMD can't be run if this file is changed.
+#write.table(BeefStroganoff.1997.dat, "BeefStroganoff.1997.tab") 
+#write.table(BeefStroganoff.2006.dat, "BeefStroganoff.2006.tab") 
+```
+
+#Merging Data
+
+*Import all 6 tables and add columns for recipe name and year.*
+```{r}
+#vectorize a list of filenames
+filename <- c("BeefStroganoff.1997.tab",
+              "BeefStroganoff.2006.tab",
+              "CottagePudding.1936.tab",
+              "CottagePudding.2006.tab",
+              "ChantillyPotatoes.1936.tab",
+              "ChantillyPotatoes.2006.tab")
+
+table.dat <- data.frame()
+Recipe <- {}
+Year <- {}
+
+#for loop to accept each element of the filename vector
+for (i in 1:length(filename)) {
+  PathToFile <- filename[i]
+  
+  #create a running table of the data from each file
+  y <- read.table(PathToFile, sep="", header=TRUE, stringsAsFactors = FALSE)
+  table.dat <- rbind(table.dat,y)
+  
+  #parse the filename 
+  x <- sapply(strsplit(filename[i], split="\\."),FUN=as.character)
+  
+  #create a running table for Recipe and Year
+  Recipe <- cbind(c(Recipe,rep(x[1],length(y$Ingredient))))
+  Year <- cbind(c(Year,rep(x[2],length(y$Ingredient))))
+}
+
+#combine into a data frame
+JoyOfCooking.dat <- data.frame(Recipe=Recipe,Year=Year,table.dat, stringsAsFactors = FALSE)
+JoyOfCooking.dat
+```
+
+#Second table - calories per serving and calories per gram
+
+*Create vectors for data frame.*
+```{r}
+Recipe2 <- c("Beef Stroganoff","Beef Stroganoff",
+             "Chanitilly_Potatoes","Chanitilly_Potatoes",
+             "Cottage_Pudding","Cottage_Pudding")
+
+Year2 <- c(1997,2006,
+           1936,2006,
+           1936,2006)
+
+Min_Serving_Size <- c(4,4,6,6,6,8)
+Max_Serving_Size <- c(6,6,6,8,6,10)
+
+#these were taken from the recipe filess and will be used later
+Gram_Per_Serving <- c(169.82,371.4,217.06,133.4,89.88,72.47)
+Calories_Per_serving <- c(250.6,416.1,310,170.3,282.9,247.6)
+Calories_Per_Gram <- c(1.48,1.12,1.28,1.28,3.15,3.42)
+
+```
+
+*Create data frame*
+```{r}
+Servings.dat <- data.frame(
+  Recipe = Recipe2,
+  Year = Year2,
+  "Min Servings" = Min_Serving_Size,
+  "Max Servings" = Max_Serving_Size,
+  
+  #will be filled in for the final
+  Grams = NA,
+  Calories = NA
+)
+Servings.dat
+```
+*Values were double checked in the recipe files for accuracy.*
+
+*Output table to tab file.*
+```{r}
+write.table(Servings.dat, "Servings.tab")
+```
+
+*Import back in for verification.*
+```{r}
+PathToServings = "Servings.tab"
+Servings.imported <- read.table(PathToServings, sep="", header=TRUE, stringsAsFactors = FALSE)
+Servings.imported
+```
+*Re-import is successful.*

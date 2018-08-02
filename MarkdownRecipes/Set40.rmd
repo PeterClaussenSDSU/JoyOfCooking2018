@@ -1,0 +1,239 @@
+---
+title: "Joy Of Cooking Midterm Project"
+author: "Set 40"
+date: "7/20/2018"
+output:
+  html_document: default
+  pdf_document: default
+---
+# Project Introduction
+From a pool of 106 Recipes, each of us are assigned with two recipes. These Recipes files contains `Amount`, `Measure` and `Ingredients` for two different years `1936` and `2006` for each Recipe types with Minimum and Maximum Number of Serving per Recipes. As the files are not directly readable (Images are used as a pdf format) by Writing Script/ Code in R, so we need to create data table or data frame containing three columns `Amount`, `Measure` and `Ingredients` for each recipe and needs to be exported to a common formate file making sure that each file can be read programatically and individual recipes from others files are mergable to create a new file containing information of each Recipes and their `Amount`, `Measure` and `Ingredients` so that statistical analaysis can be carried out for whole set of Recipes.
+
+# Project Objective
+The Objective for this project can be summarised on the point as below:\
+1. Creating a data frame or data table for two assigned `Recipes` `Chicken Jambalaya` and `Chocolate Cake` for Year `1936` and `2006` having columns  `Amount`, `Measure` and `Ingredient`\
+2. Writing each Recipes to a tab deliminated file and the file name should be from the `Recipes Name` and `Year`\
+3. Reading the created file from step 2 and merging it with a Reference file of `Beef Stroganoff` tables by reading file for `Beef Stroganoff`\
+4. Proof of data for error check either by making plot or contingency table for finding the measures that are not consistent or mismatches in measures between ingredients.\
+5. Appending rows for `Recipe Name` , `Year`, `Minimum Serving` and `Maximum Serving` in the `Recipes` file by parsing the file name with string maipulation operation\
+6. Cross Validating `Ingredient` Name from `FOOD_DES.txt` reference file and updating `Ingredient` from reference file and adding `NDB_No` for each `Ingredient`\
+
+
+# Methodology
+The data containing values for the `Amount`, `Measure` and `Ingredient` for Recipes `Chicken Jambalaya` for `Year` `1936` & `2006` and `Chocolate Cake` for `Year` `1936` and `2006`  is made into data frame and this data frame is exported to the tab deliminated file by using write table function in R. As we need to read back these tables to append the `Recipe Name` and `Year`, these four recipes are exported in a separate folder to ease the process of reading and writing data from the file. The output data frame for each `Recipes` are shown in the table below.
+
+## Enter data
+### Data for Chicken Jambalaya for 1936 and 2006
+```{r} 
+# data frame for chicken Jambalaya 1936
+Chickenjambalaya1936.dat <- data.frame(
+  Amount=c(3.00, 0.50, 0.25, 0.33, 0.50, 1.00, 4.00),  # vector containing amount value for Amount
+  Measure = c('lb', 'lb', 'cup', 'cup', 'cup', 'cup', 'cup'), # vector containing measure unit for Measure
+  Ingredient = c('chicken, whole, raw, with skin','fat, pork, cured ham, uncooked','lard','onion, yellow, fresh, chopped','tomatoes,  fresh, year round average, chopped', 'rice, white, dry, long grain, enriched', 'water, generic')) # vectors for Ingredient 
+Chickenjambalaya1936.dat  #print the data frame
+write.table(Chickenjambalaya1936.dat,'Chicken Jambalaya1936.tab', sep=" ", row.names = FALSE) # export the data frame to tab deliminated file 
+```
+
+
+```{r}
+# data frame for chicken Jambalaya 2006
+Chickenjambalaya2006.dat <- data.frame(
+  Amount=c(2.50, 12.00, 2.00, 1.00, 1.00, 0.50, 2.00, 14.50, 2.00, 1.00), # vector containing amount value for Amount
+  Measure = c('lb', 'oz', 'Tbs', 'cup', 'ea', 'cup', 'Tbs','oz','cup','cup'), # vector containing measure unit for Measure
+  Ingredient = c('chicken, whole, raw, with skin', 'sausage, pork, cajun style andouille', 'butter, salted','onion, yellow, fresh, chopped', 'bell pepper, green, fresh, medium, 2 1/2\"', 'celery, fresh, diced', 'tomato paste, canned, 6 oz','tomatoes, whole, canned, with juice','water, generic','rice, white, dry, long grain, enriched')) # vectors for Ingredient
+Chickenjambalaya2006.dat
+write.table(Chickenjambalaya2006.dat,'Chicken Jambalaya2006.tab', sep=" ", row.names = FALSE) # export the data frame to tab deliminated file 
+
+```
+
+#### Comment
+The table for the `Chicken Jambalaya` with observations on three differerent varaibles `Amount`, `Measure` and `Ingredient` shows there is slight difference in the `Ingredients` for two years `1936` and `2006`.In addition to the ingredients that were used in `1936`, the additional ingredients are added on the recipes for year `2006` making it to total of 10 different `Ingredients` as compared to 7 different `Ingredients` in `1936` and the effect of these added ingredients on the nutritional value will be analysed on the final project.
+
+### Data for Chocolate Cake for 1936 and 2006
+```{r}
+# data frame for Chocolate Cake for 1936
+ChocolateCake1936.dat <- data.frame(
+  Amount=c(2.00, 5.00, 1.50, 0.50, 4.00, 1.75, 0.50, 1.00), # Vector containing amount value for Amount
+  Measure = c('oz', 'Tbs', 'cup','cup', 'lrg','cup','cup','tsp'), # vector containing measure unit for Measure
+  Ingredient = c('chocolate,dark,45-59% cacao solids', 'water,generic', 'sugar,white,granulated,granulated', 'butter,salted', 'egg,raw', 'flour,cake,white,unsifted,enriched', 'milk,whole,3.25%','extract,vanilla')) # vector for Ingredient
+ChocolateCake1936.dat
+write.table(ChocolateCake1936.dat,'Chocolate Cake1936.tab', sep=" ", row.names = FALSE) # # export the data frame to tab deliminated file 
+
+```
+
+
+```{r}
+# data frame for Chocolate Cake  2006
+ChocolateCake2006.dat <- data.frame(
+  Amount=c(1.75, 2.00, 0.33, 0.50, 4.00, 1.50, 1.00), # Vector containing amount value for Amount
+  Measure = c('cup', 'oz', 'cup','cup', 'lrg','cup','tsp'), # vector containing measure unit for Measure
+  Ingredient = c('flour,cake,white,unsifted,enriched','chocolate,dark,45-59% cacao solids', 'water,generic', 'butter,salted','egg,raw', 'sugar,white,granulated,granulated','extract,vanilla')) # vector for Ingredient
+ChocolateCake2006.dat
+write.table(ChocolateCake2006.dat,'Chocolate Cake2006.tab', sep=" ", row.names = FALSE)# export the data frame to tab deliminated file 
+```
+
+#### Comment
+Similarly, the data frame for the `Chocolate Cake` for year `1936` and `2006` is created having columns names `Amount`, `Measure` and `Ingredients` for two years `1936` and `2006`.These data frame shows that there is change in `Amount` and `Ingredients` for recipes. Some of the new `Ingredients` are added in recipes for year `2006`. By looking at the table, we can see that the  one of `Ingridents` in `1936` is removed to prepare the recipes for year `2006` as the number of `Ingridents` in year `2006` is one less than number of `Ingredients` used in `1936` and the effect of removal of ingredients in Nutritional Value will be analysed by doing statistical analysis on final project.
+
+
+## Mergable Test for Recipes file with Reference File
+To verify that the data are properly entered into and mergable with the reference file `Beef Stroganoff` for year `1997` and `2006`, all the file are read in and then merged with a common variable `Ingredient`. The result obatined from the merge output suggest that the data are mergable and this merged file is used for checking the consistency in measurement unit by creating the contigency table and plot for two different measurement type named as `Measure` in table.
+```{r}
+### Checking if files are mergable or not
+Beef1997 <- read.csv('BeefStroganoff.1997.tab', sep ="", header= TRUE) # reading BeefStroganoff Recipes for 1997
+Beef2006 <- read.csv('BeefStroganoff.2006.tab', sep ="", header= TRUE) # reading BeefStroganoff Recipes for 2006
+Chicken1936 <- read.csv('Chicken Jambalaya1936.tab',sep="", header=TRUE) # reading Chicken Jambalaya 1936 recipes 
+Chicken1936
+Chicken2006 <- read.csv('Chicken Jambalaya2006.tab',sep="", header=TRUE) # reading Chicken Jambalaya 2006 recipes 
+Chicken2006
+Chocolate1936 <- read.csv('Chocolate Cake1936.tab',sep="", header=TRUE) # reading Chocolate Cake 1936 recipes 
+Chocolate2006 <- read.csv('Chocolate Cake2006.tab',sep="", header=TRUE) # reading Chocolate Cake 2006 recipes 
+
+### Merge all the tables read from the file with the Refrence one 
+m1 <- merge(Beef1997, Beef2006, by = 'Ingredient') # merge BeefStroganoff Recipes for 1997 and 2006  by Ingredient 
+m2<- merge(Chicken1936,Chicken2006, by= 'Ingredient')  # merge Chicken Jambalaya Recipes for 1936 and 2006  by Ingredient
+m3 <-merge(Chocolate1936, Chocolate2006, by='Ingredient') # merge Chocolate Cake Recipes for 1936 and 2006  by Ingredient
+m4 <- merge(m1,m2, all = TRUE)  # merge Beef Recipes and  Chicken Recipes
+m5 <- merge(m4,m3, all = TRUE) # merge all recipes 
+m5
+### Finding Anamolies in Data Entered 
+# Contingency table 
+table(m5$Measure.x, m5$Measure.y)
+plot(m5$Amount.x, m5$Amount.y, main = "plot for Finding Contingency in Measure" ,xlab="Measure of Amount of Ingredient for 1936", ylab="Measure of Amount of Ingredient for 2006")
+```
+
+### Comment 
+From the Contigency table we can see that the same `Ingredients` are measured into two differents measurement types named as `Measure` in file. We can see that "sour cream,cultured" is measured "Tbs" and "cup", "water, generic" is measured in "Tbs" and "cup" and "mustard, dijon" is also measured in two different unit "tsp" and "Tbs". Same thing can also be infered from the plot between Amount for the measured where the devaition of the points from the linear line suggest possible inconsistency in the data.
+
+
+## Updating Recipe File
+
+The `Recipe` file contains the `Recipe Name`, `Year` , `Minimum Servings` and `Maximum Serving` for the `Beef Stroganoff` and this file needs to be updated with value for these four observations. As each of the files that were exported earlier has `Recipe Name` and `Year` as a file name and this filename needs to be splitted into two strings `Recipe Name` and `Year` so that it can be added to the `Recipe` File along with `Minimum Serving` and `Maximum Serving`.
+
+```{r}
+### Read file and then append Recipe and Year to it
+```{r,eval=FALSE}
+recipesassigned <- list.files(path = "C:/Users/Basanta/Desktop/STAT 700/Midterm Project/RecipeAssigned", pattern = '*.tab')
+recipesassigned
+MinimumServings = c(10,6,1,1)  # Minimum Serving for four recipes 
+MaximumServings =c(10,8,1,1)   # Maximum Serving for four recipes 
+filelocation <- "C:/Users/Basanta/Desktop/STAT 700/Midterm Project/Recipes.csv"  # file location for Recipes file 
+recipesfile <- read.csv(filelocation, header = TRUE, sep =",")  # read file 
+
+if (dim(recipesfile)[1] == 2){  # to prevent over writing data to file 
+  i <- 1  # counter for looping through array of Maximum and Minimum Serving
+for (file in recipesassigned){ # loop through file in the folder 
+  yearrecipe <- as.list(strsplit(sub('(\\.tab$)', '', file), "(?=[A-Za-z])(?<=[0-9])|(?=[0-9])(?<=[A-Za-z])",perl=TRUE)[[1]]) # split filename into Recipe Name and Year
+  year <-as.numeric(yearrecipe[[2]])  # extract year from the filename 
+  recipe <- as.character(yearrecipe[[1]])  # extract Recipe Name from filename 
+  dataframerecipe <- data.frame(Recipe = recipe, Year = year, MinServings = MinimumServings[i], MaxServings = MaximumServings[i])
+  # data frame for each recipe type with Minimum and Maximum Servings
+  recipesfile <- rbind(recipesfile,dataframerecipe) # append the data frame to the file 
+  i<- i+1  # increase counter value to access every element in the Minimum Serving array
+}
+# write the recipefile back
+write.table(recipesfile, filelocation, sep=",", row.names = FALSE)
+# Display content of Recipe File 
+read.csv(filelocation, header = TRUE, sep =",")  # Reading Recipe File to check if data are written or not 
+}
+read.csv(filelocation, header = TRUE, sep =",")  # Reading Recipe File to check if data are written or not
+  
+```
+
+### Comment 
+The list of filename from Folder `RecipeAssigned` is stored in a variable for parsing the filename into `Recipe` and `Year` inorder to append with `Recipe file` along with `Minimum Serving` and `Maximum Serving`.  The numeric vector for `Minimum Serving` and `Maximum Serving` is created. Inorder to protect over writing of these values in Recipe file, the dimension of Recipe is checked and if row number is equal to 2, then these values are appended to the recipefiles variable that contains the data read from `Recipe` file. For appending the Recipe Name and Year into the file, at first the file extension is removed by using sub function and then the string is splitted based on the first character that starts from characters and number and ends with character and number for extracting the Recipe Name and Year respectively (using zero width assertion operator). The new data frame is created containing the `Recipe`, `Year` , `MinServings` and `MaxServings` and is appended with file till all the readings from numeric vector of Servings are appended.
+
+
+## Cross Validation Ingredient Name with Reference File 
+The reference file for the `Ingredient` name is read into a table `food_des.dat`. As the file contains mixed observationsof number and characters in different variable, the read.table functions treats character strings as a factor and thus need to be converted into character before applying any text processing. The `Ingredient` as factor is converted into character and the subset of `Ingredient` and `NDB_No` are stored in the new variables for extracting the `Ingredient` that matches best with `Ingredient` in previously exported file.  
+
+### Partial matching of Ingredient 
+The text processing operation is carried out for finding the best matched `Ingredient` and thus will repalace `Ingredient` in our file. Finding the best match with code is quite tedious, so the partial matching for all of the Ingredient is carried out manually by using grep function. The result below shows the best matching for one of the Ingredient from Chicken Jambalaya Recipe.
+```{r}
+food_des.dat <- read.table("FOOD_DES.txt",header=FALSE,sep="^",quote="~") 
+# reading Reference file for Ingredient, separator Character is ^ and has ~ as quote character
+names(food_des.dat) <- c("NDB_No","FdGrp_Cd","Long_Desc","Shrt_Desc",
+"ComName","ManufacName","Survey","Ref_desc","Refuse","SciName",
+"N_Factor","Pro_Factor","Fat_Factor","CHO_Factor")  # renaming columns
+ingredientnum.dat <-data.frame(NDB_No = food_des.dat$NDB_No, Long_Desc = as.character(food_des.dat$Long_Desc))
+ingredientnum.dat[grep('(C|c)hicken.*(M|m)eat.*(S|s)kin.*(R|r)aw', ingredientnum.dat$Long_Desc),] # finding the best match for chicken, rhole, reat, rkin ,raw
+```
+#### Comment
+The file `food_des.txt` is  read into data frame and the new data frame named `ingredientnum.dat` is created from the `food_des.dat` containing `NDB_No` and `Long_Desc` where the factor format for `Long_Desc` is converted to character for text processing. Using this `ingredientnum.dat` data frame the Ingredients name for each exported file will be update in following section.As the `Ingredient` name from file doesn't exactly match with ingredient name under `Long_Desc` column, the grep function is used to find the one that matches best with the supplied parameters. The result for matchig of "chicken, whole,raw,with skin" is shown above and among these 19 matches, the one that best matches is `NDB_No` with 5006. Now this string will replace the value for `Ingredient` in the table created earlier.  
+
+### Updating Ingredients
+The Ingredients in file are replaced by the one that matches best with reference Ingredinets and the `NDB_No` column is added to the file for cross reference of the Ingredients. The vector of  `NDB_No` number for each matched `Ingredient` is created and the ingredient name from the file is pulled out by using these number and thus will replace the corressponding `Ingredient` names in each file. 
+```{r}
+
+# Read Chicekn Jambalya 1936 
+ChickenJam1936 <- read.csv('Chicken Jambalaya1936.tab',sep="", header=TRUE) # reading Chicken Jambalaya 1936 recipes
+ChickenJam1936$Ingredient <- as.character(ChickenJam1936$Ingredient)  # convert string as a factor to character
+ndb <- c(5006, 7019,4002,11286,11529,20048,14555)  # NDB_No for each Ingredient name
+for(i in 1:length(ndb)){  # loop through length of ndb
+  ChickenJam1936$Ingredient[i] <-as.character( ingredientnum.dat[ingredientnum.dat$NDB_No ==ndb[i],][[2]]) # extaract the element from ingredientnum.dat that has corresponding ndb number and convert string as a factor to character
+  ChickenJam1936$NDB_No[i] <- ndb[i] # append the NDB_No column in data frame
+}
+
+write.table(ChickenJam1936,'Chicken Jambalaya1936.tab', sep=" ", row.names = FALSE) # write the updated table
+
+# Read Chicekn Jambalya 2006 
+ChickenJam2006 <- read.csv('Chicken Jambalaya2006.tab',sep="", header=TRUE) # reading Chicken Jambalaya 2006 recipes
+ChickenJam2006$Ingredient <- as.character(ChickenJam2006$Ingredient)  # convert string as a factor to character
+ndb <- c(5006, 7074,1001,11286,11333,11143,11693,11885,14555,20048)  # NDB_No for each Ingredient name
+for(i in 1:length(ndb)){  # loop through length of ndb
+  ChickenJam2006$Ingredient[i] <-as.character( ingredientnum.dat[ingredientnum.dat$NDB_No ==ndb[i],][[2]]) # extaract the element from ingredientnum.dat that has corresponding ndb number and convert string as a factor to character
+  ChickenJam2006$NDB_No[i] <- ndb[i] # append the NDB_No column in data frame
+}
+
+write.table(ChickenJam2006,'Chicken Jambalaya2006.tab', sep=" ", row.names = FALSE) # write the updated table
+
+
+# Read Chocolate Cake 1936 
+Chocolate1936 <- read.csv('Chocolate Cake1936.tab',sep="", header=TRUE) # reading Chocolate Cake 1936 recipes
+Chocolate1936$Ingredient <- as.character(Chocolate1936$Ingredient)  # convert string as a factor to character
+ndb <- c(19902, 14555,19335,1001,1123,20084,1211,2050)  # NDB_No for each Ingredient name
+for(i in 1:length(ndb)){  # loop through length of ndb
+  Chocolate1936$Ingredient[i] <-as.character( ingredientnum.dat[ingredientnum.dat$NDB_No ==ndb[i],][[2]]) # extaract the element from ingredientnum.dat that has corresponding ndb number and convert string as a factor to character
+  Chocolate1936$NDB_No[i] <- ndb[i] # append the NDB_No column in data frame
+}
+
+write.table(Chocolate1936,'Chocolate Cake1936.tab', sep=" ", row.names = FALSE) # write the updated table
+
+
+# Read Chocolate Cake 2006 
+Chocolate2006 <- read.csv('Chocolate Cake2006.tab',sep="", header=TRUE) # reading Chocolate cake 2006 recipes
+Chocolate2006$Ingredient <- as.character(Chocolate2006$Ingredient)  # convert string as a factor to character
+ndb <- c(20084, 19902,14555,1001,1123,19335,2050)  # NDB_No for each Ingredient name
+for(i in 1:length(ndb)){  # loop through length of ndb
+  Chocolate2006$Ingredient[i] <-as.character( ingredientnum.dat[ingredientnum.dat$NDB_No ==ndb[i],][[2]]) # extaract the element from ingredientnum.dat that has corresponding ndb number and convert string as a factor to character
+  Chocolate2006$NDB_No[i] <- ndb[i] # append the NDB_No column in data frame
+}
+write.table(Chocolate2006,'Chocolate Cake2006.tab', sep=" ", row.names = FALSE) # write the updated table
+
+```
+#### Comment
+For updating the `Ingredient` in file exported earlier with ingredients name from `Food Description` file, the grep function is used to match the best ingredients and the `NDB_No` for it is stored for each of the Recipes that has been assigned. Now, this `NDB_No` is used as a primary key to find the `Ingredient` from the `Food Description` file that matches with `Ingredient` in tab file. For this, the value for the `NDB_No` for each file is stored accordingly to the `Ingredient` name in tab file and comparison operation along with indexing operation is used to find the factor that has corresponding `NDB_No` in `ingredientnum.dat` data frame. Thus, obatined factor of `Ingredient` is converted to character vector and then is updated to the existing tab file. Similarly, the `NDB_No` is appended to the tab file by looping through the number of iteration that equals to its length. Finally, the data frame with `Amount`, `Measure`, `Ingredient` and `NDB_No` is write back to tab file for each assigned recipes using the same naming convention i.e file name is Recipes followed by  year.
+
+# Result 
+After going through sequences of operation as listed on the Methodology section, the required file is obatined having obseravitions on 5 different variables `Amount`, `Measure`, `Ingredient` and `NDB_No` and the content of respective file is displayed below.
+
+```{r}
+### Reading Updated file 
+Chicken1936 <- read.csv('Chicken Jambalaya1936.tab',sep="", header=TRUE) # reading Chicken Jambalaya 1936 recipes 
+Chicken1936
+Chicken2006 <- read.csv('Chicken Jambalaya2006.tab',sep="", header=TRUE) # reading Chicken Jambalaya 2006 recipes 
+Chicken2006
+Chocolate1936 <- read.csv('Chocolate Cake1936.tab',sep="", header=TRUE) # reading Chocolate Cake 1936 recipes
+Chocolate1936
+Chocolate2006 <- read.csv('Chocolate Cake2006.tab',sep="", header=TRUE) # reading Chocolate Cake 2006 recipes 
+Chocolate1936
+```
+
+
+# Conclusion
+The data frame for each `Recipes` assigned is created with variables `Amount`, `Measure` and `Ingredient` and this data frame is exported to tab deliminated file with file name Recipes Name followed by Year. These file are merged with the Reference file and inconsistency in the data is examined by making contingency table and scatter plot.Finally, the `Ingredient` is cross checked with the standard ingredient name listed in another file by using text processing operation and `Ingredient` in tab deliminated file is repalced by best match ingredient name listed under `Long_Desc` varible along with addition of `NDB_No` as a key for the data.   
+
+
+
+
+

@@ -1,0 +1,202 @@
+---
+title: "Joy Of Cooking Midterm Project Prep"
+author: "Set 75"
+date: "7/29/2018"
+output: 
+  word_document: default
+---
+
+For this midterm project, I will generate tables for the following two recipes: Rombauer Italian Rice and Baked Rice Pudding.  
+
+# Step 1: Create and save data tables for the assigned recipes, with columns Amount, Measure, and Ingredient.
+
+```{r}
+# Create data frames for each recipes and years
+Rombauer_Italian_Rice_1936 <- data.frame(Amount = c(2,0.5,2,0.25),
+                              Measure=c("Tbs","cup","cup","cup"),
+                              Ingredient=c("butter, salted",
+                                           "rice, white, dry, long grain, enriched",
+                                           "stock, chicken, prepared from recipe",
+                                           "cheese, parmesan, grated"))
+
+Rombauer_Italian_Rice_2006 <- data.frame(Amount = c(0.25,1,4,0.5),
+                              Measure=c("cup","cup","cup","cup"),
+                              Ingredient=c("butter, salted",
+                                           "rice, white, dry, long grain, enriched",
+                                           "stock, chicken, prepared from recipe",
+                                           "cheese, parmesan, grated"))
+
+Baked_Rice_Pudding_1936 <- data.frame(Amount = c(2,1.33,3.5,1,2,1,1),
+                           Measure=c("cup","cup","Tbs","Tbs","lrg","tsp","tsp"),
+                           Ingredient=c("rice, white, cooked, long grain, unenriched",
+                                        "milk, whole, 3.25%", 
+                                        "sugar, white, granulated, granulated",
+                                        "butter, salted",
+                                        "egg, raw",
+                                        "juice, lemon, fresh",
+                                        "extract, vanilla"))
+
+Baked_Rice_Pudding_2006 <- data.frame(Amount = c(2,1.33,6,2,2,1),
+                           Measure=c("cup","cup","Tbs","Tbs","lrg","tsp"),
+                           Ingredient=c("rice, white, cooked, long grain, unenriched",
+                                        "milk, whole, 3.25%", 
+                                        "sugar, white, granulated, granulated",
+                                        "butter, salted",
+                                        "egg, raw",
+                                        "extract, vanilla"))
+```
+
+# Step 2: Write each individual recipe to a tab delimited file. The name of the tab file should be comprised of the recipe file name and the year of the recipe (1936 or 2006, in most cases).
+
+```{r}
+# Save all tables into tab delimited file, named them by recipe and year.
+write.table(Rombauer_Italian_Rice_1936,"RombauerItalianRice.1936.tab", sep="\t",row.names = FALSE)
+write.table(Rombauer_Italian_Rice_2006,"RombauerItalianRice.2006.tab", sep="\t",row.names = FALSE)
+write.table(Baked_Rice_Pudding_1936,"BakedRicePudding.1936.tab", sep="\t",row.names = FALSE)
+write.table(Baked_Rice_Pudding_2006,"BakedRicePudding.2006.tab", sep="\t",row.names = FALSE)
+```
+
+# Step 3: Read in each tab file, and merge the tables with the example Beef Stroganoff tables as well as check for inconsistencies (proof the data to check for errors).
+
+```{r}
+files <- list.files(pattern="*.tab")
+
+# Read each table
+Pudding1 <- read.table(files[1],header=TRUE) 
+Pudding2 <- read.table(files[2],header=TRUE) 
+Beef1 <- read.table(files[3],header=TRUE)
+Beef2 <- read.table(files[4],header=TRUE) 
+Rice1 <- read.table(files[5],header=TRUE) 
+Rice2 <- read.table(files[6],header=TRUE) 
+
+# Merge the same recipes of different years by ingredients
+Pudding_merge <- merge(Pudding1,Pudding2,by="Ingredient",all=TRUE)
+Beef_merge <- merge(Beef1,Beef2,by="Ingredient",all=TRUE)
+Rice_merge <- merge(Rice1,Rice2,by="Ingredient",all=TRUE)
+
+# Check the consistencies/inconsistencies measure between two years of recipes
+table(Pudding_merge$Measure.x,Pudding_merge$Measure.y)
+table(Beef_merge$Measure.x,Beef_merge$Measure.y)
+table(Rice_merge$Measure.x,Rice_merge$Measure.y)
+```
+
+Comment: First, instead of merging all six tables together, I think it is better to compare within recipes for different years. So by making contingency table for measure, it is shown that inconsistency occurred in Beef and Rice table, but not Pudding table, for example, Tbs-cup mismatch in Beef data. Then I went back and checked the pdf files to make sure all the differences are not accidental typos, which means they are all intended changes. All Measures will be matched with Nut_DES and WEIGHT file later.
+
+# Step 4: Match ingredients to FOOD_DES.txt file. 
+
+```{r}
+# Read FOOD_DES.txt and name each column
+food_des.dat <- read.table("FOOD_DES.txt",header=FALSE,sep="^",quote="~")
+names(food_des.dat) <- c("NDB_No","FdGrp_Cd","Long_Desc","Shrt_Desc","ComName",
+                         "ManufacName","Survey","Ref_desc","Refuse","SciName",
+                         "N_Factor","Pro_Factor","Fat_Factor","CHO_Factor")
+
+# List all unique ingredient among all tables
+unique_ingredient <- unique(c(as.vector(Pudding_merge$Ingredient),
+                            as.vector(Beef_merge$Ingredient),
+                            as.vector(Rice_merge$Ingredient)))
+
+# Print ALL unique ingredients
+unique_ingredient
+```
+
+```{r}
+# Create a function to seach the key words matched in FOOD_DES file
+match <- function(x) {
+food_des.dat[grep(x, food_des.dat$Long_Desc), c(1,3)]
+}
+
+# Mannually type in the key words for each unique ingredient 
+# only showing one example here (canola oil)
+match("(C|c)anola")
+```
+
+Comment: Sometimes it was tricky to find proper key words to search for matches in the FOOD_DES data. For some of them, I just used the first word of the description, like (|) in the example. However, some other ones are difficult. For example, like "beef roast, tenderloin, raw, 0\" trim", if (B|b)eef is used for searching, it listed over one thousand results. Thus, "tenderloin" was used. I only show one function call here (match("(C|c)anola")) as an example and skipped the rest. Then I just looked up the match listed to find the one with the most similar item and record the NDB_No in step 4.
+
+# Step 5: Combine tables and edit ingredient names according to FOOD_DES matches. 
+
+```{r}
+newtab <- data.frame() # Create an empty data frame
+for (i in 1:length(files)){
+  file_name <- unlist(strsplit(files[i],".",fixed=TRUE)) # Load the file names
+  tab <- read.table(files[i],header=TRUE) # Read each table
+  tab <- cbind(Recipe=c(rep(file_name[1],nrow(tab))),
+               Year=c(rep(file_name[2],nrow(tab))),tab) # Add columns of recipe and year
+  newtab <- as.data.frame(rbind(newtab,tab)) # Combine the tables 
+}
+
+# Create matrix for matched ingredients and corresponding NDB_No in sequence
+Ingredient<-c('Rice, white, long-grain, regular, unenriched, cooked without salt',
+              'Milk, whole, 3.25% milkfat, without added vitamin A',
+              'Sugars, granulated',
+              'Butter, salted',
+              'Egg, whole, raw, fresh',
+              'Lemon juice, raw',
+              'Vanilla extract',
+              'Rice, white, long-grain, regular, unenriched, cooked without salt',
+              'Milk, whole, 3.25% milkfat, without added vitamin A',
+              'Sugars, granulated',
+              
+              'Butter, salted',
+              'Egg, whole, raw, fresh',
+              'Vanilla extract',
+              'Beef, loin, tenderloin roast, boneless, separable lean and fat, trimmed to 0" fat, all grades, raw',
+              'Butter, salted',
+              'Wheat flour, white, all-purpose, self-rising, enriched',
+              'Soup, stock, beef, home-prepared',
+              'Cream, sour, cultured',
+              'Mustard, prepared, yellow',
+              'Beef, loin, tenderloin roast, boneless, separable lean and fat, trimmed to 0" fat, all grades, raw',
+              
+              'Oil, canola',
+              'Butter, salted',
+              'Onions, raw',
+              'Mushrooms, white, raw',
+              'Soup, stock, beef, home-prepared',
+              'Cream, sour, cultured',
+              'Mustard, prepared, yellow',
+              'Butter, salted',
+              'Rice, white, long-grain, regular, raw, enriched',
+              'Soup, stock, chicken, home-prepared',
+              
+              'Cheese, parmesan, grated',
+              'Butter, salted',
+              'Rice, white, long-grain, regular, raw, enriched',
+              'Soup, stock, chicken, home-prepared',
+              'Cheese, parmesan, grated')
+
+NDB <- c('20445','1211','19335','1001','1123','9152','2050','20445','1211','19335',
+         '1001','1123','2050','23336','1001','20082','6170','1056','2046','23336',
+         '4582','1001','11282','11260','6170','1056','2046','1001','20044','6172',
+         '1032','1001','20044','6172','1032')
+
+mat <- data.frame(Ingredient=Ingredient,NDB_No=NDB)
+
+# Check if assigned ingredients and NDB_No are in right sequence
+check_table <- cbind(newtab,mat)
+check_table
+
+# Generate output table (delete original ingredient)
+complete_table <- cbind(newtab[,1:4],mat)
+
+# Output the revised table into a tab file
+write.table(complete_table,"complete.tab", sep="\t",row.names = FALSE)
+```
+
+Comment: The output tab file includes five columns that cover all ingredients in the six recipes. All ingredients are matched to the best choice in FOOD_DES.txt file and followed by the NDB_No.
+
+# Step 6: Create a Recipe table containing recipe, year, minservings and maxservings. Read the Recipes.csv, append rows for the recipes, then write the table back to Recipes.csv. 
+
+```{r}
+Beef.recipe <- read.csv("Recipes.csv",header=TRUE)  # Read the given table of Beef
+recipe <- data.frame(Recipe=c("RombauerItalianRice","RombauerItalianRice","BakedRicePudding","BakedRicePudding"),
+                     Year=c("1936","2006","1936","2006"),
+                     MinServings=c("4","6","8","8"),
+                     MaxServings=c("4","6","8","8")) # Create recipe file  
+all.recipe <- rbind(Beef.recipe,recipe)  # Combine the two matrix
+
+# Output csv file
+write.csv(all.recipe,"Merged.Recipes.csv",col.names = TRUE,row.names = FALSE)  
+```
+
+Comment: Since I already showed how to use the chopped file names to implent matrix, I just directly typed all data needed here and exported.

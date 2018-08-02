@@ -1,0 +1,540 @@
+---
+title: "Joy Of Cooking Midterm Project"
+author: "Set 46"
+date: "7/21/2018"
+output:
+  word_document: default
+  html_document: default
+---
+
+# Check Nutrient Data
+
+Run this to make sure your system can read the required nutrient database tables.
+
+```{r}
+weight.dat <- read.table("WEIGHT.txt",header=FALSE,sep="^",quote="~")
+names(weight.dat) <- c("NDB_No","Seq","Amount","Msre_Desc","Gm_Wgt","Num_Data_Pts","Std_Dev")
+head(weight.dat)
+summary(weight.dat)
+```
+
+```{r}
+food_des.dat <- read.table("FOOD_DES.txt",header=FALSE,sep="^",quote="~")
+names(food_des.dat) <- c("NDB_No","FdGrp_Cd","Long_Desc","Shrt_Desc",
+"ComName","ManufacName","Survey","Ref_desc","Refuse","SciName",
+"N_Factor","Pro_Factor","Fat_Factor","CHO_Factor")
+dim(food_des.dat)
+head(food_des.dat)
+summary(food_des.dat)
+```
+
+```{r}
+nut_data.dat <- read.table("NUT_DATA.txt",header=FALSE,sep="^",quote="~")
+names(nut_data.dat) <- c("NDB_No","Nutr_No","Nutr_Val","Num_Data_Pts","Std_Error",
+"Src_Cd","Deriv_Cd","Ref_NDB_No","Add_Nutr_Mark","Num_Studies",
+"Min","Max","DF","Low_EB","Up_EB","Stat_cmt","AddMod_Date")
+head(nut_data.dat)
+summary(nut_data.dat)
+```
+
+You are required to enter ingredients using the text listed in FOOD_DES.txt. In some cases, the ingredient in the PDF files are identical to the ingredients lists in FOOD_DES.txt, aside from case. The Beef Stroganoff recipes list "butter, salted" , in FOOD_DES, this is listed as "Butter, salted". In other cases, there are not exact matches. You will need to perform partial matching in FOOD_DES and pick the best match. For example, using grep('(D|d)ijon' ... , I don't find any matches, so I use grep('(M|m)ustard', to find the best match. I would enter "Mustard, prepared, yellow" into the Beef Stroganoff recipe, instead of the listed ingredient "mustard, dijon".
+
+Print the WEIGHT.dat table featuring the NDB_No and Msre_Desc variables.
+
+Print the FOOD_DES.dat table featuring the NDB_No and Long_Desc variables.
+
+```{r}
+data.frame(weight.dat$NDB_No,weight.dat$Msre_Desc)
+data.frame(food_des.dat$NDB_No,food_des.dat$Long_Desc)
+```
+
+Use grep to find the ingredients lists in FOOD_DES.txt to replace the ingredients in the created data tables.
+
+Use grep to find the NDB_No in FOOD_DES.txt that corresponds with the found ingredient for the created data tables.
+
+Use grep to find the Msre_Desc that corresponds with the found NDB_No
+
+```{r}
+food_des.dat$Long_Desc[(grep('(S|s)tock', food_des.dat$Long_Desc))]
+#stock, beef, prepared from recipe = Soup, stock, beef, home-prepare
+food_des.dat$NDB_No[(grep('Soup, stock, beef, home-prepared', food_des.dat$Long_Desc))]
+#NDB_No = 6170
+
+food_des.dat$Long_Desc[(grep('(M|m)ustard', food_des.dat$Long_Desc))]
+#mustard, dijon = Mustard, prepared, yellow
+food_des.dat$NDB_No[(grep('Mustard, prepared, yellow', food_des.dat$Long_Desc))]
+#NDB_No = 2046
+
+food_des.dat$Long_Desc[(grep('(B|b)utter, (S|s)alted', food_des.dat$Long_Desc))]
+#butter, salted = Butter, salted
+food_des.dat$NDB_No[(grep('Butter, salted', food_des.dat$Long_Desc))]
+#NDB_No = 1001
+
+food_des.dat$Long_Desc[(grep('(M|m)ushrooms', food_des.dat$Long_Desc))]
+#mushrooms, fresh = Mushrooms, canned, drained solids
+food_des.dat$NDB_No[(grep('Mushrooms, canned, drained solids', food_des.dat$Long_Desc))]
+#NDB_No = 11264
+
+food_des.dat$Long_Desc[(grep('(S|s)our (C|c)ream', food_des.dat$Long_Desc))]
+#sour cream, cultured = Sour cream, imitation, cultured
+food_des.dat$NDB_No[(grep('Sour cream, imitation, cultured', food_des.dat$Long_Desc))]
+#NDB_No = 1074
+
+food_des.dat$Long_Desc[(grep('(O|o)il, (C|c)anola', food_des.dat$Long_Desc))]
+#oil, canola = Oil, canola
+food_des.dat$NDB_No[(grep('Oil, canola', food_des.dat$Long_Desc))]
+#NDB_No = 4582
+
+food_des.dat$Long_Desc[(grep('(A|a)pple', food_des.dat$Long_Desc))]
+#apple, fresh, large, 3 1/4 = Apples, raw, with skin (Includes foods for USDA's Food Distribution Program)
+food_des.dat$NDB_No[(grep('Apples, raw, with skin', food_des.dat$Long_Desc))]
+#NDB_No = 9003
+
+#Note: 'Apples, raw, with skin (Includes foods for USDA's Food Distribution Program)' is the proper name in FOOD_DES.dat table, but function used to find NDB_No results in integer(0). Find NDB_No using only 'Apples, raw, with skin', but use proper name when replacing Ingredient names.
+
+food_des.dat$Long_Desc[(grep('(V|v)inegar', food_des.dat$Long_Desc))]
+#vinegar, distilled = Vinegar, distilled
+food_des.dat$NDB_No[(grep('Vinegar, distilled', food_des.dat$Long_Desc))]
+#NDB_No = 2053
+
+#vinegar, cider = Vinegar, cider
+food_des.dat$NDB_No[(grep('Vinegar, cider', food_des.dat$Long_Desc))]
+#NDB_No = 2048
+
+food_des.dat$Long_Desc[(grep('(S|s)ugar', food_des.dat$Long_Desc))]
+#sugar, white, granulated, granulated = Sugars, granulated
+food_des.dat$NDB_No[(grep('Sugars, granulated', food_des.dat$Long_Desc))]
+#NDB_No = 19335
+
+#sugar, brown, packed = Sugars, brown
+food_des.dat$NDB_No[(grep('Sugars, brown', food_des.dat$Long_Desc))]
+#NDB_No = 19334
+
+food_des.dat$Long_Desc[(grep('(B|b)acon', food_des.dat$Long_Desc))]
+#bacon, raw, cured = Bacon, pre-sliced, reduced/low sodium, unprepared
+food_des.dat$NDB_No[(grep('Bacon, pre-sliced, reduced/low sodium, unprepared', food_des.dat$Long_Desc))]
+#NDB_No = 10994
+
+food_des.dat$Long_Desc[(grep('(C|c)abbage', food_des.dat$Long_Desc))]
+#cabbage, fresh, shredded = Cabbage, raw
+food_des.dat$NDB_No[(grep('Cabbage, raw', food_des.dat$Long_Desc))]
+#NDB_No = 11109
+
+food_des.dat$Long_Desc[(grep('(W|W)ater', food_des.dat$Long_Desc))]
+#water, generic = Water, bottled, generic
+food_des.dat$NDB_No[(grep('Water, bottled, generic', food_des.dat$Long_Desc))]
+#NDB_No = 14555
+
+food_des.dat$Long_Desc[(grep('(G|g)elatin', food_des.dat$Long_Desc))]
+#gelatin, dry, unsweetened = Gelatins, dry powder, unsweetened
+food_des.dat$NDB_No[(grep('Gelatins, dry powder, unsweetened', food_des.dat$Long_Desc))]
+#NDB_No = 19177
+
+#gelatin mix, lemon, Jell-O = Gelatin desserts, dry mix, reduced calorie, with aspartame, added phosphorus, potassium, sodium, vitamin C
+food_des.dat$NDB_No[(grep('Gelatin desserts, dry mix, reduced calorie, with aspartame, added phosphorus, potassium, sodium, vitamin C', food_des.dat$Long_Desc))]
+#NDB_No = 19703
+
+food_des.dat$Long_Desc[(grep('(J|j)uice', food_des.dat$Long_Desc))]
+#juice, lemon, fresh = Lemon juice, raw
+food_des.dat$NDB_No[(grep('Lemon juice, raw', food_des.dat$Long_Desc))]
+#NDB_No = 9152
+
+food_des.dat$Long_Desc[(grep('(H|h)orseradish', food_des.dat$Long_Desc))]
+#horseradish, grated, in vinegar = Horseradish, prepared
+food_des.dat$NDB_No[(grep('Horseradish, prepared', food_des.dat$Long_Desc))]
+#NDB_No = 2055
+
+food_des.dat$Long_Desc[(grep('(C|c)ream, (W|w)hip', food_des.dat$Long_Desc))]
+#cream, whipping, heavy = Cream, whipped, cream topping, pressurized
+food_des.dat$NDB_No[(grep('Cream, whipped, cream topping, pressurized', food_des.dat$Long_Desc))]
+#NDB_No = 1054
+
+food_des.dat$Long_Desc[(grep('(O|o)nion', food_des.dat$Long_Desc))]
+#onion, yellow, fresh, medium, 2 1/2" = Onions, yellow, sauteed
+food_des.dat$NDB_No[(grep('Onions, yellow, sauteed', food_des.dat$Long_Desc))]
+#NDB_No = 11286
+
+#onion, yellow, fresh, chopped = Onions, yellow, sauteed
+food_des.dat$NDB_No[(grep('Onions, yellow, sauteed', food_des.dat$Long_Desc))]
+#NDB_No = 11286
+
+food_des.dat$Long_Desc[(grep('(F|f)lour', food_des.dat$Long_Desc))]
+#flour, all purpose, self rising, enriched = Wheat flour, white, all-purpose, self-rising, enriched
+food_des.dat$NDB_No[(grep('Wheat flour, white, all-purpose, self-rising, enriched', food_des.dat$Long_Desc))]
+#NDB_No = 20082
+
+food_des.dat$Long_Desc[(grep('(A|a)vocado', food_des.dat$Long_Desc))]
+#avocado, California, fresh = Avocados, raw, California
+food_des.dat$NDB_No[(grep('Avocados, raw, California', food_des.dat$Long_Desc))]
+#NDB_No = 9038
+
+food_des.dat$Long_Desc[(grep('(C|c)elery', food_des.dat$Long_Desc))]
+#celery stalk, fresh, medium, 7.5"to 8" = Celery, raw
+food_des.dat$NDB_No[(grep('Celery, raw', food_des.dat$Long_Desc))]
+#NDB_No = 11143
+
+food_des.dat$Long_Desc[(grep('(B|b)eef, (T|t)enderloin', food_des.dat$Long_Desc))]
+#beef roast, tenderloin, raw, 0" trim = Beef, tenderloin, separable lean and fat, trimmed to 1/8" fat, prime, raw
+food_des.dat$NDB_No[(grep('Beef, tenderloin, separable lean and fat, trimmed to 1/8" fat, prime, raw', food_des.dat$Long_Desc))]
+#NDB_No = 13926
+
+
+food_des.dat$Long_Desc[(grep('(T|t)omato', food_des.dat$Long_Desc))]
+#tomatoes, whole, canned, with juice = Tomatoes, red, ripe, canned, packed in tomato juice, no salt added
+food_des.dat$NDB_No[(grep('Tomatoes, red, ripe, canned, packed in tomato juice, no salt added', food_des.dat$Long_Desc))]
+#NDB_No = 11885
+
+#juice, tomato, with salt = Tomato juice, canned, with salt added
+food_des.dat$NDB_No[(grep('Tomato juice, canned, with salt added', food_des.dat$Long_Desc))]
+#NDB_No = 11540
+
+#juice, tomato, canned, unsalted = Tomato juice, canned, without salt added
+food_des.dat$NDB_No[(grep('Tomato juice, canned, without salt added', food_des.dat$Long_Desc))]
+#NDB_No = 11886
+
+#tomato puree, canned = Tomato products, canned, puree, without salt added
+food_des.dat$NDB_No[(grep('Tomato products, canned, puree, without salt added', food_des.dat$Long_Desc))]
+#NDB_No = 11547
+
+#soup, tomato, canned, condensed = Soup, tomato, canned, condensed, reduced sodium
+food_des.dat$NDB_No[(grep('Soup, tomato, canned, condensed, reduced sodium', food_des.dat$Long_Desc))]
+#NDB_No = 6956
+
+```
+
+Replace the Ingredient names listed for the Beef Stroganoff, Hot Slaw and Tomato Aspic data to the corresponding Ingredient names above from the FOOD_DES.dat table.
+
+Replace Measure / Unit names 'TBS' and 'ea' listed for the Beef Stroganoff, Hot Slaw and Tomato Aspic data to the corresponding Ingredient names above from the WEIGHT.dat table:
+- 'TBS' = 'tbsp' (both represent the unit of measure Tablespoon)
+- 'ea' = 'peices' (ea represents unit of measure eaches or peices)
+
+
+# Part 1 - Creating Data Tables
+
+Create data tables for the assigned recipes, with columns Amount, Unit, Ingredient and NDB_No.
+
+Write the code to create the data tables for Beef Stroganoff, 1997 and Beef Stroganoff, 2006.
+
+```{r}
+Beef_Stroganoff_1997.dat <- data.frame(
+  Amount = c(1.5, 3.5, 1.0, 1.0, 3.0, 1.0),
+  Measure = c('lb', 'tbsp', 'tbsp', 'cup', 'tbsp', 'tsp'),
+  Ingredient = c('Beef, tenderloin, separable lean and fat, trimmed to 1/8" fat, prime, raw','Butter, salted','Wheat flour, white, all-purpose, self-rising, enriched','Soup, stock, beef, home-prepared','Sour cream, imitation, cultured','Mustard, prepared, yellow'),
+  NDB_No = c(13926, 1001, 20082, 6170, 1074, 2046)
+)
+Beef_Stroganoff_1997.dat
+
+Beef_Stroganoff_2006.dat <- data.frame(
+  Amount = c(2.0, 2.0, 3.0, 1.0, 1.0, 1.0, 3.0, 1.0),
+  Measure = c('lb', 'tbsp', 'tbsp', 'pieces', 'lb', 'cup', 'cup', 'tbsp'),
+  Ingredient = c('Beef, tenderloin, separable lean and fat, trimmed to 1/8" fat, prime, raw','Oil, canola','Butter, salted','Onions, yellow, sauteed','Mushrooms, canned, drained solids','Soup, stock, beef, home-prepared','Sour cream, imitation, cultured','Mustard, prepared, yellow'),
+  NDB_No = c(13926, 4582, 1001, 11286, 11264, 6170, 1074, 2046)
+)
+Beef_Stroganoff_2006.dat
+```
+
+Write the code to create the data tables for Hot Slaw, 1936 and Hot Slaw, 2006.
+
+```{r}
+Hot_Slaw_1936.dat <- data.frame(
+  Amount = c(3.00, 3.00, 1.00, 2.00, 1.00),
+  Unit = c('cup', 'tbsp', 'tbsp', 'tbsp', 'pieces'),
+  Ingredient = c('Cabbage, raw', 'Vinegar, distilled', 'Sugars, granulated', 'Butter, salted', "Apples, raw, with skin (Includes foods for USDA's Food Distribution Program)"),
+  NDB_No = c(11109, 2053, 19335, 1001, 9003)
+)
+Hot_Slaw_1936.dat
+
+Hot_Slaw_2006.dat <- data.frame(
+  Amount = c(0.50, 3.00, 1.00, 3.00),
+  Unit = c('lb', 'tbsp', 'tbsp', 'cup'),
+  Ingredient = c('Bacon, pre-sliced, reduced/low sodium, unprepared', 'Vinegar, cider', 'Sugars, brown', 'Cabbage, raw'),
+  NDB_No = c(10994, 2048, 19334, 11109)
+)
+Hot_Slaw_2006.dat
+```
+
+Write the code to create the data tables for Tomato Aspic i, 1936 and Tomato Aspic i, 2006.
+
+Write the code to create the data tables for Tomato Aspic ii, 1936 and Tomato Aspic ii, 2006.
+
+```{r}
+Tomato_Aspic_i_1936.dat <- data.frame(
+  Amount = c(3.50, 1.50, 3.00, 2.00, 4.00, 2.00, 0.50, 0.50, 3.00, 2.00),
+  Unit = c('cup', 'tsp', 'tbsp', 'tbsp', 'pieces', 'tbsp', 'cup', 'cup', 'tbsp', 'tbsp'),
+  Ingredient = c('Tomatoes, red, ripe, canned, packed in tomato juice, no salt added', 
+                 'Sugars, granulated', 
+                 'Onions, yellow, sauteed', 
+                 'Lemon juice, raw', 
+                 'Celery, raw', 
+                 'Gelatins, dry powder, unsweetened', 
+                 'Water, bottled, generic', 
+                 'Cream, whipped, cream topping, pressurized', 
+                 'Lemon juice, raw', 
+                 'Horseradish, prepared'),
+  NDB_No = c(11885, 19335, 11286, 9152, 11143, 19177, 14555, 1054, 9152, 2055)
+)
+  
+Tomato_Aspic_i_1936.dat
+
+Tomato_Aspic_ii_1936.dat <- data.frame(
+  Amount = c(2.00, 4.00),
+  Unit = c('tbsp', 'cup'),
+  Ingredient = c('Gelatins, dry powder, unsweetened', 
+                 'Tomato juice, canned, with salt added'),
+  NDB_No = c(19177, 11540)
+)
+Tomato_Aspic_ii_1936.dat
+
+Tomato_Aspic_i_2006.dat <- data.frame(
+  Amount = c(4.00, 0.50, 0.50, 2.00, 2.00, 2.00, 4.50, 0.50, 1.00),
+  Unit = c('cup', 'cup', 'cup', 'pieces', 'tbsp', 'tsp', 'tsp', 'cup', 'pieces'),
+  Ingredient = c('Tomato juice, canned, without salt added', 
+                 'Tomato products, canned, puree, without salt added', 
+                 'Onions, yellow, sauteed', 
+                 'Celery, raw', 
+                 'Lemon juice, raw', 
+                 'Sugars, granulated', 
+                 'Gelatins, dry powder, unsweetened', 
+                 'Water, bottled, generic', 
+                 'Avocados, raw, California'),
+  NDB_No = c(11886, 11547, 11286, 11143, 9152, 19335, 19177, 14555, 9038)
+)
+Tomato_Aspic_i_2006.dat
+
+Tomato_Aspic_ii_2006.dat <- data.frame(
+  Amount = c(2.25, 10.75, 2.00, 3.00),
+  Unit = c('tsp', 'oz', 'cup', 'oz'),
+  Ingredient = c('Gelatins, dry powder, unsweetened', 
+                 'Soup, tomato, canned, condensed, reduced sodium', 
+                 'Tomato juice, canned, without salt added', 
+                 'Gelatin desserts, dry mix, reduced calorie, with aspartame, added phosphorus, potassium, sodium, vitamin C'),
+  NDB_No = c(19177, 6956, 11886, 19703)
+)
+Tomato_Aspic_ii_2006.dat
+```
+
+
+# Part 2 - Creating Tab Delimited Files
+
+Write each individual recipe to a tab delimited file. The name of the tab file should be comprised of the recipe file name and the year of the recipe (1936 or 2006, in most cases).
+
+Create tab delimited files for:
+- Beef Stroganoff, 1997
+- Beef Stroganoff, 2006
+- Hot Slaw, 1936
+- Hot Slaw, 2006
+- Tomato Aspic i, 1936
+- Tomato Aspic i, 2006
+- Tomato Aspic ii, 1936
+- Tomato Aspic ii, 2006
+
+```{r}
+write.table(Beef_Stroganoff_1997.dat, file = "BeefStroganoff.1997.tab",  sep = "\t")
+
+write.table(Beef_Stroganoff_2006.dat, file = "BeefStroganoff.2006.tab", sep = "\t")
+
+
+write.table(Hot_Slaw_1936.dat, file = "HotSlaw.1936.tab", sep = "\t")
+
+write.table(Hot_Slaw_2006.dat, file = "HotSlaw.2006.tab", sep = "\t")
+
+
+write.table(Tomato_Aspic_i_1936.dat, file = "TomatoAspici.1936.tab", sep = "\t")
+
+write.table(Tomato_Aspic_i_2006.dat, file = "TomatoAspici.2006.tab", sep = "\t")
+
+write.table(Tomato_Aspic_ii_1936.dat, file = "TomatoAspicii.1936.tab", sep = "\t")
+
+write.table(Tomato_Aspic_ii_2006.dat, file = "TomatoAspicii.2006.tab", sep = "\t")
+```
+
+
+# Part 3 - Merging Tables
+
+Read in each tab file and merge the tables.
+
+Read in the tab demilimated files while adding Recipe and Year columns for:
+- Beef Stroganoff, 1997
+- Beef Stroganoff, 2006
+- Hot Slaw, 1936
+- Hot Slaw, 2006
+- Tomato Aspic i, 1936
+- Tomato Aspic i, 2006
+- Tomato Aspic ii, 1936
+- Tomato Aspic ii, 2006
+
+```{r}
+BeefStroganoff.1997.Table <- read.table("BeefStroganoff.1997.tab", header=TRUE)
+BeefStroganoff.1997.Table["Recipe"] <- "Beef Stroganoff"
+BeefStroganoff.1997.Table["Year"] <- 1997
+BeefStroganoff.1997.Table
+
+BeefStroganoff.2006.Table <- read.table("BeefStroganoff.2006.tab", header=TRUE)
+BeefStroganoff.2006.Table["Recipe"] <- "Beef Stroganoff"
+BeefStroganoff.2006.Table["Year"] <- 2006
+BeefStroganoff.2006.Table
+
+
+HotSlaw.1936.Table <- read.table("HotSlaw.1936.tab", header=TRUE)
+HotSlaw.1936.Table["Recipe"] <- "Hot Slaw"
+HotSlaw.1936.Table["Year"] <- 1936
+HotSlaw.1936.Table
+
+HotSlaw.2006.Table <- read.table("HotSlaw.2006.tab", header=TRUE)
+HotSlaw.2006.Table["Recipe"] <- "Hot Slaw"
+HotSlaw.2006.Table["Year"] <- 2006
+HotSlaw.2006.Table
+
+
+TomatoAspici.1936.Table <- read.table("TomatoAspici.1936.tab", header=TRUE)
+TomatoAspici.1936.Table["Recipe"] <- "Tomato Aspic i"
+TomatoAspici.1936.Table["Year"] <- 1936
+TomatoAspici.1936.Table
+
+TomatoAspici.2006.Table <- read.table("TomatoAspici.2006.tab", header=TRUE)
+TomatoAspici.2006.Table["Recipe"] <- "Tomato Aspic i"
+TomatoAspici.2006.Table["Year"] <- 2006
+TomatoAspici.2006.Table
+
+TomatoAspicii.1936.Table <- read.table("TomatoAspicii.1936.tab", header=TRUE)
+TomatoAspicii.1936.Table["Recipe"] <- "Tomato Aspic ii"
+TomatoAspicii.1936.Table["Year"] <- 1936
+TomatoAspicii.1936.Table
+
+TomatoAspicii.2006.Table <- read.table("TomatoAspicii.2006.tab", header=TRUE)
+TomatoAspicii.2006.Table["Recipe"] <- "Tomato Aspic ii"
+TomatoAspicii.2006.Table["Year"] <- 2006
+TomatoAspicii.2006.Table
+```
+
+Merge BeefStroganoff.1997.Table and BeefStroganoff.2006.Table to create BeefStroganoff_Merged.
+Merge HotSlaw.1936.Table and HotSlaw.2006.Table to create HotSlaw_Merged.
+Merge TomatoAspici.1936.Table and TomatoAspici.2006.Table to create TomatoAspici_Merged.
+Merge TomatoAspicii.1936.Table and TomatoAspicii.2006.Table to create TomatoAspicii_Merged.
+Merge TomatoAspici_Merged and TomatoAspicii_.2006.Table_Merged to create TomatoAspic_Merged.
+Merge HotSlaw_Merged and TomatoAspic_Merged to create Merged_Table_1.
+Merge Merged_Table_1 and BeefStroganoff_Merged to create Merged_Table_2.
+
+```{r}
+BeefStroganoff_Merged <- merge(BeefStroganoff.1997.Table,BeefStroganoff.2006.Table, by=c("Recipe","Year","Amount","Measure","Ingredient","NDB_No"), all = TRUE, sort=TRUE)
+BeefStroganoff_Merged
+
+HotSlaw_Merged <- merge(HotSlaw.1936.Table,HotSlaw.2006.Table, by=c("Recipe","Year","Amount","Unit","Ingredient","NDB_No"), all = TRUE, sort=TRUE)
+HotSlaw_Merged
+
+TomatoAspici_Merged <- merge(TomatoAspici.1936.Table,TomatoAspici.2006.Table, by=c("Recipe","Year","Amount","Unit","Ingredient","NDB_No"), all = TRUE, sort=TRUE)
+TomatoAspici_Merged
+
+TomatoAspicii_Merged <- merge(TomatoAspicii.1936.Table,TomatoAspicii.2006.Table, by=c("Recipe","Year","Amount","Unit","Ingredient","NDB_No"), all = TRUE, sort=TRUE)
+TomatoAspicii_Merged
+
+TomatoAspic_Merged <- merge(TomatoAspici_Merged,TomatoAspicii_Merged, c("Recipe","Year","Amount","Unit","Ingredient","NDB_No"), all = TRUE, sort=TRUE)
+TomatoAspic_Merged
+
+HotSlaw_TomatoAspic_Merged <- merge(HotSlaw_Merged,TomatoAspic_Merged, c("Recipe","Year","Amount","Unit","Ingredient","NDB_No"), all = TRUE, sort=TRUE)
+HotSlaw_TomatoAspic_Merged
+
+BeefStroganoff_HotSlaw_TomatoAspic_Merged <- merge(HotSlaw_TomatoAspic_Merged,BeefStroganoff_Merged, by.x = c("Recipe","Year","Amount","Unit","Ingredient","NDB_No"), by.y = c("Recipe","Year","Amount","Measure","Ingredient","NDB_No"), all = TRUE, sort=TRUE)
+BeefStroganoff_HotSlaw_TomatoAspic_Merged
+```
+
+
+# Part 4 - Checking for Errors
+
+Proof the data to check for errors.
+
+Create tables to find the errors between years in the created merged tables for Measure / Units and Amounts.
+Sort by Ingredient.
+
+```{r}
+#BeefStroganoff_Merged
+BeefStroganoff_Merged_1 <- merge(BeefStroganoff.1997.Table,BeefStroganoff.2006.Table, by=c("Ingredient"), all = TRUE, sort=TRUE)
+
+table(BeefStroganoff_Merged_1$Measure.x,BeefStroganoff_Merged_1$Measure.y,BeefStroganoff_Merged_1$Ingredient)
+
+table(BeefStroganoff_Merged_1$Amount.x,BeefStroganoff_Merged_1$Amount.y,BeefStroganoff_Merged_1$Ingredient)
+
+#HotSlaw_Merged
+HotSlaw_Merged_1 <- merge(HotSlaw.1936.Table,HotSlaw.2006.Table, by=c("Ingredient"), all = TRUE, sort=TRUE)
+
+table(HotSlaw_Merged_1$Amount.x,HotSlaw_Merged_1$Amount.y,HotSlaw_Merged_1$Ingredient)
+
+table(HotSlaw_Merged_1$Amount.x,HotSlaw_Merged_1$Amount.y,HotSlaw_Merged_1$Ingredient)
+
+#TomatoAspici_Merged
+TomatoAspici_Merged_1 <- merge(TomatoAspici.1936.Table,TomatoAspici.2006.Table, by=c("Ingredient"), all = TRUE, sort=TRUE)
+
+table(TomatoAspici_Merged_1$Amount.x,TomatoAspici_Merged_1$Amount.y,TomatoAspici_Merged_1$Ingredient)
+
+table(TomatoAspici_Merged_1$Amount.x,TomatoAspici_Merged_1$Amount.y,TomatoAspici_Merged_1$Ingredient)
+
+#TomatoAspicii_Merged
+TomatoAspicii_Merged_1 <- merge(TomatoAspicii.1936.Table,TomatoAspicii.2006.Table, by=c("Ingredient"), all = TRUE, sort=TRUE)
+
+table(TomatoAspicii_Merged_1$Amount.x,TomatoAspicii_Merged_1$Amount.y,TomatoAspicii_Merged_1$Ingredient)
+
+table(TomatoAspicii_Merged_1$Amount.x,TomatoAspicii_Merged_1$Amount.y,TomatoAspicii_Merged_1$Ingredient)
+```
+
+Noted Errors:
+
+Beef Stroganoff:
+- The ingredient 'Mustard, prepared, yellow' changes from unit of tsp (teaspoon) in 1997 to tbsp (tablespoon) in 2006.
+- The ingredient 'Sour cream, imitation, cultured' changes from unit of tbsp (tablespoon) in 1997 to cup in 2006.
+- The ingredient 'Wheat flour, white, all-purpose, self-rising, enriched' changes from tbsp (tablespoon) to no units in 2006.
+- The ingredients 'Mushrooms, canned, drained solids', 'Oil, canola' and 'Onions, yellow, sauteed' have no units in 1997.
+
+- The ingredient 'Beef, tenderloin, separable lean and fat, trimmed to 1/8" fat, prime, raw' changes from an amount of 1.5 in 1997 to an amount of 2 in 2006.
+- The ingredient 'Butter, salted' changes from an amount of 3.5 in 1997 to an amount of 3 in 2006.
+
+Hot Slaw:
+- The ingredients 'Bacon, pre-sliced, reduced/low sodium, unprepared', 'Sugars, brown' and 'Vinegar, cider' have no units in 1936.
+- The ingredients 'Apples, raw, with skin (Includes foods for USDA's Food Distribution Program)', 'Butter, salted', 'Sugars, granulated' and 'Vinegar, distilled ' have no units in 2006.
+
+Tomato Aspic i:
+- The ingredients 'Avocados, raw, California', 'Tomato juice, canned, without salt added' and 'Tomato products, canned, puree, without salt added' have no units in 1936.
+- The ingredients 'Cream, whipped, cream topping, pressurized', 'Horseradish, prepared' and 'Tomatoes, red, ripe, canned, packed in tomato juice, no salt added' have no units in 2006.
+
+- The ingredient 'Celery, raw' changes from an amount of 4 in 1936 to an amount of 2 in 2006.
+- The ingredient 'Gelatins, dry powder, unsweetened' changes from an amount of 2 in 1936 to an amount of 4.5 in 2006.
+- One of the ingredients, 'Lemon juice, raw', appears twice in 1936 and once in 2006. One changes from an amount of 3 in 1936 to an amount of 0 in 2006.
+- The ingredient 'Onions, yellow, sauteed' changes from an amount of 3 in 1936 to an amount of 0.5 in 2006.
+- The ingredient 'Sugars, granulated' changes from an amount of 1.5 in 1936 to an amount of 2 in 2006.
+ 
+Tomato Aspic ii:
+- The ingredient 'Gelatins, dry powder, unsweetened' changes from unit of tbsp (tablespoon) in 1997 to tsp (teaspoon) in 2006.
+- The ingredients 'Gelatin desserts, dry mix, reduced calorie, with aspartame, added phosphorus, potassium, sodium, vitamin C', 'Tomato juice, canned, without salt added' and 'Soup, tomato, canned, condensed, reduced sodium' have no units in 1936.
+- The ingredient 'Tomato juice, canned, with salt added' has no unit in 2006.
+
+- The ingredient 'Gelatins, dry powder, unsweetened' changes from an amount of 21.5 in 1936 to an amount of 2.25 in 2006.
+
+ 
+# Part 5 - Create Recipe Table
+
+Read the Recipes.csv, append rows for your recipes, then write the table back to Recipes.csv. We would be able to determine the file names for your recipes by concatentating Recipe and Year, removing white space if necessary.
+
+Read in the csv file Recipes.csv to Recipes.
+
+Merge BeefStroganoff_HotSlaw_TomatoAspic_Merged and Recipes to create Recipe_Table.
+
+Add Gram and Calories columns to Recipe_Table.
+
+```{r}
+Recipes <- read.csv("Recipes.csv")
+Recipes
+
+Recipe_Table <- merge(BeefStroganoff_HotSlaw_TomatoAspic_Merged,Recipes, by=c("Recipe", "Year"), all = TRUE, sort=TRUE)
+Recipe_Table
+
+Recipe_Table['Grams'] <- NA
+Recipe_Table['Calories'] <- NA
+Recipe_Table
+```
+
+Create csv file from Recipe_Table back into "Recipes.csv".
+
+```{r}
+#PMC - this doesn't match the original file column format
+#write.csv(Recipe_Table, file = "Recipes.csv", row.names=FALSE)
+```
+

@@ -1,0 +1,553 @@
+---
+title: Midterm Project
+author: 'Set 5'
+date: July 20, 2018
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+For the midterm project, the class is working as a team to  validate the calories per recipe data provided by John Becker.
+
+The first task is to create data tables for two recipes, and then to export the data in a format that can be merged with data from teh rest of the class. In order to validate the format of the data, this program will read in data from multiple files and merge it into a single data table.
+
+### Preliminary Step: Create data tables for sample files
+
+We will be using a common file format for loading and merging recipe data.
+The common file format is a "wide" data set with the following columns:
+Recipe      (text)    The name of the recipe
+Year        (integer) The year the recipe was published
+Amount      (double)  The quantity of a particular ingredient
+Unit        (text)    Categorical variable that defines the units for "Amount"
+Ingredient  (text)    The name of an ingredient from the USDA database
+
+To get all the ingredients for a specific recipe, you need to select by
+recipe name and year.
+
+```{r}
+
+# Beef Stroganoff is a test recipe; this code reads in the ingredients from
+# files that represent a specific recipe (in this case Beef Stroganoff) and
+# year (referenced in the file name).
+
+test_pathname <- "./"
+test_recipe <- "BeefStroganoff"
+test_year <- 1997
+test_filename <- paste(test_pathname,test_recipe,".",toString(test_year),".tab",sep = "")
+df.97 <- read.table(test_filename, header = TRUE, sep = "", dec = ".",
+                    stringsAsFactors = FALSE)
+
+# In order to to confrm to the standard format, we need to add the recipe
+# and year; this code assumes the files use a naming convention that includes
+# a standardized name and publication year like this:
+# <recipe_name>.<year>.tab
+# for the test file we will just type in the name, but later on we will
+# read the file names and will need to parse them.
+df.97 <- cbind(test_year, df.97) # insert year as 1st col; same value for all rows
+df.97 <- cbind(test_recipe, df.97) # insert recipe name at beginning also
+colnames(df.97) <- c('Recipe','Year','Amount','Unit','Ingredient')
+print(df.97)
+
+# Now repeat the above steps for the year 2006
+test_year <- 2006
+test_filename <- paste(test_pathname,test_recipe,".",toString(test_year),".tab",sep = "")
+df.06 <- read.table(test_filename, header = TRUE, sep = "", dec = ".",
+                    stringsAsFactors = FALSE)
+df.06 <- cbind(test_year, df.06) # insert year as 1st col; same value for all rows
+df.06 <- cbind(test_recipe, df.06) # insert recipe name at beginning also
+colnames(df.06) <- c('Recipe','Year','Amount','Unit','Ingredient')
+print(df.06)
+
+```
+
+### Function Definitions
+
+*This function standardizes and tokenizes a string; assumes space word separator.*
+```{r}
+
+std_tkn <- function(str_parm,rmv_punc=FALSE,lcase=FALSE,ucase=FALSE)
+{
+  
+  temp_str <- str_parm
+  
+  # validate lowercase, uppercase parameters
+  if (lcase&ucase)
+  {
+    cat("both lcase and ucase parameters set to TRUE; defaulting to all lowercase\n")
+    ucase <- FALSE
+  }
+  if (ucase) temp_str <- toupper(temp_str)
+  if (lcase) temp_str <- tolower(temp_str)
+  
+  if (rmv_punc) temp_str <- stringr::str_replace_all(temp_str,"[^a-zA-Z0-9\\s]"," ")
+
+  # remove extra whitespace
+  temp_str <- gsub("\\s+", " ",temp_str)
+  
+  # tokenize
+  rtn.v <- stringr::str_split(temp_str, " ")[[1]]
+
+  # remove empty tokens caused by leading/trailing white space in original string
+  temp_idx <- which(rtn.v == "")
+  if(length(temp_idx) > 0) rtn.v <- rtn.v[-temp_idx]
+  
+  return(rtn.v)
+}
+
+```
+
+### Read in USDA database
+
+First step in preparing for the project is to make sure we can read in all
+the required data files.
+
+*Generate a list of the recipe pdf files*
+*(I downloaded all the recipe files  to a local directory)*
+```{r}
+
+recipe_path <- './'
+recipe_list <-  list.files(path = recipe_path, pattern = '*.pdf') 
+print(recipe_list[1:20])
+
+```
+
+*Read in USDA nutrient data*
+```{r}
+
+db_pathname <- "./"
+filename <- paste(db_pathname,"WEIGHT.txt",sep="")
+weight.dat <- read.table(filename,header=FALSE,sep="^",quote="~")
+names(weight.dat) <- c("NDB_No","Seq","Amount","Msre_Desc","Gm_Wgt","Num_Data_Pts","Std_Dev")
+head(weight.dat)
+
+```
+
+*Read in USDA food descriptions*
+```{r}
+
+filename <- paste(db_pathname,"FOOD_DES.txt",sep="")
+food_des.dat <- read.table(filename,header=FALSE,sep="^",quote="~")
+names(food_des.dat) <- c("NDB_No","FdGrp_Cd","Long_Desc","Shrt_Desc", "ComName","ManufacName","Survey","Ref_desc","Refuse","SciName", "N_Factor","Pro_Factor","Fat_Factor","CHO_Factor")
+dim(food_des.dat)
+head(food_des.dat)
+summary(food_des.dat)
+
+```
+
+*Read in nutritional data*
+```{r}
+
+filename <- paste(db_pathname,"NUT_DATA.txt",sep="")
+nut_data.dat <- read.table(filename,header=FALSE,sep="^",quote="~")
+names(nut_data.dat) <- c("NDB_No","Nutr_No","Nutr_Val","Num_Data_Pts","Std_Error", "Src_Cd","Deriv_Cd","Ref_NDB_No","Add_Nutr_Mark","Num_Studies", "Min","Max","DF","Low_EB","Up_EB","Stat_cmt","AddMod_Date")
+head(nut_data.dat)
+summary(nut_data.dat)
+
+```
+
+##Create data tables for assigned recipes
+
+*Each Team Member has 2 recipes, and we need to create files for 2 different*
+*years (1997 and 2006) for analysis, so there will be a total of 4 data files.*
+
+My recipes: 
+Ham Loaf
+Ham Cakes with Pineapple and Sweet Potatoes
+
+*This code chunk creates the data tables for my assigned recipes*
+```{r}
+
+# I am using the exact name that appears in the file list, including spaces
+# The actual recipe name in the PDF file is different in this case, but I am 
+# sticking to the name that can be matched back to the recipe file.
+
+# recipe # 1: Ham Loaf, 1936
+recipe_name <- "Ham Loaf"
+recipe_year <- 1936
+filename <- paste(recipe_name,".",toString(recipe_year),".tab",sep = "")
+filename.v <- c(filename) # keep a vector of filenames for later
+ingredient.v <- c("lean smoked ham, ground",
+                  "veal, ground",
+                  "onion, grated",
+                  "Worcestershire sauce",
+                  "pepper",
+                  "paprika",
+                  "quick cooking tapioca",
+                  "milk")
+unit.v <- c("lb","lb","Tbs","tsp","tsp","tsp","cup","cup")
+amount.v <- c(1,1.5,2,1,0.25,0.25,0.5,2)
+name.v <- rep(recipe_name,length(ingredient.v))
+year.v <- rep(recipe_year,length(ingredient.v))
+r1.df <- cbind.data.frame(name.v,year.v,amount.v,unit.v,ingredient.v,
+                          stringsAsFactors = FALSE)
+colnames(r1.df) <- c('Recipe','Year','Amount','Unit','Ingredient')
+print(r1.df)
+
+# recipe # 2: Ham Loaf, 2006
+recipe_name <- "Ham Loaf"
+recipe_year <- 2006
+filename <- paste(recipe_name,".",toString(recipe_year),".tab",sep = "")
+filename.v <- append(filename.v, filename)
+ingredient.v <- c("diced ham",
+                  "seasoned dry bread crumbs",
+                  "eggs",
+                  "prepared mustard")
+unit.v <- c("cup","cup","whole","tsp")
+amount.v <- c(2,0.5,2,3)
+name.v <- rep(recipe_name,length(ingredient.v))
+year.v <- rep(recipe_year,length(ingredient.v))
+r2.df <- cbind.data.frame(name.v,year.v,amount.v,unit.v,ingredient.v,
+                          stringsAsFactors = FALSE)
+colnames(r2.df) <- c('Recipe','Year','Amount','Unit','Ingredient')
+print(r2.df)
+
+# recipe #3: Ham Cakes with Pineapple and Sweet Potato, 1936
+recipe_name <- "Ham Cakes with Pineapple and Sweet Potato"
+recipe_year <- 1936
+filename <- paste(recipe_name,".",toString(recipe_year),".tab",sep = "")
+filename.v <- append(filename.v, filename)
+ingredient.v <- c("large sweet potatoes",
+                  "cooked chopped ham",
+                  "dry bread crumbs",
+                  "eggs",
+                  "salt",
+                  "prepared mustard",
+                  "bacon drippings",
+                  "sliced drained pineapple",
+                  "cloves",
+                  "sugar",
+                  "pineapple juice")
+unit.v <- c("whole","cup","cup","whole","tsp","tsp","Tbs","whole","tsp","cup","cup")
+amount.v <- c(3,2,0.5,2,0.125,1,5,6,0.25,0.25,0.5)
+name.v <- rep(recipe_name,length(ingredient.v))
+year.v <- rep(recipe_year,length(ingredient.v))
+r3.df <- cbind.data.frame(name.v,year.v,amount.v,unit.v,ingredient.v,
+                          stringsAsFactors = FALSE)
+colnames(r3.df) <- c('Recipe','Year','Amount','Unit','Ingredient')
+print(r3.df)
+
+# recipe #4: Ham Cakes with Pineapple and Sweet Potato, 2006
+recipe_name <- "Ham Cakes with Pineapple and Sweet Potato"
+recipe_year <- 2006
+filename <- paste(recipe_name,".",toString(recipe_year),".tab",sep = "")
+filename.v <- append(filename.v,filename)
+ingredient.v <- c("diced ham",
+                  "seasoned dry bread crumbs",
+                  "eggs",
+                  "prepared mustard",
+                  "sliced pineapple",
+                  "vegetable oil",
+                  "drained sliced canned sweet potatoes",
+                  "dark brown sugar",
+                  "ground cloves",
+                  "pineapple juice")
+unit.v <- c("cup","cup","whole","tsp","oz","Tbs","oz","cup","tsp","cup")
+amount.v <- c(2,0.5,2,3,20,5,32,0.25,0.25,0.5)
+name.v <- rep(recipe_name,length(ingredient.v))
+year.v <- rep(recipe_year,length(ingredient.v))
+r4.df <- cbind.data.frame(name.v,year.v,amount.v,unit.v,ingredient.v,
+                          stringsAsFactors = FALSE)
+colnames(r4.df) <- c('Recipe','Year','Amount','Unit','Ingredient')
+print(r4.df)
+
+
+```
+
+*This function validates the ingredient names against the USDA data.*
+*The goal is to ensure the data contains names and units that can be*
+*matched up successfully with the reference data for further analysis.*
+*In future steps we will use the reference data to calculate gram weight*
+*and calorie content for the recipe overall.*
+
+*The steps are:*
+*1. tokenize the ingredient string*
+*2. identify the actual food name*
+*2. Look up the food in FOOD_DES, and find the appropriate NDB_No*
+*4. normalize the data as needed*
+```{r}
+
+# This function takes a recipe file (dataframe in standard format) and converts
+# the ingredient description into a standard format as follows:
+# <USDA Food Name>, <adjective1> <adjective2> ... <adjective n>
+# The function also adds the NDB_No (nutrition database key) to the dataframe
+# If no valid match can be found in FOOD_DES, NDB_No will be set to 99999
+
+validate_ingredients <- function(in.df)
+{
+  out.df <- in.df # initialize return value
+  
+  # first thing we do when this function is called is add a search vector to
+  # FOOD_DES. The convention in FOOD_DES is that the Shrt_Desc column
+  # is in all caps, with the actual food name listed first followed by a set of
+  # comma-separated adjectives.
+  # Ideally we would just add this column once, up front, when we load FOOD_DES.
+  # I put this here because I did not want the function to have any non-obvious
+  # dependencies on other code.
+  sdf <- food_des.dat
+  for (temp_idx in 1:nrow(sdf))
+  {
+    temp.v <- std_tkn(sdf[temp_idx,"Shrt_Desc"],rmv_punc=TRUE,ucase=TRUE)
+    sdf[temp_idx,"food"] <- temp.v[1] # first string value
+    sdf[temp_idx,"adj_cnt"] <- 0 # will use later to score adjective matches
+  }
+
+  temp_ingredient.v <- in.df[,"Ingredient"]
+  for (temp_ingredient in temp_ingredient.v)
+  {
+    recipe_idx = which(in.df[,"Ingredient"]==temp_ingredient)
+    # tokenize the description, and check each individual token for matches
+    temp_token.v <- std_tkn(temp_ingredient,rmv_punc=TRUE,ucase=TRUE)
+  
+    food_name = "unknown" # initialize for each description
+    max_hits = 0 
+  
+    for (temp_token in temp_token.v)
+    {
+      # we are going to assume that the word in the description that gets
+      # the largest number of "hits" is the actual food name, and the rest
+      # of the words are adjectives
+      match_idxs <- which(sdf[,"food"]==temp_token)
+      num_hits = length(match_idxs)
+      if (num_hits > max_hits)
+      {
+        food_name = temp_token
+        max_hits = num_hits
+      }
+    }
+  
+    # Now that we have the actual food name, we need to decide which NDB_No
+    # is the best fit by comparing the adjectives
+    food_idx.v = which(sdf[,"food"]==food_name)
+
+    for (temp_token in temp_token.v)
+    {
+      # we are looking at adjectives, so skip the food name
+      if (temp_token != food_name)
+      {
+        # compare this adjective to each relevant row in FOOD_DES
+        for (temp_idx in food_idx.v)
+        {
+          temp_target_str <- as.character(sdf[temp_idx,'Shrt_Desc'])
+          # use the token as a regular expression to match on description
+          if (length(grep(temp_token,temp_target_str)) > 0)
+          {
+            sdf[temp_idx,"adj_cnt"] <- sdf[temp_idx,"adj_cnt"] + 1
+          }
+        }
+      }
+    }
+  
+    # use the number of matching adjectives to decide which NDB_No is best fit
+    best_ndb <- 99999 # default
+    max_matches <- 0
+    for (temp_idx in food_idx.v)
+    {
+      if (sdf[temp_idx,"adj_cnt"] > max_matches)
+      {
+        max_matches <- sdf[temp_idx,"adj_cnt"]
+        best_ndb <- sdf[temp_idx,"NDB_No"]
+      }
+    }
+  
+    if ((best_ndb==99999)&&(length(food_idx.v > 0))) # no matches, so use first one
+    {
+      best_ndb <- sdf[food_idx.v[1],"NDB_No"]
+    }
+  
+    out.df[recipe_idx,"ndb"] <- best_ndb
+    
+    # reformat the ingredient string so the food name is first
+    temp_str <- food_name
+    for (temp_token in temp_token.v)
+    {
+      if (temp_token != food_name)
+      {
+        temp_str <- paste(temp_str,",",temp_token,sep="")
+      }
+    }
+    out.df[recipe_idx,"Ingredient"] <- temp_str
+
+  }
+
+  return(out.df)
+}
+
+```
+
+
+*This function validates the measures against the WEIGHT database.*
+*It relies on a defined set of conversions that need to be agreed*
+*on by the Team (ex: sample file uses 'Tbs' for tablespoon; weight.dat*
+*uses 'tbsp'.)*
+
+```{r}
+
+validate_measures <- function(in.df)
+{
+  out.df <- in.df # initialize return value
+  
+  # first create a vector of valid measures. look only at the primary unit,
+  # don't consider descriptive text.
+  valid_msr.v <- c("tsp") # initialize using known valid measure
+  for (msr in weight.dat[,"Msre_Desc"])
+  {
+    # pull out first word in the string
+    temp_str <- tolower(std_tkn(msr,rmv_punc=TRUE)[1])
+    if (!(temp_str %in% valid_msr.v)) valid_msr.v <- append(valid_msr.v,temp_str)
+  }
+  
+  # now check each measure in the recipe file against the standard list
+  for (temp_idx in 1:nrow(in.df))
+  {
+    temp_msr <- tolower(in.df[temp_idx,"Unit"])
+    if (!(temp_msr %in% valid_msr.v))
+    {
+      out.df[temp_idx,"Unit"] <- 'unk' # default for units not found in weight.dat
+      # list of valid conversions
+      if (temp_msr=='tbs') out.df[temp_idx,"Unit"] <- 'tbsp'
+      if (temp_msr=='whole') out.df[temp_idx,"Unit"] <- 'whole'
+    }
+  }
+  
+  return(out.df) # change this to out.df to get updated measures
+}
+
+```
+
+
+*This code chunk calls the validation functions for my assigned recipes.*
+```{r}
+
+r1.df <- validate_ingredients(r1.df)
+r2.df <- validate_ingredients(r2.df)
+r3.df <- validate_ingredients(r3.df)
+r4.df <- validate_ingredients(r4.df)
+
+r1.df <- validate_measures(r1.df)
+r2.df <- validate_measures(r2.df)
+r3.df <- validate_measures(r3.df)
+r4.df <- validate_measures(r4.df)
+
+# need to validate the sample recipes too, so we can combine them later
+df.97 <- validate_ingredients(df.97)
+df.06 <- validate_ingredients(df.06)
+
+df.97 <- validate_measures(df.97)
+df.06 <- validate_measures(df.06)
+
+```
+
+
+*This code chunk writes the recipes to .tab files. Pathname is to a folder*
+*on my local machine; eventually will update to use a shared repository.*
+```{r}
+
+# Files are stored on my local machine; later we will use a shared repository
+pathname <- "./"
+
+filename <- paste(pathname,filename.v[1],sep = "")
+write.table(r1.df, filename, quote=TRUE,sep=' ' ,dec='.',row.name=FALSE,col.names=TRUE,fileEncoding="UTF-8")
+
+filename <- paste(pathname,filename.v[2],sep = "")
+write.table(r2.df, filename, quote=TRUE,sep=' ' ,dec='.',row.name=FALSE,col.names=TRUE,fileEncoding="UTF-8")
+
+filename <- paste(pathname,filename.v[3],sep = "")
+write.table(r3.df, filename, quote=TRUE,sep=' ' ,dec='.',row.name=FALSE,col.names=TRUE,fileEncoding="UTF-8")
+
+filename <- paste(pathname,filename.v[4],sep = "")
+write.table(r4.df, filename, quote=TRUE,sep=' ' ,dec='.',row.name=FALSE,col.names=TRUE,fileEncoding="UTF-8")
+
+```
+
+### Read data back in and combine into a single dataframe
+
+*This function takes two data frames as arguments and returns the combined*
+*data frame. Eventually we will update this function to do validation and*
+*error checking.*
+
+```{r}
+
+dfcombine <- function(df.1,df.2) {
+  
+  valid_data <- TRUE # initialize
+  
+  # compare number of columns
+  if (ncol(df.1)!=ncol(df.2)) valid_data <- FALSE
+  
+  # check each column in df.1 to make sure it is present in df.2, and has
+  # a consistent class
+  for (cn in colnames(df.1))
+  {
+    if (is.na(match(cn,colnames(df.2)))) valid_data <- FALSE
+    else if (class(df.1[cn])!=class(df.2[cn])) valid_data <- FALSE
+  }
+  
+  if (valid_data) return(rbind(df.1,df.2)) 
+  else
+  {
+    cat("data format not consistent, data frames not combined")
+    return(df.1)
+  }
+}
+```
+
+
+*This code chunk is not part of the midterm; it tests the df_combine function*
+```{r}
+
+test1.v = c(1,2,3,4,5)
+test2.v = c("The","Quick","Brown","Fox","Jumped")
+test3.v = c(0.2,0.4,0.6,0.8,1)
+
+testdf.1 <- data.frame(test1.v,test2.v,test3.v)
+testdf.2 <- data.frame(test1.v,test3.v)
+
+print(dfcombine(testdf.1,testdf.2))
+
+```
+
+
+*This code chunk reads in data from multiple .TAB files, and combines them all*
+*into a single data table*
+```{r}
+
+test_recipe <- "Ham Loaf"
+test_year <- 1936
+test_filename <- paste(test_pathname,test_recipe,".",toString(test_year),".tab",sep = "")
+df.in <- read.table(test_filename, header = TRUE, sep = " ", dec = ".",
+                    stringsAsFactors = FALSE)
+df.all <- df.in # first one, nothing to combine yet
+
+test_recipe <- "Ham Loaf"
+test_year <- 2006
+test_filename <- paste(test_pathname,test_recipe,".",toString(test_year),".tab",sep = "")
+df.in <- read.table(test_filename, header = TRUE, sep = " ", dec = ".",
+                    stringsAsFactors = FALSE)
+df.all <- dfcombine(df.all,df.in)
+
+test_recipe <- "Ham Cakes with Pineapple and Sweet Potato"
+test_year <- 1936
+test_filename <- paste(test_pathname,test_recipe,".",toString(test_year),".tab",sep = "")
+df.in <- read.table(test_filename, header = TRUE, sep = " ", dec = ".",
+                    stringsAsFactors = FALSE)
+df.all <- dfcombine(df.all,df.in)
+
+test_recipe <- "Ham Cakes with Pineapple and Sweet Potato"
+test_year <- 2006
+test_filename <- paste(test_pathname,test_recipe,".",toString(test_year),".tab",sep = "")
+df.in <- read.table(test_filename, header = TRUE, sep = " ", dec = ".",
+                    stringsAsFactors = FALSE)
+df.all <- dfcombine(df.all,df.in)
+
+# combine with the sample recipe files
+df.all <- dfcombine(df.all,df.97)
+df.all <- dfcombine(df.all,df.06)
+
+print(df.all)
+
+```
+
+

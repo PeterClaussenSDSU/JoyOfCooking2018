@@ -1,0 +1,264 @@
+---
+title: "Midterm Project"
+author: "Set 14"
+date: "July 21, 2018"
+output: 
+   pdf_document: default
+---
+
+I have gone through the Lond Description in the FOOD_DES,I try to find the best description that matches the description of each ingredient of the recipes in my dataset.Based on the matched description, I have added the column NDB_No to each recipe table.
+
+
+To generate ChocolateCharlotte.2006 recipe data table:
+
+```{r}
+ChocolateCharlotte.1936 <- data.frame(
+  Amount=c(1.00,0.25,0.75,1.00,2.00,1.00,0.88,1.00,18.00),
+  Measure= c("envelope (1 tbsp)", "cup","cup","oz","cup, whipped","large","cup","tsp","ladyfinger"),
+  Ingredient = c("Gelatins, dry powder, unsweetened", "Water, bottled, generic", "Milk, whole, 3.25% milkfat, without added vitamin A and vitamin D", "Chocolate, dark, 45- 59% cacao solids", "Cream, fluid, heavy whipping", "Egg, whole, raw, fresh", "Sugars, granulated","Vanilla extract","Cookies, ladyfingers, without lemon juice and rind"),
+  NDB_No=c(19177,14555,1211,19902,1053,1123,19335,02050,18423)
+  )
+
+ChocolateCharlotte.1936
+```
+
+
+To generate ChocolateCharlotte.2006 recipe data table: In this data, I have combined the "sugars,granulated" three vaules using the following conversions: 1 cup = 16 table spoon, and 1 table spoon = 3 tea spoon.
+
+```{r}
+ChocolateCharlotte.2006<- data.frame(
+  Amount=c(18.00,0.56,0.44,0.44,0.50,6.00,3.00,1.00,0.50),
+  Measure= c("ladyfinger", "cup","cup","cup","envelope (1 tbsp)","oz","tbsp","large","cup, whipped"),
+   Ingredient = c("Cookies, ladyfingers, without lemon juice and rind","Sugars, granulated","Water, bottled, generic","Beverages, coffee, brewed, prepared with tap water","Gelatins, dry powder, unsweetened","Chocolate, dark, 45- 59% cacao solids","Butter, salted","Egg, whole, raw, fresh","Cream, fluid, heavy whipping"),
+  NDB_No=c(18423,19335,14555,14209,19177,19902,1001,1123,1053)
+)
+
+ChocolateCharlotte.2006
+```
+
+To generate MoldedCustard.1936 recipe data table:
+
+```{r}
+MoldedCustard.1936<- data.frame(
+  Amount=c(1.00,1.75,2.00,0.33,1.00),
+  Measure= c("envelope (1 tbsp)","cup","large","cup","tsp"),
+  Ingredient = c("Gelatins, dry powder, unsweetened","Milk, whole, 3.25% milkfat, without added vitamin A and vitamin D", "Egg, whole, raw, fresh", "Sugars, granulated","Vanilla extract"),
+  NDB_No=c(19177,1077,1123,19335,02050)
+)
+
+MoldedCustard.1936
+```
+To generate MoldedCustard.2006 recipe data table:
+
+```{r}
+MoldedCustard.2006<- data.frame(
+  Amount=c(3.00,0.75,0.50,3.00,1.00),
+  Measure= c("cup","envelope (1 tbsp)","cup","large","tsp"),
+  Ingredient = c("Milk, whole, 3.25% milkfat, without added vitamin A and vitamin D","Gelatins, dry powder, unsweetened", "Sugars, granulated", "Egg, whole, raw, fresh","Vanilla extract"),
+  NDB_No=c(1077,19177,19335,1123,02050)
+)
+
+MoldedCustard.2006
+```
+
+
+Writing the ChocolateCharlotte 1936 recipe:
+```{r}
+write.table(ChocolateCharlotte.1936,"ChocolateCharlotte.1936", sep="\t")
+```
+
+
+Writing the ChocolateCharlotte 1936 recipe:
+```{r}
+write.table(ChocolateCharlotte.1936,"ChocolateCharlotte.2006", sep="\t")
+```
+
+
+Writing the MoldedCustard 1936 recipe:
+
+```{r}
+write.table(ChocolateCharlotte.1936,"MoldedCustard.1936", sep="\t")
+```
+
+
+Writing the MoldedCustard 2006 recipe:
+
+```{r}
+write.table(ChocolateCharlotte.1936,"MoldedCustard.2006", sep="\t")
+```
+
+Reading the ChocolateCharlotte 1936:
+```{r}
+#getwd()
+read.table("ChocolateCharlotte.1936")
+
+```
+
+Reading the ChocolateCharlotte 2006:
+
+```{r}
+read.table("ChocolateCharlotte.2006")
+```
+
+
+Reading the MoldedCustard 1936 recipe:
+
+```{r}
+read.table("MoldedCustard.1936")
+```
+
+
+Reading the MoldedCustard 2006 recipe:
+
+```{r}
+read.table("MoldedCustard.2006")
+```
+
+
+Reading the BeefStroganoff.1997 recipe:
+
+
+```{r}
+BeefStroganoff.1936<-read.table("BeefStroganoff.1997.tab" ,header=TRUE)
+BeefStroganoff.1936
+
+```
+
+
+Reading the BeefStroganoff.2006 recipe:
+
+```{r}
+BeefStroganoff.2006<-read.table("BeefStroganoff.2006.tab",header=TRUE)
+BeefStroganoff.2006
+```
+
+
+since the given files, BeefStroganoff.1997.tab and BeefStroganoff.2006.tab, do not have NDB_No. It would be diffcult to add combine them with the MoldedCustard 1936/2006 recipe and ChocolateCharlotte 1936/2006 recipe. Thus, let us add NDB_No to BeefStroganoff.1997 and 2006 recipes. Similar to what I have done above, I will use the best description matching approach to assign NDB_No to the ingredients.
+
+
+Adding the column NDB_No to BeefStroganoff.1936:
+
+```{r}
+
+BeefStroganoff.1936$NDB_No=c(23336,1001,20082,06170,01074,02046)
+BeefStroganoff.1936
+```
+
+
+Adding the column NDB_No to BeefStroganoff.2006:
+
+```{r}
+BeefStroganoff.2006$NDB_No=c(23336,04582,1001,11282,11238,06170,01074,02046)       
+BeefStroganoff.2006
+```
+
+Combining all three recipes from above (for both 1936 and 2006), we get:
+
+```{r}
+combined_recipes<-rbind(ChocolateCharlotte.1936,ChocolateCharlotte.2006,MoldedCustard.1936,MoldedCustard.2006,BeefStroganoff.1936,BeefStroganoff.2006)
+
+combined_recipes
+
+```
+
+I have proved the accuracy of my data and checked for errors using tables, tests and plots:
+
+```{r}
+datacheck1<-merge.data.frame(ChocolateCharlotte.1936,ChocolateCharlotte.2006,by = "NDB_No")
+datacheck1
+all(ChocolateCharlotte.1936$Measure.x== ChocolateCharlotte.2006$Measure.y)
+```
+
+
+From the above table and the test for equality, we can see that the measurement units for each NDB_No in both 1936 and 2006 data are matched.
+
+
+Similarly, MoldedCustared recipes:
+
+```{r}
+datacheck2<-merge.data.frame(MoldedCustard.1936,MoldedCustard.2006,by = "NDB_No")
+datacheck2
+all(MoldedCustard.1936$Measure.x== MoldedCustard.2006$Measure.y)
+```
+From the above table and the test for equality, we can see that the measurement units for each NDB_No in both 1936 and 2006 data are matched.
+
+
+
+To check data, let us plot the amount.1936 and amount.2006 for ChocolateCharlotte recipes:
+
+
+```{r}
+datacheck1<-merge.data.frame(ChocolateCharlotte.1936,ChocolateCharlotte.2006,by = "NDB_No")
+#datacheck
+plot(datacheck1$Amount.x,datacheck1$Amount.y)
+```
+
+
+
+To check data, let us plot the amount.1936 and amount.2006 for MoldedCustared recipes:
+
+```{r}
+datacheck2<-merge.data.frame(MoldedCustard.1936,MoldedCustard.2006,by = "NDB_No")
+#datacheck
+plot(datacheck2$Amount.x,datacheck2$Amount.y)
+```
+
+For both recipes, the plots of the amount look reasonable since they are close to each other.
+
+
+Reading the Recipes.csv:
+
+
+```{r}
+Recipe_Table<-read.table("Recipes.csv" ,header=TRUE,sep = ",")
+
+Recipe_Table
+```
+
+
+Inputting the Maximum and Minimum Servings 
+
+```{r}
+Add_data<- data.frame(
+  Recipe=c("ChocolateCharlotte","ChocolateCharlotte","MoldedCustard","MoldedCustard"),
+  Year= c(1997,2006,1997,2006),
+  MinServings = c(6,8,6,8),
+  MaxServings=c(6,8,6,8)
+)
+Add_data
+```
+
+Combining rows from Recipes.csv containing BeefStroganoff, ChocolateCharlotte, and MoldedCustard:
+
+
+```{r}
+Recipe_comb<-rbind(Recipe_Table, Add_data)
+Recipe_comb
+```
+
+
+
+Writing the modified Recipes.csv out:
+
+
+```{r}
+write.table(Recipe_comb,"Recipes.csv", sep=",")
+```
+
+Reading the Recipes.csv in:
+
+```{r}
+Recipes.csv<-read.table("Recipes.csv" ,header=TRUE,sep = ",")
+Recipes.csv
+```
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,269 @@
+---
+title: "Mid-Term Project"
+author: "Angie Hammrich"
+date: "July 21, 2018"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r}
+#Setup the Bacon Cornmeal Waffle Recipe from 1936
+#Researched each individual NDB_No related to each ingredient.  Use this website:  https://ndb.nal.usda.gov/ndb/search/list
+#I found that any items that began with "4" and were 8 digits would not provide a match.
+#In setting up the NDB_No column I did notice that it was dropping the leading zero.  I initally set these to strings; however when you go to update the description to match on the NDB_No with the FOOD_Des table these have to be numeric.  They will display without the leading zero, but will work correctly with the matching on the description.
+BaconCornMealWaffles.1936.dat<- data.frame(
+ Amount = c(2.00, 1.75, 1.00, 1.00, 1.00, 5.00, 12.00),
+ Measure = c('lrg', 'cup', 'cup', 'Tbs', 'cup', 'Tbs', 'slice'),
+  Ingredient = c('egg, raw', 'milk, whole, 3.25%', 'flour, cake, white, unsifted, enriched', 'sugar, white, granulated', 'cornmeal, yellow, degerminated, enriched', 'fat,bacon', 'bacon, raw, cured'),
+ NDB_No = c(01123, 01211, 20084, 19335, 20022, 04609, 10123)
+)
+
+(BaconCornMealWaffles.1936.dat)
+#wrtie the table
+write.table(BaconCornMealWaffles.1936.dat, "BaconCornMealWaffles.1936.dat.tab", row.names=FALSE, sep=" ")
+```
+
+```{r}
+#Setup the Bacon Ronmeal Waffle Recipe from 2006
+BaconCornMealWaffles.2006.dat<- data.frame(
+ Amount = c(1.00, 1.00, 2.00, 5.00, 0.25, 2.00, 3.00),
+ Measure = c('cup', 'cup', 'cup', 'Tbs', 'cup', 'lrg', 'slice'),
+  Ingredient = c('flour, all purpose, self rising, enriched', 'cornmeal, yellow, degerminated, unenriched', 'buttermilk, 1%, cultured', 'butter, salted', 'syrup, maple', 'egg, raw', 'bacon,cooked, extra thin sliced, food service'),
+ NDB_No = c(20082, 20022, 01094, 	01001, 19353, 01123, 	10862)
+)
+(BaconCornMealWaffles.2006.dat)
+#Write the table
+write.table(BaconCornMealWaffles.2006.dat, "BaconCornMealWaffles.2006.dat.tab", row.names=FALSE, sep=" ")
+
+```
+```{r}
+#Setup the recipe for Steamed Chocolate Feather Pudding from 1936
+SteamedChocolateFeatherPudding.1936.dat<- data.frame(
+ Amount = c(2.00, 0.50, 1.00, 1.00, 1.00, 0.50),
+ Measure = c('oz', 'cup', 'lrg', 'Tbs', 'cup', 'cup'),
+  Ingredient = c('chocolate, dark, 45-59% cacao solids', 'sugar, white, granulated', 'egg, raw', 'butter, salted', 'flour, bread, white, enriched', 'milk, whole, 3.25%'),
+ NDB_No = c(19902, 19335, 01123, 01001, 	20083, 	01211)
+)
+
+(SteamedChocolateFeatherPudding.1936.dat)
+#Write the table
+write.table(SteamedChocolateFeatherPudding.1936.dat, "SteamedChocolateFeatherPudding.1936.dat.tab", row.names=FALSE, sep=" ")
+```
+```{r}
+#Setup the recipe for Steamed Chocolate Feather Pudding from 2006
+SteamedChocolateFeatherPudding.2006.dat<- data.frame(
+ Amount = c(1.00, 8.00, 0.50, 4.00, 2.00, 6.00,1.00, 0.50, 2.00),
+ Measure = c('cup', 'oz', 'cup', 'Tbs', 'Tbs', 'lrg', 'Tbs', 'cup', 'Tbs'),
+  Ingredient = c('bread crumbs, plain, dry, grated', 'chocolate, dark, 45-59% cacao solids', 'cream, whipping, heavy', 'butter, salted', 'coffee, brewed, with tap water', 'egg, raw', 'extract, vanilla', 'sugar, white, granulated', 'flour, all purpose, self rising, enriched'),
+ NDB_No = c(18079, 19902, 01053, 01001, 14209, 01123, 02050, 19335, 20082)
+)
+
+(SteamedChocolateFeatherPudding.2006.dat)
+
+#write the table
+write.table(SteamedChocolateFeatherPudding.2006.dat, "SteamedChocolateFeatherPudding.2006.dat.tab", row.names=FALSE, sep=" ")
+```
+```{r}
+#Read in each new file and then merge with Beef Stroganoff Tables
+#Read in Bacon Corn Meal Waffles - 1936 
+Pathtodata = "BaconCornMealWaffles.1936.dat.tab"
+BaconCornMealWaffles.1936.dat <- read.table(Pathtodata, header=TRUE, sep=" ")
+BaconCornMealWaffles.1936.dat
+
+```
+```{r}
+#Read in Bacon Corn meal Waffles 2006
+Pathtodata = "BaconCornMealWaffles.2006.dat.tab"
+BaconCornMealWaffles.2006.dat <- read.table(Pathtodata, header=TRUE, sep=" ")
+BaconCornMealWaffles.2006.dat
+```
+```{r}
+#Read in Steamed Chocolate Feather Pudding - 1936
+Pathtodata = "SteamedChocolateFeatherPudding.1936.dat.tab"
+SteamedChocolateFeatherPudding.1936.dat <- read.table(Pathtodata, header=TRUE, sep=" ")
+SteamedChocolateFeatherPudding.1936.dat
+```
+```{r}
+#Read in Steamed Chocolate Feather Pudding - 2006
+Pathtodata = "SteamedChocolateFeatherPudding.2006.dat.tab"
+SteamedChocolateFeatherPudding.2006.dat <- read.table(Pathtodata, header=TRUE, sep=" ")
+SteamedChocolateFeatherPudding.2006.dat
+```
+```{r}
+#read in Beef Stroganoff recipes - updated file name in order to add NDB_No
+#PMC - BeefStroganoff must have been edited manually; I needed to add
+#NDB_No and change read.table parameters
+Pathtodata = "BeefStroganoff.1997.tab"
+BeefStroganoff.1997.tab<- read.table(Pathtodata, header=TRUE)
+BeefStroganoff.1997.tab
+BeefStroganoff.1997.tab$NDB_No <- NA
+
+Pathtodata = "BeefStroganoff.2006.tab"
+BeefStroganoff.2006.tab<- read.table(Pathtodata, header=TRUE)
+BeefStroganoff.2006.tab
+BeefStroganoff.2006.tab$NDB_No <- NA
+
+
+#merge recipes with Beef Stroganoff
+
+
+newdata <- rbind(BeefStroganoff.1997.tab,
+      BeefStroganoff.2006.tab,
+      BaconCornMealWaffles.1936.dat,
+      BaconCornMealWaffles.2006.dat,
+      SteamedChocolateFeatherPudding.1936.dat,
+      SteamedChocolateFeatherPudding.2006.dat,
+      by="Ingredient"
+      )
+newdata
+```
+```{r}
+#Check data for accuracy
+#compare measure and amounts for each similar recipe
+for (i in 1:(length(BaconCornMealWaffles.1936.dat$Measure))){
+ bcw36_M <- BaconCornMealWaffles.1936.dat$Measure[i]
+bcw06_M <- BaconCornMealWaffles.2006.dat$Measure[i]
+print(bcw36_M)
+print(bcw06_M)
+}
+#the measurements after running the loop seem in line
+
+for (i in 1:(length(BaconCornMealWaffles.1936.dat$Amount))){
+ bcw36_A <- BaconCornMealWaffles.1936.dat$Amount[i]
+bcw06_A <- BaconCornMealWaffles.2006.dat$Amount[i]
+print(bcw36_A)
+print(bcw06_A)
+}
+#There is an issue with an amount.  It is showing 12 on one item - that does not seem reasonable.  The slices of bacon increased from 3 to 12.  The serving size also increased from 4 to 10.
+
+#Tried running a loop and matching on NDB_No; however the size difference caused an issue. It did locate the increase in butter.  There is also a discrepency on eggs. Those increased from 1 to 6.
+#for (i in 1:(length(SteamedChocolateFeatherPudding.2006.dat$Measure))){
+#  if (SteamedChocolateFeatherPudding.1936.dat$NDB_No[i] == SteamedChocolateFeatherPudding.2006.dat$NDB_No[i]) #{
+# scfp36_M <- SteamedChocolateFeatherPudding.1936.dat$Measure[i]
+# scfp36_A <- SteamedChocolateFeatherPudding.1936.dat$Amount[i]
+#scfp06_M <- SteamedChocolateFeatherPudding.2006.dat$Measure[i]
+#scfp06_A <- SteamedChocolateFeatherPudding.2006.dat$Amount[i]
+#print(scfp36_M)
+#print(scfp36_A)
+#print(scfp06_M)
+#print(scfp06_A)
+#print(SteamedChocolateFeatherPudding.1936.dat$NDB_No)
+#print(SteamedChocolateFeatherPudding.2006.dat$NDB_No)
+#}}
+#the measurements after running the there is an increase in butter, salted from 1 Tbs to 4 Tbs.
+
+for (i in 1:(length(SteamedChocolateFeatherPudding.1936.dat$Amount))){
+ bcw36_A <- SteamedChocolateFeatherPudding.1936.dat$Amount[i]
+bcw06_A <- SteamedChocolateFeatherPudding.2006.dat$Amount[i]
+print(bcw36_A)
+print(bcw06_A)
+}
+
+
+```
+```{r}
+#Read in current recipes file
+Recipes.dat <- read.csv("Recipes.csv",header=FALSE,skip=1)
+print(Recipes.dat)
+
+x2.dat = data.frame  (
+titles =c('Beef Stroganoff', 'Beef Stroganoff'),
+   years =c(1997, 2006),
+  min_serv =c(4, 4),
+  max_serv =c(4,4)
+)
+```
+```{r}
+#Create additional data to add to the recipes.csv file
+
+x1.dat = data.frame (
+  titles =c('Bacon CornMeal Waffles', 'Bacon CornMeal Waffles', 'Steamed Chocolate Feather Pudding','Steamed Chocolate Feather Pudding'),
+   years =c(1936, 2006, 1936,2006),
+  min_serv =c(6, 6, 4,10),
+  max_serv =c(6, 6, 4,10)
+)
+x1.dat
+x3.dat <- rbind(x2.dat, x1.dat)
+x3.dat
+```
+```{r}
+#write the file with the additional recipe information
+#I have been working with the append fundtion all week off and on.  I can get the file to write; however it will always ignore the append function.  I thought it was my anti-virus, but even turning it off didn't allow me to append.  So, I am writing the entire file to recipes.csv vs. appending the file.  This is the error I keep receiving:  attempt to set 'append' ignored
+
+write.csv(x3.dat, file='Recipes.csv', append=FALSE, row.names=FALSE)
+
+```
+
+```{r}
+
+#update descriptions with the Long_Description from the FOOD_DES table.
+
+food_des.dat <- read.table("FOOD_DES.txt",header=FALSE,sep="^",quote="~")
+names(food_des.dat) <- c("NDB_No","FdGrp_Cd","Long_Desc","Shrt_Desc",
+"ComName","ManufacName","Survey","Ref_desc","Refuse","SciName",
+"N_Factor","Pro_Factor","Fat_Factor","CHO_Factor")
+
+#update Bacon CornMeal Waffles 1936 and re-write the file
+BaconCornMealWaffles.1936.dat$Ingredient <- food_des.dat[match(BaconCornMealWaffles.1936.dat$NDB_No,food_des.dat$NDB_No),]$Long_Desc
+
+BaconCornMealWaffles.1936.dat
+write.table(BaconCornMealWaffles.1936.dat, "BaconCornMealWaffles.1936.dat.tab", row.names=FALSE, sep=" ")
+```
+```{r}
+#update Bacon CornMeal Waffles 2006
+BaconCornMealWaffles.2006.dat$Ingredient <- food_des.dat[match(BaconCornMealWaffles.2006.dat$NDB_No,food_des.dat$NDB_No),]$Long_Desc
+
+BaconCornMealWaffles.2006.dat
+write.table(BaconCornMealWaffles.2006.dat, "BaconCornMealWaffles.2006.dat.tab", row.names=FALSE, sep=" ")
+```
+```{r}
+#update Steamed Chocoloate Feather Pudding 1936 and re-write the file
+
+SteamedChocolateFeatherPudding.1936.dat$Ingredient <- food_des.dat[match(SteamedChocolateFeatherPudding.1936.dat$NDB_No,food_des.dat$NDB_No),]$Long_Desc
+
+SteamedChocolateFeatherPudding.1936.dat
+write.table(SteamedChocolateFeatherPudding.1936.dat, "SteamedChocolateFeatherPudding.1936.dat.tab", row.names=FALSE, sep=" ")
+```
+```{r}
+#update Steamed Chocolate Feather Pudding 2006
+
+SteamedChocolateFeatherPudding.2006.dat$Ingredient <- food_des.dat[match(SteamedChocolateFeatherPudding.2006.dat$NDB_No,food_des.dat$NDB_No),]$Long_Desc
+
+SteamedChocolateFeatherPudding.2006.dat
+write.table(SteamedChocolateFeatherPudding.1936.dat, "SteamedChocolateFeatherPudding.1936.dat.tab", row.names=FALSE, sep=" ")
+```
+```{r}
+#update Beef stroganoff 1997 table
+
+BeefStroganoff.1997.tab$Ingredient <- food_des.dat[match(BeefStroganoff.1997.tab$NDB_No,food_des.dat$NDB_No),]$Long_Desc
+
+BeefStroganoff.1997.tab
+
+BeefStroganoff.2006.tab$Ingredient <- food_des.dat[match(BeefStroganoff.2006.tab$NDB_No,food_des.dat$NDB_No),]$Long_Desc
+
+BeefStroganoff.2006.tab
+#write.table(SteamedChocolateFeatherPudding.1936.dat, "SteamedChocolateFeatherPudding.1936.dat.tab", row.names=FALSE, sep=" ")
+
+#Re-merge all the files with the Stroganoff files
+
+newdata1 <- rbind(BeefStroganoff.1997.tab,
+      BeefStroganoff.2006.tab,
+      BaconCornMealWaffles.1936.dat,
+      BaconCornMealWaffles.2006.dat,
+      SteamedChocolateFeatherPudding.1936.dat,
+      SteamedChocolateFeatherPudding.2006.dat,
+      by="Ingredient"
+      )
+newdata1
+```
+
+

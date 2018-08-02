@@ -1,0 +1,257 @@
+---
+output:
+  word_document: default
+  html_document: default
+---
+---
+title: "Midterm"
+author: "Set 9"
+date: "7/20/18"
+output:
+  word_document: default
+  pdf_document: default
+  html_document: default
+references:
+- author:
+  - family: Claussen
+    given:  Peter
+  
+  source: Mid term Instructions and blogs
+ ---
+
+# Instructions
+
+We will be working as a team to validate the calories per recipe data provided by John Becker.
+Update Jul 17.
+After a productive chat session, we've added one additional requirement. Add the column NDB_No to each recipe table. When you match Ingredient to the Long Description in the FOOD_DES, the will be a corresponding column NBD_No. You can either manually edit this column in your original data table (and note this in your literate document, how you found the values - was there a single match or did you need to write a series of partial matches, and just picked the best one?) or, if you're up for a challenge, do this programmatically as you match Ingredient names, before you export your recipes.
+Update Jul 15.
+A brief outline of the steps required for the Midterm project 
+1. Create data tables for your assigned recipes, with columns Amount, Unit and Ingredient.
+2. Write each individual recipe to a tab delimited file. The name of the tab file should be comprised of the recipe file name and the year of the recipe (1936 or 2006, in most cases).
+3. Read in each tab file, and merge the tables with the example Beef Stroganoff tables. 
+4. Proof the data to check for errors. Consider, for example, the error in the example Beef Stroganoff recipes, where the measures for sour cream are inconsistent. If we merge the two recipes by Ingredient, we can plot Measure.1997 vs Measure.2006 and see quickly where the measures are not consistent. We could also create a contingency table comparing Measure.1997 and Measure.2006 to look for mismatches in measures between ingredients. We can plot Amount.1997 and Amount.2006 to look for unexpected changes in values.
+5. Read the Recipes.csv, append rows for your recipes, then write the table back to Recipes.csv. We would be able to determine the file names for your recipes by concatentating Recipe and Year, removing white space if necessary.
+
+*Coding below will follow the 5 steps outlined above.  On checking and participation in the forum, I realized that many are following different techniques. I have however decided to follow the given instructions to the letter*
+
+
+You are required to enter ingredients using the text listed in FOOD_DES.txt. In some cases, the ingredient in the PDF files are identical to the ingredients lists in FOOD_DES.txt, aside from case. The Beef Stroganoff recipes list "butter, salted" , in FOOD_DES, this is listed as "Butter, salted". In other cases, there are not exact matches. You will need to perform partial matching in FOOD_DES and pick the best match. For example, using grep('(D|d)ijon' ... , I don't find any matches, so I use grep('(M|m)ustard', to find the best match. I would enter "Mustard, prepared, yellow" into the Beef Stroganoff recipe, instead of the listed ingredient "mustard, dijon".
+You will be expected to produce a literate document, and grading will be based primarily on how well you document what you understand the requirements of this exercise, followed by how you intend to write the code to meet the requirements of this exercise. You've been given R Markdown documents with instructions for completing the exercises, for the Midterm project, you will be writing your own instructions. State what you intend to do, then write the code to do it. If those two steps match, you won't be penalized.
+Each recipe is different, and may require choices about what to enter. There isn't really a right or wrong on this, as long as you document your choices. Remember, while I will be grading the Midterm submissions, your target audience for reading your submissions will be the other students; if there are issues with merging data in the final project, the midterm documentation may help resolve those issues. If I have problems merging your output, I'll give you a chance to refine your submission before making it available to other students.
+
+
+
+# Analysis
+
+### Enter data
+
+Create data tables for your assigned recipes, with columns Amount, Unit and Ingredient.
+***The data set below is created from the Recipe pdf provided.  Ingredients listed below are as in the pdf recipe files and I have therefore given Ingredient_pdf as the name. These will be corrected in a later step to match the FOODS_DES.txt table.***
+
+```{r}
+StovetopMacaroniandCheese1936.dat <- data.frame(
+  Amount=c(4,0.5,0.5),
+  Measure = c("oz","cup","cup"),
+  Ingredient_pdf = c("pasta, macaroni, dry, enriched", "cream, whipping, heavy", "cheese, cheddar, shredded"))
+
+StovetopMacaroniandCheese2006.dat <- data.frame(
+  Amount=c(8,0.25,1.5,3,2),
+  Measure = c("oz","cup","cup","cup","lrg"),
+  Ingredient_pdf = c("pasta, macaroni, dry, enriched", "butter, salted", "evaporated milk, canned","cheese, cheddar, shredded", "egg,raw"))
+
+ChocolateSouffle1936.dat <- data.frame(
+  Amount=c(1,1,2,1,0.33,3,1),
+  Measure = c("oz","oz","Tbs","Tbs","cup","lrg","tsp"),
+  Ingredient_pdf = c("milk, whole,3.25%", "chocolate, dark, 45-59% cacao solids", "butter, salted","flour, bread, white, enriched","sugar, white, granulated, granulated","egg, raw", "extract, vanilla"))
+
+ChocolateSouffle2006.dat <- data.frame(
+  Amount=c(6,6,2,3,1,0.25),
+  Measure = c("oz","Tbs","Tbs","lrg","ea","cup"),
+  Ingredient_pdf = c("chocolate, dark, 45-59% cacao solids", "butter, salted","coffee, brewed, with tap water", "egg, raw", "egg white, raw, large","sugar, white, granulated, granulated"))
+#ChocolateSouffle2006.dat
+#ChocolateSouffle2006.dat$Ingredient <- NULL
+#ChocolateSouffle2006.dat
+
+```
+
+
+
+###Determine NBD numbers - Part1
+
+***Below data obtained is for StovetopMacaroniandCheese. I have read the FOODS_DES.txt table into R.  I have done a key word search of ingredients to determine best match and coressponding NBD number.***
+```{r}
+food_des.dat <- read.table("./FOOD_DES.txt",header=FALSE,sep="^",quote="~")
+names(food_des.dat) <- c("NDB_No","FdGrp_Cd","Long_Desc","Shrt_Desc",
+"ComName","ManufacName","Survey","Ref_desc","Refuse","SciName",
+"N_Factor","Pro_Factor","Fat_Factor","CHO_Factor")
+dim(food_des.dat)
+head(food_des.dat)
+food_des.dat<- as.character(food_des.dat[,3])
+#Find best match to Ingredients from pdf recipe
+grep ('(P|p)asta.*(M|m)acaroni',food_des.dat, value=TRUE)
+#NDB = 32001
+grep ('(C|c)ream.*(W|w)hipping',food_des.dat, value=TRUE)
+#NDB = 01053
+grep ('(C|c)heese.*(c|c)heddar',food_des.dat, value=TRUE)
+#NDB 01009
+grep ('(B|b)utter.*(S|s)alted',food_des.dat, value=TRUE)
+#NDB1001
+grep ('(M|m)ilk.*(E|e)vaporated',food_des.dat, value=TRUE)
+#pick the works, NDB = 01291
+grep ('(E|e)gg.*(R|r)aw',food_des.dat, value=TRUE)
+#NDB=01123
+```
+###Determine NBD numbers- Part2
+
+***Below data obtained is for ChocolateSouffle. I have read the FOODS_DES.txt table into R.  I have done a key word search of ingredients to determine best match and coressponding NBD number.***
+
+```{r}
+grep ('(M|m)ilk.*3.25',food_des.dat, value=TRUE)
+#NDB=01211
+grep('(C|c)hocolate.*(D|d)ark', food_des.dat, value =TRUE)
+#NDB 19902
+grep('(F|f)lour.*(B|b)read', food_des.dat, value =TRUE)
+#NDB20083
+grep('(S|s)ugar.*(G|g)ranulated', food_des.dat, value =TRUE)
+#NDB 19335
+grep('(V|v)anilla.*(E|e)xtract', food_des.dat, value =TRUE)
+#NDB02050
+grep('(E|e)gg.*(W|w)hite', food_des.dat, value =TRUE)
+#NDB01124
+grep('(C|c)offee.*(B|b)rewed', food_des.dat, value =TRUE)
+#NDB14209
+```
+
+
+
+
+### create dataframe of NDB #s and exact Ingredient for each recipe/year
+***I have created dataframes with the exact description in FOODS_DES.txt table and NDB number for each of my recipes. I have then replaced my original Ingredient_pdf by the correct Ingredient (per the FOODS_DES file) and also added the NDB column to the original data file. The new tables are the raw tables before export and are printed below. They are StovetopMacaroniandCheese1936.dat, StovetopMacaroniandCheese2006.dat, ChocolateSouffle1936.dat,and ChocolateSouffle2006.dat.  Each table has the Amount, Measure,Ingredient, and NDB. ***
+```{r}
+NDB_StovetopMacaroniandCheese1936.dat <- data.frame(
+  Ingredient = c("Pasta mix, classic cheeseburger macaroni, unprepared", "Cream, fluid, heavy whipping", "Cheese, cheddar, reduced fat (Includes foods for USDA's Food Distribution Program)"),NDB=c(32001,01053,01009))
+#NDB_StovetopMacaroniandCheese1936.dat
+StovetopMacaroniandCheese1936.dat=cbind(StovetopMacaroniandCheese1936.dat,NDB_StovetopMacaroniandCheese1936.dat)
+StovetopMacaroniandCheese1936.dat$Ingredient_pdf <- NULL
+StovetopMacaroniandCheese1936.dat
+NDB_StovetopMacaroniandCheese2006.dat <- data.frame(
+  Ingredient = c("Pasta mix, classic cheeseburger macaroni, unprepared","Butter, salted", "Milk, evaporated, 2% fat, with added vitamin A and vitamin D", "Cheese, cheddar, reduced fat (Includes foods for USDA's Food Distribution Program)","Egg, whole, raw, fresh"),
+  NDB=c(32001,01001,01291,01009,01123))
+StovetopMacaroniandCheese2006.dat=cbind(StovetopMacaroniandCheese2006.dat,NDB_StovetopMacaroniandCheese2006.dat)
+StovetopMacaroniandCheese2006.dat$Ingredient_pdf <- NULL
+StovetopMacaroniandCheese2006.dat
+NDB_ChocolateSouffle1936.dat <- data.frame(
+  Ingredient = c("Milk, whole, 3.25% milkfat, without added vitamin A and vitamin D", "Chocolate, dark, 45- 59% cacao solids", "Butter, salted","flour, bread, white, enriched","Sugars, granulated","Egg, whole, raw, fresh", "Vanilla extract"), NDB=c(01211,19902,01001,20083,19335,01123,02050))
+ChocolateSouffle1936.dat=cbind(ChocolateSouffle1936.dat,NDB_ChocolateSouffle1936.dat)
+ChocolateSouffle1936.dat$Ingredient_pdf <- NULL
+ChocolateSouffle1936.dat
+NDB_ChocolateSouffle2006.dat <- data.frame(
+  Ingredient = c("Chocolate, dark, 45- 59% cacao solids", "Butter, salted","Beverages, coffee, brewed, prepared with tap water", "Egg, whole, raw, fresh", "Egg, white, raw, fresh", "Sugars, granulated"),NDB=c(19902,01001,14209,01123,01124,19335))
+ChocolateSouffle2006.dat=cbind(ChocolateSouffle2006.dat,NDB_ChocolateSouffle2006.dat)
+ChocolateSouffle2006.dat$Ingredient_pdf <- NULL
+ChocolateSouffle2006.dat
+
+
+```
+
+### Write each individual recipe
+
+Write each individual recipe to a tab delimited file. The name of the tab file should be comprised of the recipe file name and the year of the recipe (1936 or 2006, in most cases).
+***Code below follows instruction above. Tab file is as requested above***
+
+```{r}
+write.table(StovetopMacaroniandCheese1936.dat, "StovetopMacaroniandCheese1936.tab", row.names=FALSE,sep="\t")
+write.table(StovetopMacaroniandCheese2006.dat, "StovetopMacaroniandCheese2006.tab", row.names=FALSE,sep="\t")
+write.table(ChocolateSouffle1936.dat, "ChocolateSouffle1936.tab", row.names=FALSE,sep=" ")
+write.table(ChocolateSouffle2006.dat, "ChocolateSouffle2006.tab", row.names=FALSE,sep=" ")
+StovetopMacaroniandCheese1936.dat
+StovetopMacaroniandCheese1936.dat
+ChocolateSouffle1936.dat
+ChocolateSouffle2006.dat
+
+```
+
+### Read in each tab file 
+Read in each tab file, and merge the tables with the example Beef Stroganoff tables.
+***Merge has been completed with example BeefStraganoff files. I did not want to modify the example BeefStraganoff files, so I have stripped out the NDB column in the final step in my files that I read back and demonstrated merge***
+
+```{r}
+ChocolateSouffle1936 =read.csv("ChocolateSouffle1936.tab", sep ="")
+ChocolateSouffle2006 =read.csv("ChocolateSouffle2006.tab", sep ="")
+StovetopMacaroniandCheese1936 =read.csv("StovetopMacaroniandCheese1936.tab", sep ="")
+StovetopMacaroniandCheese2006 =read.csv("StovetopMacaroniandCheese2006.tab", sep ="")
+BeefStroganoff.1997 =read.csv("BeefStroganoff.1997.tab", sep ="")
+BeefStroganoff.2006 =read.csv("BeefStroganoff.2006.tab", sep ="")
+#Eliminating NDB columns after final imported tables in order to merge with sample Beef Straganoff files without NDB - as demonstration. Code below can be removed for final merge after BeefStraganoff files have NDB number.
+StovetopMacaroniandCheese1936$NDB <- NULL
+StovetopMacaroniandCheese2006$NDB <- NULL
+ChocolateSouffle1936$NDB <- NULL
+ChocolateSouffle2006$NDB <- NULL
+Merged = rbind(ChocolateSouffle1936,ChocolateSouffle2006,StovetopMacaroniandCheese1936,StovetopMacaroniandCheese2006,BeefStroganoff.1997,BeefStroganoff.2006)
+Merged
+```
+###Proof the data to check for errors
+Consider, for example, the error in the example Beef Stroganoff recipes, where the measures for sour cream are inconsistent. If we merge the two recipes by Ingredient, we can plot Measure.1997 vs Measure.2006 and see quickly where the measures are not consistent. We could also create a contingency table comparing Measure.1997 and Measure.2006 to look for mismatches in measures between ingredients. We can plot Amount.1997 and Amount.2006 to look for unexpected changes in values.
+
+***I reviewed the plots and contingency tables created and did not find any discrepancies to fix in my files.  I did not make any changes to the BeefStraganoff example provided***
+```{r}
+M_SM=merge(StovetopMacaroniandCheese1936,StovetopMacaroniandCheese2006, by = "Ingredient" )
+M_CS=merge(ChocolateSouffle1936, ChocolateSouffle2006, by = "Ingredient")
+M_SM
+M_CS
+plot(M_SM$Measure.x, M_SM$Measure.y)
+plot(M_SM$Amount.x, M_SM$Amount.y)
+plot(M_CS$Measure.x, M_CS$Measure.y)
+plot(M_CS$Amount.x, M_CS$Amount.y)
+
+```
+
+
+
+###. Read the Recipes.csv, append rows for your recipes, then write the table back to Recipes.csv.
+We would be able to determine the file names for your recipes by concatentating Recipe and Year, removing white space if necessary.
+***I have created dataframes for the serving size. I reviewed the pdf recipe and then decided that the serving size listed by esha Research is the best fit although the detail in the recipe was a bit subjective. I have used same size for min and max servings as there was no range for serving size. I have appended to recipe file in the same example format provided***
+
+```{r}
+R =read.csv("Recipes.csv", sep=",")
+Serving_StovetopMacaroniandCheese1936 <- data.frame(
+  Recipe=c("StovetopMacaroniandCheese"),
+  Year = c(1936),
+  MinServings = c(4),
+  MaxServings =c(4))
+Serving_StovetopMacaroniandCheese2006 <- data.frame(
+  Recipe=c("StovetopMacaroniandCheese"),
+  Year = c(2006),
+  MinServings = c(10),
+  MaxServings =c(10))
+Serving_ChocolateSouffle1936 <- data.frame(
+  Recipe=c("ChocolateSouffle"),
+  Year = c(1936),
+  MinServings = c(4),
+  MaxServings =c(4))
+Serving_ChocolateSouffle2006 <- data.frame(
+  Recipe=c("ChocolateSouffle"),
+  Year = c(2006),
+  MinServings = c(4),
+  MaxServings =c(4))
+R = rbind(R,Serving_StovetopMacaroniandCheese1936,Serving_StovetopMacaroniandCheese2006,Serving_ChocolateSouffle1936,Serving_ChocolateSouffle2006)
+R
+R <- R[!duplicated(R),]
+write.table(R, "Recipes.csv", row.names=FALSE,sep=",")
+```
+
+We would be able to determine the file names for your recipes by concatentating Recipe and Year, removing white space if necessary.
+***Determine file names for recipe as below***
+
+```{r}
+#Below code determines file names by concatinating Recipe and Year and is correct
+
+  for(i in seq(1,nrow(R))){
+    Filename = c()
+    Filename = paste(as.character(R$Recipe[i]),R$Year[i], sep="")
+    Filename=gsub("[[:space:]]", "", Filename)
+    print(Filename)
+  }
+
+```
+

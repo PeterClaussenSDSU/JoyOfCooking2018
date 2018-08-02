@@ -222,3 +222,4 @@ summary(join.frame)
 
 **To do** 
 Iterate over non-conforming tables, determine which can be fixed programmatically.
+

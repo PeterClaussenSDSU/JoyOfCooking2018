@@ -1,0 +1,737 @@
+---
+title: "Joy Of Cooking Midterm"
+author: "Set 43"
+date: "7/20/2018"
+output:
+  html_document: default
+---
+
+## Part 1: Create data tables for your assigned recipes, with columns Amount, Measure and Ingredient and output these to a file.
+
+Note: Initial posts indicated that Measure was named Units. Since the BeefStroganoff.1997 and BeefStroganoff.2006 tab files utilize Measure instead of Units, I assumed that Measure was the correct column name. I also changed Measurements to match the values normally found in weight table ie Tbs became tbsp.
+
+I was assigned two recipes, those being Bavarian Berry Cream and Creamed Oysters
+
+## BavarianBerryCream Recipe
+
+There was one optional ingredient for BavarianBerryCream2006, that being 1 tbsp Fresh Lemon Juice. As its optional and I believe most people would not add it, I will not be including it. 
+
+Lets create the dataframes for these two recipes. The NDB_No column will be added a a later step
+First up is the dataframes BavarianBerryCream1936
+
+```{r}
+# Create dataframe BavarianBerryCream1936.dat with columns Amount,Measure and Ingredient
+BavarianBerryCream1936.dat <- data.frame(
+    Amount=c(1.50, 3.00, 1.00, 1.50, 2.00),
+    Measure = c("tbsp", "tbsp", "qt", "cup", "cup"),
+    Ingredient = c("gelatin, dry, unsweetened", "water, generic", "strawberries, fresh", "sugar, powdered, unsifted", "cream, whipping, heavy"))
+```
+
+Lets check to see what the output looks like
+```{r,echo=FALSE}
+# Print the dataframe BavarianBerryCream1936.dat to verify it looks correct
+print(BavarianBerryCream1936.dat)
+```
+
+Now we will create the dataframe BavarianBerryCream2006.dat
+
+```{r}
+# Create dataframe BavarianBerryCream2006.dat with columns Amount,Measure and Ingredient
+BavarianBerryCream2006.dat <- data.frame(
+    Amount=c(1.00, 0.50, 2.00, 6.00, 1.00),
+    Measure = c("qt", "cup", "tsp", "tbsp", "cup"),
+    Ingredient = c("strawberries, fresh", "sugar, white, granulated, granulated", "gelatin, dry, unsweetened", "water, generic", "cream, whipping, heavy"))
+```
+
+Once again, lets check to see what the output looks like
+```{r,echo=FALSE}
+# Print the dataframe BavarianBerryCream2006.dat to verify it looks correct
+print(BavarianBerryCream2006.dat)
+```
+
+Now, we are asked to write the dataframe files out as tab files. This will be utilized later when we merge them with the BeefStroganoff.1997.tab and BeefStroganoff.2006.tab file. Note, these files don't have NDB_No so as to make merging with existing files (that also dont have NDB_No) easier. We will recreate these files again later after we conduct data cleanup.
+
+```{r}
+# Write the BavarianBerryCream1936.dat data out to file BavarianBerryCream.1936.tab
+write.table(BavarianBerryCream1936.dat, "BavarianBerryCream.1936.tab", row.names=FALSE, sep=" ")
+
+# Write the BavarianBerryCream2006.dat data out to file BavarianBerryCream.2006.tab
+write.table(BavarianBerryCream2006.dat, "BavarianBerryCream.2006.tab", row.names=FALSE, sep=" ")
+```
+
+##  Creamed Oysters Recipe 
+
+There was one optional ingredient for CreamedOysters1936, that is adding cream or milk to the fish stock
+There was one optional ingredient for CreamedOysters2006, that is 1/2 to 1 tsp of curry powder
+As these ingredients are optional and I believe most people would not add them, I will not be including them. 
+
+One other note, John Becker indicates that there was no match for the oyster liquid (not to be confused with oysters, eastern, in liquid, 12 oz can which does exist). As such, his calculations replaced oyster liquid with fish stock
+
+Lets create the dataframes for these two recipes. As before, the NDB_No column will be added a a later step
+First up is the dataframes CreamedOysters1936.dat
+
+```{r}
+# Create dataframe CreamedOysters1936.dat with columns Amount,Measure and Ingredient
+CreamedOysters1936.dat <- data.frame(
+    Amount=c(1.00, 2.00, 2.00, 1.00, 1.00, 4.00),
+    Measure = c("pnt", "tbsp", "tbsp", "cup", "tsp", "thick slc"),
+    Ingredient = c("oysters, eastern, in liquid, 12 oz can", "butter, salted", "flour, all purpose, self rising, enriched", "stock, fish, prepared from recipe", "juice, lemon, fresh", "bread, soft white"))
+```
+
+Lets check to see what the output looks like
+```{r,echo=FALSE}
+# Print the dataframe CreamedOysters1936.dat to verify it looks correct
+print(CreamedOysters1936.dat)
+```
+
+Now we will create the dataframe CreamedOysters2006.dat
+
+```{r}
+# Create dataframe CreamedOysters2006.dat with columns Amount,Measure and Ingredient
+# Interestingly enough the pdf shows an exact match to the 1936 list
+CreamedOysters2006.dat <- data.frame(
+    Amount=c(1.00, 2.00, 2.00, 1.00, 1.00, 4.00),
+    Measure = c("pnt", "tbsp", "tbsp", "cup", "tsp", "thick slc"),
+    Ingredient = c("oysters, eastern, in liquid, 12 oz can", "butter, salted", "flour, all purpose, self rising, enriched", "stock, fish, prepared from recipe", "juice, lemon, fresh", "bread, soft white"))
+```
+
+Once again, lets check to see what the output looks like
+```{r,echo=FALSE}
+# Print the dataframe CreamedOysters2006.dat to verify it looks correct
+print(CreamedOysters2006.dat)
+```
+
+Now, we are asked to write the dataframe files out as tab files. The same comments made for BavarianBerryCream.1936.tab and BavarianBerryCream.2006.tab apply here as well
+
+```{r}
+# Write the CreamedOysters1936.dat data out to file CreamedOysters.1936.tab
+write.table(CreamedOysters1936.dat, "CreamedOysters.1936.tab", row.names=FALSE, sep=" ")
+
+# Write the CreamedOysters2006.dat data out to file CreamedOysters.2006.tab
+write.table(CreamedOysters2006.dat, "CreamedOysters.2006.tab", row.names=FALSE, sep=" ")
+```
+
+## Part 2: Demonstrates that the data can be merged with into a shared table by merging with the example (Beef Stroganoff) recipes.
+
+The directions state that we need to import the 4 tab files that we created earlier instead of using the existing dataframes.  Lets do that now. I will replace the existing dataframes with the data read in from the four files. We will also append to each dataframe two columns, Recipe and Year which we will get by parsing the file name
+
+Import the file BavarianBerryCream.1936.tab
+
+```{r}
+# Create a variable to store filename. Thus if file name changes we only have one place to change. This promotes code reuse
+FileName <- "BavarianBerryCream.1936.tab"
+
+# Use strsplit to get the Recipe and Year from the file name
+RecipeToken <-strsplit(FileName, "\\.")[[1]][1]
+YearToken <-strsplit(FileName, "\\.")[[1]][2]
+
+# Import the data
+BavarianBerryCream1936.dat <- read.table(FileName,header=TRUE, sep = "", stringsAsFactors = FALSE)
+
+# Add new columns Recipe and Year to dataset BavarianBerryCream1936.dat
+BavarianBerryCream1936.dat$Recipe <- RecipeToken
+BavarianBerryCream1936.dat$Year <- YearToken
+
+```
+
+Lets look at BavarianBerryCream1936.dat to verify everything looks good
+```{r,echo=FALSE}
+# Print the dataframe BavarianBerryCream1936 to verify it looks correct
+print(BavarianBerryCream1936.dat)
+```
+
+Import the file BavarianBerryCream.2006.tab
+
+```{r}
+# Create a variable to store filename. Thus if file name changes we only have one place to change. This promotes code reuse
+FileName <- "BavarianBerryCream.2006.tab"
+
+# Use strsplit to get the Recipe and Year from the file name
+RecipeToken <-strsplit(FileName, "\\.")[[1]][1]
+YearToken <-strsplit(FileName, "\\.")[[1]][2]
+
+# Import the data
+BavarianBerryCream2006.dat <- read.table(FileName,header=TRUE, sep = "", stringsAsFactors = FALSE)
+
+# Add new columns Recipe and Year to dataset BavarianBerryCream2006.dat
+BavarianBerryCream2006.dat$Recipe <- RecipeToken
+BavarianBerryCream2006.dat$Year <- YearToken
+
+```
+
+Lets look at BavarianBerryCream2006.dat to verify everything looks good
+```{r,echo=FALSE}
+# Print the dataframe BavarianBerryCream2006 to verify it looks correct
+print(BavarianBerryCream2006.dat)
+```
+
+Import the file CreamedOysters.1936.tab
+
+```{r}
+# Create a variable to store filename. Thus if file name changes we only have one place to change. This promotes code reuse
+FileName <- "CreamedOysters.1936.tab"
+
+# Use strsplit to get the Recipe and Year from the file name
+RecipeToken <-strsplit(FileName, "\\.")[[1]][1]
+YearToken <-strsplit(FileName, "\\.")[[1]][2]
+
+# Import the data
+CreamedOysters1936.dat <- read.table(FileName,header=TRUE, sep = "", stringsAsFactors = FALSE)
+
+# Add new columns Recipe and Year to dataset CreamedOysters1936.dat 
+CreamedOysters1936.dat$Recipe <- RecipeToken
+CreamedOysters1936.dat$Year <- YearToken
+
+```
+
+Lets look at CreamedOysters1936.dat to verify everything looks good
+```{r,echo=FALSE}
+# Print the dataframe CreamedOysters1936 to verify it looks correct
+print(CreamedOysters1936.dat)
+```
+
+Import the file CreamedOysters.2006.tab
+
+```{r}
+# Create a variable to store filename. Thus if file name changes we only have one place to change. This promotes code reuse
+FileName <- "CreamedOysters.2006.tab"
+
+# Use strsplit to get the Recipe and Year from the file name
+RecipeToken <-strsplit(FileName, "\\.")[[1]][1]
+YearToken <-strsplit(FileName, "\\.")[[1]][2]
+
+# Import the data
+CreamedOysters2006.dat <- read.table(FileName,header=TRUE, sep = "", stringsAsFactors = FALSE)
+
+# Add new columns Recipe and Year to dataset CreamedOysters2006.dat 
+CreamedOysters2006.dat$Recipe <- RecipeToken
+CreamedOysters2006.dat$Year <- YearToken
+
+```
+
+Lets look at CreamedOysters2006.dat to verify everything looks good
+```{r,echo=FALSE}
+# Print the dataframe CreamedOysters2006.dat to verify it looks correct
+print(CreamedOysters2006.dat)
+```
+
+These all match previous values
+
+Now we need to import the BeefStroganoff.1997.tab and BeefStroganoff.2006.tab files
+
+Import the file BeefStroganoff.1997.tab
+
+```{r}
+# Create a variable to store filename. Thus if file name changes we only have one place to change. This promotes code reuse
+FileName <- "BeefStroganoff.1997.tab"
+
+# Use strsplit to get the Recipe and Year from the file name
+RecipeToken <-strsplit(FileName, "\\.")[[1]][1]
+YearToken <-strsplit(FileName, "\\.")[[1]][2]
+
+# Import the data
+BeefStroganoff1997.dat <- read.table(FileName,header=TRUE, sep = "", stringsAsFactors = FALSE)
+
+# Add new columns Recipe and Year to dataset BeefStroganoff1997.dat 
+BeefStroganoff1997.dat$Recipe <- RecipeToken
+BeefStroganoff1997.dat$Year <- YearToken
+
+```
+
+Lets look at BeefStroganoff1997.dat to verify everything looks good
+```{r,echo=FALSE}
+# Print the dataframe BeefStroganoff1997.dat to verify it looks correct
+print(BeefStroganoff1997.dat)
+```
+
+Import the file BeefStroganoff.2006.tab
+
+```{r}
+# Create a variable to store filename. Thus if file name changes we only have one place to change. This promotes code reuse
+FileName <- "BeefStroganoff.2006.tab"
+
+# Use strsplit to get the Recipe and Year from the file name
+RecipeToken <-strsplit(FileName, "\\.")[[1]][1]
+YearToken <-strsplit(FileName, "\\.")[[1]][2]
+
+# Import the data
+BeefStroganoff2006.dat <- read.table(FileName,header=TRUE, sep = "", stringsAsFactors = FALSE)
+
+# Add new columns Recipe and Year to dataset BeefStroganoff2006.dat 
+BeefStroganoff2006.dat$Recipe <- RecipeToken
+BeefStroganoff2006.dat$Year <- YearToken
+
+```
+
+Lets look at BeefStroganoff2006.dat to verify everything looks good
+```{r,echo=FALSE}
+# Print the dataframe BeefStroganoff2006.dat to verify it looks correct
+print(BeefStroganoff2006.dat)
+```
+
+The measure of Tbs is inconsistent with the tbsp value I used in my tables. Lets update that in BeefStroganoff1997.dat
+
+```{r}
+# Get indexes that currently show "Tbs"
+index <- BeefStroganoff1997.dat$Measure == "Tbs"
+
+# Change "Tbs" to "tbsp" in column Measure
+BeefStroganoff1997.dat$Measure[index] <- "tbsp"
+
+# Print dataframe to verify change
+print(BeefStroganoff1997.dat)
+```
+
+Since that worked we will do the same update in BeefStroganoff2006.dat
+
+```{r}
+# Get indexes that currently show "Tbs"
+index <- BeefStroganoff2006.dat$Measure == "Tbs"
+
+# Change "Tbs" to "tbsp" in column Measure
+BeefStroganoff2006.dat$Measure[index] <- "tbsp"
+
+# Print dataframe to verify change
+print(BeefStroganoff2006.dat)
+```
+
+Now lets show that we can merge the data files together
+
+Merge the four files we created earlier into the datafrme Recipe
+```{r}
+# Merge the BavarianBerryCream files
+BavarianBerryCream.dat <- rbind(BavarianBerryCream1936.dat, BavarianBerryCream2006.dat)
+
+# Merge the CreamedOysters files
+CreamedOysters.dat <- rbind(CreamedOysters1936.dat, CreamedOysters2006.dat)
+
+# Merge the BavarianBerryCream and CreamedOysters to create the dataframe Recipe.dat
+Recipe.dat <- rbind(BavarianBerryCream.dat, CreamedOysters.dat)
+```
+
+What does that look like?
+```{r,echo=FALSE}
+# Print the dataframe Recipe.dat to verify it looks correct
+print(Recipe.dat)
+```
+
+Now we will merge the Beef Stroganoff files into the dataframe Recipe
+
+```{r}
+# Merge the BeefStroganoff files together
+BeefStroganoff.dat <- rbind(BeefStroganoff1997.dat, BeefStroganoff2006.dat)
+
+# Now merge that combined file with Recipe.dat
+Recipe.dat <- rbind(Recipe.dat, BeefStroganoff.dat)
+```
+
+What does that look like?
+```{r,echo=FALSE}
+# Print the dataframe Recipe to verify it looks correct
+print(Recipe.dat)
+```
+
+## Part 3: Demonstrates that the ingredients and units can be cross referenced into the WEIGHT and FOOD_DES table
+
+One of the requirements is to have the tab file with the column NDB_No's. The NDB_No's were obtained by visiting the website https://ndb.nal.usda.gov/ndb/search/list and entering each ingredient as a key word search.  In this section, I will cross reference first the FOOD_DES table to see what the recommended NDB_No's are for each ingredient. Ultimately, I'll add the NDB_No's to the four dataframes using the previously calculated values.
+
+Once I have an assigned NDB_No's, I will
+1) Update the Ingredient to match what is in the FOOD_DES table
+2) Recreate the four dataframes again with columns Amount, Measure, Ingredient, and NDB_No.
+3) Export the four datafiles as tab files since the new requirement was to have that column added.
+
+Once the new tab files are created, I can utilze the column NDB_No to cross reference the WEIGHT table. Its my understanding that I dont need to convert the measurements at this time. I assume that would be part of the final project
+
+Let's start getting by importing the FOOD_DES file.
+
+```{r}
+# Code from MidTermPrep file
+food_des.dat <- read.table("FOOD_DES.txt",header=FALSE,sep="^",quote="~")
+names(food_des.dat) <- c("NDB_No","FdGrp_Cd","Long_Desc","Shrt_Desc",
+"ComName","ManufacName","Survey","Ref_desc","Refuse","SciName",
+"N_Factor","Pro_Factor","Fat_Factor","CHO_Factor")
+
+# Check a few records to see layout
+head(food_des.dat)
+```
+
+And now import the WEIGHT File
+```{r}
+# Code from MidTermPrep file
+weight.dat <- read.table("WEIGHT.txt",header=FALSE,sep="^",quote="~")
+names(weight.dat) <- c("NDB_No","Seq","Amount","Msre_Desc","Gm_Wgt","Num_Data_Pts","Std_Dev")
+
+# Check a few records to see layout
+head(weight.dat)
+```
+
+Now, lets get a list of Unique ingredients
+
+```{r}
+# Code modifed from taht provided by Rhonda West
+unique_ingredients <- unique(sort(Recipe.dat$Ingredient))
+
+# Make everything lowercase 
+sapply(unique_ingredients, tolower)
+
+print(unique_ingredients)
+```
+
+And now lets see if any of them match exactly to the FOOD_RES file
+
+```{r}
+USDA_matched <- c()
+
+for (i in unique_ingredients) {
+  if (i %in% tolower(food_des.dat$Long_Desc)) {
+    print(paste("Match found for ", i))
+  }
+  else {
+    print(paste(i, " is not matched."))
+  }
+}
+```
+
+As we can see when we match up on lower case we have two matchs: "butter, salted" and "oil, canola""
+
+Lets start trying to determine the proper NDB_No for when Ingredient is "butter, salted"
+
+```{r}
+# Function provided by Rhonda West to do a grep lookup. We just need to pass the pattern we are looking for
+USDAref <- function(x) {
+  food_des.dat[grep(x, food_des.dat$Long_Desc, ignore.case = TRUE), c(1,3)]
+}
+
+#Lets look for something starting with Butter
+print(USDAref("butter, salted"))
+```
+
+So the NDB_No for ingredient "butter, salted" is 1001
+
+Let's update our dataframe with that value
+
+```{r}
+# Update the dataframe Recipe.dat to set NDB_No to 1001 when Ingredient is "butter, salted"
+Recipe.dat$NDB_No[Recipe.dat$Ingredient == "butter, salted"] <- 1001
+
+# Get a list of rows that have NDB_No equal to 1001
+rows <- which(Recipe.dat$NDB_No==1001)
+```
+
+Lets see what rows were changed
+```{r}
+# Lets print out the rows that were changed to verify
+print(Recipe.dat[rows,])
+```
+
+And now we do the same for "oil, canola"
+```{r}
+#Lets look for something starting with Butter
+print(USDAref("oil, canola"))
+```
+
+So the NDB_No for ingredient "oil, canola" is 4582
+
+Let's update our dataframe with that value
+
+```{r}
+# Update the dataframe Recipe.dat to set NDB_No to 4582 when Ingredient is "oil, canola"
+Recipe.dat$NDB_No[Recipe.dat$Ingredient == "oil, canola"] <- 4582
+
+# Get a list of rows that have NDB_No equal to 4582
+rows <- which(Recipe.dat$NDB_No==4582)
+```
+
+Lets see what rows were changed
+```{r}
+# Lets print out the rows that were changed to verify
+print(Recipe.dat[rows,])
+```
+
+Lets do another search trying to find a match for "gelatin, dry, unsweetened"
+
+```{r}
+#Lets look for something containing "gelatin" and "dry" and "unsweetened"
+print(USDAref('gelatin[a-z, ]*dry[a-z, ]*unsweetened'))
+```
+
+This returns one match for "Gelatins, dry powder, unsweetened". This has a NDB_No of 19177 so we will update the dataframe with that value
+```{r}
+# Update the dataframe Recipe.dat to set NDB_No to 4582 when Ingredient is "gelatin, dry, unsweetened"
+Recipe.dat$NDB_No[Recipe.dat$Ingredient == "gelatin, dry, unsweetened"] <- 19177
+
+# Get a list of rows that have NDB_No equal to 19177
+rows <- which(Recipe.dat$NDB_No==19177)
+
+# Lets print out the rows that were changed to verify
+print(Recipe.dat[rows,])
+```
+
+Now we could continue this matching to get a NDB_No value for every Ingredient. Instead of doing this I manually looked up the remaining values. These NDB_No's were obtained by visiting the website https://ndb.nal.usda.gov/ndb/search/list and entering each ingredient as a key word search
+```{r,echo=FALSE}
+# Display all the ingredients and the correct looked up NDB_No
+cat("bread, soft white: 18069\n", "butter, salted: 1001\n", "cream, whipping, heavy:	1053\n", "flour, all purpose, self rising, enriched: 20082\n", "gelatin, dry, unsweetened:	19177\n", "juice, lemon, fresh:	9152\n","oysters, eastern, in liquid, 12 oz can:	15170\n", "stock, fish, prepared from recipe:	6174\n", "strawberries, fresh:	9316\n", "sugar, powdered, unsifted: 19336\n", "sugar, white, granulated, granulated	19335\n", "water, generic:	14411", sep = "")
+```
+
+Update the remaining NDB_No's
+```{r,echo=FALSE}
+# Update the dataframe Recipe.dat to set NDB_No to 18069 when Ingredient is "bread, soft white"
+Recipe.dat$NDB_No[Recipe.dat$Ingredient == "bread, soft white"] <- 18069
+
+# Update the dataframe Recipe.dat to set NDB_No to 1053 when Ingredient is "cream, whipping, heavy"
+Recipe.dat$NDB_No[Recipe.dat$Ingredient == "cream, whipping, heavy"] <- 1053
+
+# Update the dataframe Recipe.dat to set NDB_No to 20082 when Ingredient is "flour, all purpose, self rising, enriched"
+Recipe.dat$NDB_No[Recipe.dat$Ingredient == "flour, all purpose, self rising, enriched"] <- 20082
+
+# Update the dataframe Recipe.dat to set NDB_No to 9152 when Ingredient is "juice, lemon, fresh"
+Recipe.dat$NDB_No[Recipe.dat$Ingredient == "juice, lemon, fresh"] <- 9152
+
+# Update the dataframe Recipe.dat to set NDB_No to 15170 when Ingredient is "oysters, eastern, in liquid, 12 oz can"
+Recipe.dat$NDB_No[Recipe.dat$Ingredient == "oysters, eastern, in liquid, 12 oz can"] <- 15170
+
+# Update the dataframe Recipe.dat to set NDB_No to 6174 when Ingredient is "stock, fish, prepared from recipe"
+Recipe.dat$NDB_No[Recipe.dat$Ingredient == "stock, fish, prepared from recipe"] <- 6174
+
+# Update the dataframe Recipe.dat to set NDB_No to 9316 when Ingredient is "strawberries, fresh"
+Recipe.dat$NDB_No[Recipe.dat$Ingredient == "strawberries, fresh"] <- 9316
+
+# Update the dataframe Recipe.dat to set NDB_No to 19336 when Ingredient is "sugar, powdered, unsifted"
+Recipe.dat$NDB_No[Recipe.dat$Ingredient == "sugar, powdered, unsifted"] <- 19336
+	
+# Update the dataframe Recipe.dat to set NDB_No to 19335 when Ingredient is "sugar, white, granulated, granulated"
+Recipe.dat$NDB_No[Recipe.dat$Ingredient == "sugar, white, granulated, granulated"] <- 19335
+
+# Update the dataframe Recipe.dat to set NDB_No to 14411 when Ingredient is "water, generic"
+Recipe.dat$NDB_No[Recipe.dat$Ingredient == "water, generic"] <- 14411
+
+```
+
+Lets look at the table now that the values have been updated?
+```{r,echo=FALSE}
+# Print the dataframe Recipe to verify it looks correct
+print(Recipe.dat)
+```
+
+We still have some NA's but thats ok as we dont need the values for this assignment. The BeefStroganoff1997.dat and BeefStroganoff2006.dat are just used to prove merging and for data check for errors
+
+Now that we have the NDB_No, we can update our dataframe Recipe.dat with the value in Long_Desc column in the FOOD_DES file
+
+```{r}
+#Update the Ingredient name to show what exists in the food_des.dat Long_Desc columns
+Recipe.dat$Ingredient <- food_des.dat[match(Recipe.dat$NDB_No,food_des.dat$NDB_No),]$Long_Desc
+```
+
+One last time lets look at the Recipe.dat dataframe
+```{r,echo=FALSE}
+# Print the dataframe Recipe to verify it looks correct
+print(Recipe.dat)
+```
+
+Now that we have an assigned NDB_No, we can cross over to the WEIGHT file as a test. Lets look 
+
+```{r}
+print(merge(Recipe.dat, weight.dat, by.x=c("NDB_No", "Measure"), by.y=c("NDB_No", "Msre_Desc")))
+```
+
+Based on this I can tell that some of my measurements don't have matches. Some may need to be changed (ie change teaspoon to tablespoon). I believe this task is not needed for this exercise and will be covered in the final project.
+
+## Recreate the tab files
+
+Now that we have demonstrates that the ingredients and units can be cross referenced into the WEIGHT and FOOD_DES table and we have updated our dataframe with the NDB_No, we want to recreate the four tab files to include the NDB_No field
+
+Create all the dataframes
+
+```{r}
+# Create the four dataframes
+BavarianBerryCream1936.dat <- Recipe.dat[Recipe.dat$Recipe =="BavarianBerryCream" & Recipe.dat$Year ==1936, c("Amount","Measure","Ingredient", "NDB_No")]
+
+BavarianBerryCream2006.dat <- Recipe.dat[Recipe.dat$Recipe =="BavarianBerryCream" & Recipe.dat$Year ==2006, c("Amount","Measure","Ingredient", "NDB_No")]
+
+CreamedOysters1936.dat <- Recipe.dat[Recipe.dat$Recipe =="CreamedOysters" & Recipe.dat$Year ==1936, c("Amount","Measure","Ingredient", "NDB_No")]
+
+CreamedOysters2006.dat <- Recipe.dat[Recipe.dat$Recipe =="CreamedOysters" & Recipe.dat$Year ==2006, c("Amount","Measure","Ingredient", "NDB_No")]
+```
+
+Recreate the four tab files
+
+```{r}
+# Write the BavarianBerryCream1936.dat data out to file BavarianBerryCream.1936.tab
+write.table(BavarianBerryCream1936.dat, "BavarianBerryCream.1936.tab", row.names=FALSE, sep=" ")
+
+# Write the BavarianBerryCream2006.dat data out to file BavarianBerryCream.2006.tab
+write.table(BavarianBerryCream2006.dat, "BavarianBerryCream.2006.tab", row.names=FALSE, sep=" ")
+
+# Write the CreamedOysters1936.dat data out to file CreamedOysters.1936.tab
+write.table(CreamedOysters1936.dat, "CreamedOysters.1936.tab", row.names=FALSE, sep=" ")
+
+# Write the CreamedOysters2006.dat data out to file CreamedOysters.2006.tab
+write.table(CreamedOysters2006.dat, "CreamedOysters.2006.tab", row.names=FALSE, sep=" ")
+```
+
+## Part 4: Demonstrates that the data have been proofread for correctness. 
+
+We need to do a comparision of the BeefStroganoff.dat dataset comparing Measure from 1997 to Measure from 2006. Therefore, we need to create a merged dataset
+
+```{r}
+# Create a merged dataset by Recipe
+BeefStroganofCombined.dat <- merge(BeefStroganoff1997.dat, BeefStroganoff2006.dat, by="Ingredient")
+
+```
+
+Print the BeefStroganofCombined.dat datafile to see if looks correct
+```{r,echo=FALSE}
+# Print the merged dataset BeefStroganofCombined.dat for analysis
+print(BeefStroganofCombined.dat)
+```
+
+Plot the relationship between Measure.x(1997) and Measure.y(2006)
+
+```{r}
+# plot the variables Measure.x and Measure.y
+plot(as.factor(BeefStroganofCombined.dat$Measure.x), as.factor(BeefStroganofCombined.dat$Measure.y),  
+    xlab="Measure 1997",                   # x axis label
+    ylab="Measure 2006")                   # y axis label
+```
+
+The first thing I notice is that the seems to be some issue with the tbsp column as it doesnt have a solid color.
+
+We have one ingredient that was classified as tbsp in 1997 identified a a cup in 2006. I review of the data shows that change was due to a change in the measure of the ingredient "sour cream, cultured". Per the discussion boards this is not an error and the recipe did increase from 3 tbsp to 1 cup.
+
+There is also another difference based on the tsp column. The color of the column indicates that every ingredient using tsp was changed to tbsp. A review of the data shows that that ingredient was "mustard, dijon"
+
+Lets look at a contigency table for another lookk
+```{r}
+print(table(BeefStroganofCombined.dat$Measure.x, BeefStroganofCombined.dat$Measure.y))
+```
+
+Again this clearly identifies one mismatch between tbsp and cup and one mismatch between tsp and tbsp. This is probably ok. A tbsp translates to 3 tsps. 
+
+The next thing we should look for is to see if all the Measurement values are in the weight.data dataframe
+```{r}
+# Check the Measure.x datapoint
+print(subset(BeefStroganofCombined.dat, BeefStroganofCombined.dat$Measure.x %in% weight.dat$Msre_Desc))
+
+# Check the Measure.y datapoint
+print(subset(BeefStroganofCombined.dat, BeefStroganofCombined.dat$Measure.y %in% weight.dat$Msre_Desc))
+```
+
+It appears that we have all values of Measure lining up with a value in  weight.dat column Msre_Desc
+
+Whats else can we check. How about we look at the original pdf
+
+Looking at the Beef Stroganoff pdf file I can see that the 1997 recipe lists "butter, salted". The input file just aggregated the two records summing the amount.
+
+Based on that, it wouldnt hurt to check to see if any Ingredients are duplicated
+```{r}
+duplicated(BeefStroganoff1997.dat$Ingredient)
+
+duplicated(BeefStroganoff2006.dat$Ingredient)
+
+```
+
+Based on these results, neither dataset has duplicated data.
+
+## Part 5: Read the Recipes.csv, append rows for your recipes, then write the table back to Recipes.csv. We would be able to determine the file names for your recipes by concatentating Recipe and Year, removing white space if necessary
+
+I am not sure this is required for the midterm as the Recipe.csv file contains min and max servings and know where did I see any reference to obtaining that data in the mide term.
+
+However, I decided that I can do this task - just without providing those two data points
+
+First, we need to read the Recipe.csv file in
+```{r}
+# Create a variable to store filename. Thus if file name changes we only have one place to change. This promotes code reuse
+FileName <- "Recipes.csv"
+
+# Import the data
+RecipeListFull.dat <- na.omit(read.csv(file = FileName, stringsAsFactors = FALSE))
+
+# We can drop the MinServings and MaxServings as we just need to know if Recipe and Year exist in file
+RecipeList.dat <- subset(RecipeListFull.dat, select = c("Recipe", "Year"))
+```
+
+Check that the datafile looks correct
+```{r,echo=FALSE}
+# Print the imported dataset RecipeList.dat to check structure
+print(RecipeList.dat)
+```
+
+We now want to create a list containing all the files that we have tab files for
+```{r}
+# Create a list of all tab files
+TabFiles.ls <- list.files(path = "./", pattern = '*.tab')
+
+# Print out a few records to verify the data
+head(TabFiles.ls)
+```
+
+Ultimately, I want to add this data to a dataframe so we want to convert into into a dataframe called TabRecipeList.dat. We can do this via a for loop
+```{r}
+# Determine the length of list so we can create a for loop. For this project value is 6
+K <- length(TabFiles.ls)
+
+# Create to vectors
+Recipe <- c()
+Year <- c()
+
+# Loop through writing both Recipe and Year to their respective vectors
+for (i in 1:K){
+# Use strsplit to get the Recipe and Year from the file name
+  Recipe <- c(Recipe, strsplit(TabFiles.ls[i], "\\.")[[1]][1])
+  Year <- c(Year, strsplit(TabFiles.ls[i], "\\.")[[1]][2])
+}
+
+# Create a new dataframe using the vectors RecipeName and RecipeYear
+TabRecipeList.dat <- data.frame(
+  Recipe = Recipe,
+  Year = Year
+)
+```
+
+We only want to add Recipes that dont already exist in the Recipe.csv. To do this we find out which ones match and then take the negation of this. It is possible that there are no new records so we want to get a count before we create any new data frames
+
+```{r}
+# Find the location of Recipes that dont exists in the Recipe.csv file
+index <- !TabRecipeList.dat$Recipe %in% RecipeList.dat$Recipe
+
+# Get count of records to add
+count <- sum(index, na.rm=TRUE)
+```
+
+Using the index calculated we can then create a new dataframe called RecipeAdd.dat which only has new recipes that need to be added to Recipe.csv.
+
+```{r}
+# If count is greater than 0, then create a dataframe RecipeAdd.dat that consists of all the recipes that need to be added
+if (count != 0) {
+  RecipeAdd.dat <- TabRecipeList.dat[index, ]
+  
+  # Add columns to dataframe RecipeAdd.dat so we can merge it with RecipeListFull.dat
+  # This is a placeholder. Later we will put the actual values in
+  RecipeAdd.dat$MinServings= ''
+  RecipeAdd.dat$MaxServings= ''
+  } 
+``` 
+
+Now we can get the full list of recipes in the Recipe.csv file as well as the new Recipes by rbinding the two dataframes
+
+```{r}
+# If count greater than 0, append the new dataframe RecipeAdd.dat to the  existing dataset RecipeListFull.dat
+if (count != 0) {
+  RecipeListFull.dat <- rbind(RecipeListFull.dat, RecipeAdd.dat)
+}
+```
+
+Lets check that the dataframe RecipeListFull.dat looks correct
+```{r,echo=FALSE}
+# Print the imported dataset RecipeListFull.dat to check structure
+print(RecipeListFull.dat)
+```
+
+Now we just write out the RecipeListFull.dat dataframe to replace the existing Recipes.csv file specifying we dont want the index
+
+```{r}
+# If we had new records, write the RecipeListFull.dat data out to file Recipes.csv
+if (count != 0) {
+  write.csv(RecipeListFull.dat, file = "Recipes.csv", row.names=FALSE)
+}
+```

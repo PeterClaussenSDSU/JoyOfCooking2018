@@ -1,0 +1,465 @@
+---
+title: "Joy Of Cooking Midterm Project Prep"
+author: "Set 16"
+date: "6/25/2018"
+output:
+  html_document: default
+---
+
+# Part 1 - Assign Recipes
+
+First, generate a list of all the recipe files that I have saved in the Recipes folder.
+```{r,eval=FALSE}
+recipes <- list.files(path = "./", pattern = '*.pdf')
+```
+
+```{r,eval=FALSE}
+recipes <- list.files(path = "./", pattern = '*.pdf')
+```
+
+
+Make this reproducible.
+```{r,eval=FALSE}
+set.seed(10010)
+```
+
+Create two randomly sampled list of recipe files and cycle this list through 80 rows
+
+```{r,eval=FALSE}
+recipe.pairs <- matrix(c(sample(recipes),sample(recipes)),ncol=2,nrow=107)
+recipe.pairs
+```
+
+Are there any pairs across rows?
+
+```{r,eval=FALSE}
+sum(recipe.pairs[,1]==recipe.pairs[,2])
+```
+
+Write to a table
+
+```{r,eval=FALSE}
+write.csv(recipe.pairs, file="Recipe.Table.csv",row.names = FALSE)
+```
+
+Read the table in and print:
+
+```{r,eval=FALSE}
+Recipe.Table <- read.csv("Recipe.Table.csv",header=FALSE,skip=1)
+print(Recipe.Table)
+```
+
+# Part 2 - Check Nutrient Data.
+
+We will be using the USDA food nutrient database, found at https://www.ars.usda.gov/northeast-area/beltsville-md-bhnrc/beltsville-human-nutrition-research-center/nutrient-data-laboratory/docs/usda-national-nutrient-database-for-standard-reference/
+
+Run this to make sure your system can read the required nutrient database tables.
+```{r}
+weight.dat <- read.table("WEIGHT.txt",header=FALSE,sep="^",quote="~")
+names(weight.dat) <- c("NDB_No","Seq","Amount","Msre_Desc","Gm_Wgt","Num_Data_Pts","Std_Dev")
+head(weight.dat)
+summary(weight.dat)
+
+#uncomment to write to external csv file
+#write.csv(weight.dat, file="weight.dat.csv",row.names = TRUE)
+```
+
+```{r}
+food_des.dat <- read.table("FOOD_DES.txt",header=FALSE,sep="^",quote="~")
+names(food_des.dat) <- c("NDB_No","FdGrp_Cd","Long_Desc","Shrt_Desc",
+"ComName","ManufacName","Survey","Ref_desc","Refuse","SciName",
+"N_Factor","Pro_Factor","Fat_Factor","CHO_Factor")
+dim(food_des.dat)
+head(food_des.dat)
+summary(food_des.dat)
+
+#uncomment to write to external csv file
+#write.csv(food_des.dat, file="food_des.dat.csv",row.names = TRUE)
+```
+
+```{r}
+nut_data.dat <- read.table("NUT_DATA.txt",header=FALSE,sep="^",quote="~")
+names(nut_data.dat) <- c("NDB_No","Nutr_No","Nutr_Val","Num_Data_Pts","Std_Error",
+"Src_Cd","Deriv_Cd","Ref_NDB_No","Add_Nutr_Mark","Num_Studies",
+"Min","Max","DF","Low_EB","Up_EB","Stat_cmt","AddMod_Date")
+head(nut_data.dat)
+summary(nut_data.dat)
+
+#uncomment to write to external csv file
+#write.csv(nut_data.dat, file="nut_data.dat.csv",row.names = TRUE)
+```
+
+Search for closest NDB_No for each Ingredient in the food_des.dat datafile
+
+```{r}
+#Searching for beef roast, tenderloin, raw, 0" trim
+food_des.dat[grepl("(b|B)eef[,a-zA-A ]*tenderloin[,a-zA-A ]*roast[,a-zA-A ]*0\"[,a-zA-A ]*raw", food_des.dat$Long_Desc),]
+
+#Selected Beef, loin, tenderloin roast, boneless, separable lean and fat, trimmed to 0" fat, all grades, raw
+#23336
+```
+
+
+```{r}
+#Searching for butter, salted
+food_des.dat[grepl("(B|b)utter[,a-zA-A ]*salted", food_des.dat$Long_Desc),]
+
+#Butter, salted
+#1001
+```
+
+
+```{r}
+#Searching for carrots, fresh, shredded
+food_des.dat[grepl("(c|C)arrots[,a-zA-A ]*raw", food_des.dat$Long_Desc),]
+
+#Carrots, raw
+#11124
+```
+
+
+```{r}
+#Searching for dates, california, chopped
+food_des.dat[grepl("(d|D)ates", food_des.dat$Long_Desc),]
+
+#chose the first result since there are fewer missing values in the table
+#Dates, deglet noor
+#9087
+```
+
+
+
+```{r}
+#Searching for egg, raw
+food_des.dat[grepl("(e|E)gg[,a-zA-A ]*raw[,a-zA-A ]*fresh", food_des.dat$Long_Desc),]
+
+#Egg, whole, raw, fresh
+#1123
+```
+
+
+```{r}
+#Searching for extract, vanilla
+food_des.dat[grepl("(v|V)anilla[,a-zA-A ]*extract", food_des.dat$Long_Desc),]
+
+#Vanilla extract
+#2050
+```
+
+
+```{r}
+#Searching for flour, all purpose, self rising, enriched
+food_des.dat[grepl("(f|F)lour[,a-zA-A ]*all.purpose[,a-zA-A ]*self", food_des.dat$Long_Desc),]
+
+#Wheat flour, white, all-purpose, self-rising, enriched
+#20082
+```
+
+
+```{r}
+#Searching for flour, bread, white, enriched
+food_des.dat[grepl("(f|F)lour[,a-zA-A ]*bread[,a-zA-A ]*enriched", food_des.dat$Long_Desc),]
+
+#Wheat flour, white, bread, enriched
+#20083
+```
+
+
+```{r}
+#Searching for gelatin mix, lemon, Jell-O
+food_des.dat[grepl("(g|G)elatin", food_des.dat$Long_Desc),]
+
+#Gelatin desserts, dry mix
+#19172
+```
+
+```{r}
+#Searching for juice, pineapple, canned, without vitamin C, unsweetened
+food_des.dat[grepl("(p|P)ineapple[,a-zA-A ]*juice[,a-zA-A ]*canned", food_des.dat$Long_Desc),]
+
+#Pineapple juice, canned or bottled, unsweetened, without added ascorbic acid
+#9273
+```
+
+
+```{r}
+#Searching for milk, whole, 3.25%
+food_des.dat[grepl("(m|M)ilk[,a-zA-A ]*whole[,a-zA-A ]*3.25", food_des.dat$Long_Desc),]
+
+#Milk, whole, 3.25% milkfat, with added vitamin D
+#1077
+```
+
+
+```{r}
+#Searching for mushrooms, fresh
+food_des.dat[grepl("(m|M)ushroom[,a-zA-A ]* raw", food_des.dat$Long_Desc),]
+
+#Mushrooms, white, raw
+#11260
+```
+
+```{r}
+#Searching for mustard, dijon
+food_des.dat[grepl("(m|M)ustard", food_des.dat$Long_Desc),]
+
+#Mustard, prepared, yellow
+#2046
+```
+
+```{r}
+#Searching for oil, canola
+food_des.dat[grepl("(o|O)il[,a-zA-A ]*canola", food_des.dat$Long_Desc),]
+
+#Oil, canola
+#4582
+```
+
+```{r}
+#Searching for onion, yellow, fresh, medium, 2 1/2"
+food_des.dat[grepl("(o|O)nion[,a-zA-A ]*raw", food_des.dat$Long_Desc),]
+
+#Onions, raw
+#11282
+```
+
+```{r}
+#Searching for pecans, chopped
+food_des.dat[grepl("(n|N)ut[,a-zA-A ]*(p|P)ecan", food_des.dat$Long_Desc),]
+
+#Nuts, pecans
+#12142
+```
+
+```{r}
+#Searching for pineapple, canned, crushed, in juice
+food_des.dat[grepl("(p|P)ineapple[,a-zA-A ]*canned[,a-zA-A ]*juice", food_des.dat$Long_Desc),]
+
+#Pineapple, canned, juice pack, solids and liquids
+#9268
+```
+
+
+```{r}
+#Searching for pineapple, canned, crushed, in juice, drained
+food_des.dat[grepl("(p|P)ineapple[,a-zA-A ]*canned[,a-zA-A ]*drained", food_des.dat$Long_Desc),]
+
+#Pineapple, canned, juice pack, drained
+#9354
+```
+
+```{r}
+#Searching for sour cream, cultured
+food_des.dat[grepl("(s|S)our cream[,a-zA-A ]*cultured", food_des.dat$Long_Desc),]
+
+#Sour cream, imitation, cultured
+#1074
+```
+
+```{r}
+#Searching for stock, beef, prepared from recipe
+food_des.dat[grepl("(s|S)tock[,a-zA-A ]*beef", food_des.dat$Long_Desc),]
+
+#Soup, stock, beef, home-prepared
+#6170
+```
+
+```{r}
+#Searching for sugar, brown, packed
+food_des.dat[grepl("(s|S)ugar[,a-zA-A ]*brown", food_des.dat$Long_Desc),]
+
+#Sugars, brown
+#19334
+```
+
+```{r}
+#Searching for sugar, white, granulated, granulated
+food_des.dat[grepl("(s|S)ugar[,a-zA-A ]*granulated", food_des.dat$Long_Desc),]
+
+#Sugars, granulated
+#19335
+```
+
+```{r}
+#Searching for walnuts, black, dried, chopped
+food_des.dat[grepl("(w|W)alnut[,a-zA-A ]*black", food_des.dat$Long_Desc),]
+
+#Nuts, walnuts, black, dried
+#12154
+```
+
+```{r}
+#Searchig for water, generic
+food_des.dat[grepl("(w|W)ater[,a-zA-A ]*drinking", food_des.dat$Long_Desc),]
+
+#Beverages, water, tap, drinking
+#14411
+```
+
+Created the data frames for each recipe.
+
+Includeing Golden Glow Salad, Stickey Toffing Pudding, and Beef Stroganoff
+
+```{r}
+#Write the Amount, Measure, and Ingrdients for Golden Glow Salad and Sticky Toffee Pudding to dataframes
+
+
+#Changed amount for gelatin mix from 3.25 oz to 1.083 package (3oz) since 3.25/3 = 1.0833
+#changed 0.88 cups of water to 7.04 oz
+GoldenGlowSalad1936.dat <- data.frame(Amount=c(2.0, 1.0, 0.88, 1.083, 7.04), 
+                                      Measure=c('cup grated', 'cup, crushed', 'cup', 'package (3 oz)', 'fl oz'),
+                                      Ingredient=c('carrots, fresh, shredded', 'pineapple, canned, crushed, in juice, drained', 'juice, pineapple, canned, without vitamin C, unsweetened', 'gelatin mix, lemon, Jell-O', 'water, generic'))
+
+#changed 3oz of gelatin mix to 1 package (3 oz)
+#changed 1.75 cups of water to 14 oz
+GoldenGlowSalad2006.dat <- data.frame(Amount=c(1.0, 1.0, 2.0, 14), 
+                                      Measure=c('cup, crushed, sliced, or chunks', 'package (3 oz)', 'cup grated', 'fl oz'),
+                                      Ingredient=c('pineapple, canned, crushed, in juice', 'gelatin mix, lemon, Jell-O', 'carrots, fresh, shredded', 'water, generic'))
+
+#changed Flour from 0.5 tbsp to 0.03125 cup
+StickyToffeePudding1936.dat <- data.frame(Amount=c(1.0, 0.25, 1.0, 1.0, 3.0, 1.0, 2.0, 0.03125),
+                                          Measure=c('cup, chopped', 'cup, chopped', 'cup, chopped', 'cup', 'large', 'tsp', 'tbsp', 'cup'),
+                                          Ingredient=c('pecans, chopped', 'walnuts, black, dried, chopped', 'dates, california, chopped', 'sugar, white, granulated, granulated', 'egg, raw', 'extract, vanilla', 'milk, whole, 3.25%', 'flour, bread, white, enriched'))
+
+
+StickyToffeePudding2006.dat <- data.frame(Amount=c(1.5, 2.0, 1.25, 6.0, 3.0, 1.5),
+                                          Measure=c('cup, chopped', 'cup', 'cup packed', 'tbsp', 'large', 'tsp'),
+                                          Ingredient=c('dates, california, chopped', 'flour, all purpose, self rising, enriched', 'sugar, brown, packed', 'butter, salted', 'egg, raw', 'extract, vanilla'))
+
+
+#Changing Beef roast from lb to oz to match weight.dat
+#change flour from tbsp to cup  to match weight.dat
+#changed sour cream from 3 tbsp to 0.1875 cups
+BeefStroganoff1997.dat <- data.frame(Amount=c(24, 3.5, 0.0625, 1.0, 0.1875, 1.0),
+                                          Measure=c('oz', 'tbsp', 'cup', 'cup', 'cup', 'tsp or 1 packet'),
+                                          Ingredient=c('beef roast, tenderloin, raw, 0" trim', 'butter, salted', 'flour, all purpose, self rising, enriched', 'stock, beef, prepared from recipe', 'sour cream, cultured', 'mustard, dijon'))
+
+#Changing Beef roast from lb to oz to match weight.dat
+#changed mushrooms from 1lb to 6.5 cups based on 1 lb = 453g  and 70g = 1 cup, therefore 1lb = 6.5 cups
+#changed mustard from 1 tbsp to 3 tsp to match weight.dat
+BeefStroganoff2006.dat <- data.frame(Amount=c(32, 2.0, 3.0, 1.0, 6.5, 1.0, 3.0, 3.0),
+                                          Measure=c('oz', 'tbsp', 'tbsp', 'medium (2-1/2" dia)', 'cup, pieces or slices', 'cup', 'cup', 'tsp or 1 packet'),
+                                          Ingredient=c('beef roast, tenderloin, raw, 0" trim','oil, canola', 'butter, salted', 'onion, yellow, fresh, medium, 2 1/2"', 'mushrooms, fresh', 'stock, beef, prepared from recipe', 'sour cream, cultured', 'mustard, dijon'))
+
+```
+
+Write created dataframe to external tab files
+
+```{r}
+#Write the dataframes to tab files
+
+write.table(GoldenGlowSalad1936.dat, file="GoldenGlowSalad.1936.tab",row.names = TRUE)
+write.table(GoldenGlowSalad2006.dat, file="GoldenGlowSalad.2006.tab",row.names = TRUE)
+write.table(StickyToffeePudding1936.dat, file="StickyToffeePudding.1936.tab",row.names = TRUE)
+write.table(StickyToffeePudding2006.dat, file="StickyToffeePudding.2006.tab",row.names = TRUE)
+write.table(BeefStroganoff1997.dat, file="BeefStroganoff.1997.tab",row.names = TRUE)
+write.table(BeefStroganoff2006.dat, file="BeefStroganoff.2006.tab",row.names = TRUE)
+
+```
+
+Read in each recipe from the external tab files
+
+```{r}
+#Read in recipe tab files
+
+BeefStroganoff.1997 <- read.table("BeefStroganoff.1997.tab", header=TRUE, sep = "")
+BeefStroganoff.2006 <- read.table("BeefStroganoff.2006.tab", header=TRUE, sep = "")
+GoldenGlowSalad.1936 <- read.table("GoldenGlowSalad.1936.tab", header = TRUE, sep = "")
+GoldenGlowSalad.2006 <- read.table("GoldenGlowSalad.2006.tab", header = TRUE, sep = "")
+StickyToffeePudding.1936 <- read.table("StickyToffeePudding.1936.tab", header = TRUE, sep = "")
+StickyToffeePudding.2006 <- read.table("StickyToffeePudding.2006.tab", header = TRUE, sep = "")
+
+```
+
+Added Recipe and Year columns to each recipe  and merged them together
+
+```{r}
+#Add Recipe name and Year columns to each recipe with appropriate information
+BeefStroganoff.1997 <- cbind(Recipe = 'BeefStroganoff', Year = '1997', BeefStroganoff.1997)
+BeefStroganoff.2006 <- cbind(Recipe = 'BeefStroganoff', Year = '2006', BeefStroganoff.2006)
+GoldenGlowSalad.1936 <- cbind(Recipe = 'GoldenGlowSalad', Year = '1936', GoldenGlowSalad.1936)
+GoldenGlowSalad.2006 <- cbind(Recipe = 'GoldenGlowSalad', Year = '2006', GoldenGlowSalad.2006)
+StickyToffeePudding.1936 <- cbind(Recipe = 'StickyToffeePudding', Year = '1936', StickyToffeePudding.1936)
+StickyToffeePudding.2006 <- cbind(Recipe = 'StickyToffeePudding', Year = '2006', StickyToffeePudding.2006)
+
+#Merge all 6 recipes together
+MergedRecipes <- rbind(BeefStroganoff.1997, BeefStroganoff.2006, GoldenGlowSalad.1936, GoldenGlowSalad.2006, StickyToffeePudding.1936, StickyToffeePudding.2006)
+
+#Write Merged fire to a csv file for viewing (uncomment next line to create)
+#write.csv(MergedRecipes, file="MergedRecipes.csv",row.names = TRUE)
+```
+
+Created serving table that lists the min and max servings for each recipe and year combination
+
+```{r}
+Servings <- data.frame(Recipe=c('BeefStroganoff', 'BeefStroganoff', 'GoldenGlowSalad', 'GoldenGlowSalad', 'StickyToffeePudding', 'StickyToffeePudding'),
+                       Year=c(1997, 2006, 1936, 2006, 1936, 2006), Min.Servings=c(4, 4, 8, 8, 8, 8), Max.Servings=c(6, 6, 10, 10, 8, 8))
+head(Servings)
+```
+
+
+Added column NDB_No to merged table and the found data that goes in it
+
+```{r}
+MergedRecipes$NDB_No <- c(23336, 1001, 20082, 6170, 1074, 2046, 23336, 4582, 1001, 11282, 11260, 6170, 1074, 2046, 11124, 9354, 9273, 19172, 14411, 9268, 19172, 11124, 14411, 12142, 12154, 9087, 19335, 1123, 2050, 1077, 20083, 9087, 20082, 19334, 1001, 1123, 2050)
+
+MergedRecipes
+
+```
+
+Joined the combined recipe table with food_des.dat. To compare the ingredient names and make sure there were no errors in adding the NDB_No to the table
+
+```{r}
+#Joined the two tables (MergedRecipes and food_des.dat) on NDB_No and printed just the Ingredients on NDB_No to check and see if the Ingrdients match
+Merged.Food_des <- merge(MergedRecipes[, c("NDB_No", "Ingredient")], food_des.dat[, c("NDB_No", "Long_Desc")], by = "NDB_No")
+head(Merged.Food_des)
+```
+
+Joined the combined recipe table with the Weight table
+
+This also serves as a check that I changed all the Measures to match Msre_Desc. As long as there is a match for Measure with the same NDB_No there will be a row added to the resulting merge. So if all match then it show have the same number of rows as MergedRecipes (37 in this case)
+
+```{r}
+#Joined Mergedrecipes table with Weight table based both on the NDB_No and Measure/Msre_Desc
+#This table has the same number of observations as MergedRecipes and Merged.Food_des so all the Measure values match a Msre_Desc with the same NDB_No
+Merged.Weight <- merge(MergedRecipes, weight.dat, by.x = c("NDB_No", "Measure"), by.y = c("NDB_No", "Msre_Desc"))
+head(Merged.Weight)
+```
+
+Comparing Ingrdients, Amount and Measures across the years of Golden Glow Salad and Stickey Toffee Pudding
+
+```{r}
+Merged.GoldenGlowSalad <- merge(GoldenGlowSalad.1936, GoldenGlowSalad.2006, by = "Ingredient")
+head(Merged.GoldenGlowSalad)
+plot(Merged.GoldenGlowSalad$Ingredient, Merged.GoldenGlowSalad$Amount.x, las=2)
+par(new=TRUE)
+plot(Merged.GoldenGlowSalad$Ingredient, Merged.GoldenGlowSalad$Amount.y, axes=FALSE)
+```
+
+```{r}
+Merged.GoldenGlowSalad <- merge(GoldenGlowSalad.1936, GoldenGlowSalad.2006, by = "Ingredient")
+plot(Merged.GoldenGlowSalad$Ingredient, Merged.GoldenGlowSalad$Measure.x, las=2)
+par(new=TRUE)
+plot(Merged.GoldenGlowSalad$Ingredient, Merged.GoldenGlowSalad$Measure.y, axes=FALSE)
+```
+
+
+```{r}
+Merged.StickyToffeePudding <- merge(StickyToffeePudding.1936, StickyToffeePudding.2006, by = "Ingredient")
+head(Merged.StickyToffeePudding)
+plot(Merged.StickyToffeePudding$Ingredient, Merged.StickyToffeePudding$Amount.x, las=2)
+par(new=TRUE)
+plot(Merged.StickyToffeePudding$Ingredient, Merged.StickyToffeePudding$Amount.y, axes=FALSE)
+```
+
+```{r}
+Merged.StickyToffeePudding <- merge(StickyToffeePudding.1936, StickyToffeePudding.2006, by = "Ingredient")
+plot(Merged.StickyToffeePudding$Ingredient, Merged.StickyToffeePudding$Measure.x, las=2)
+par(new=TRUE)
+plot(Merged.StickyToffeePudding$Ingredient, Merged.StickyToffeePudding$Measure.y, axes=FALSE)
+```
+
+
+
+
+
