@@ -1,0 +1,271 @@
+---
+title: "Recipes (Mid term)"
+author: "tsrai"
+date: "July 20, 2018"
+output:
+  pdf_document: default
+  word_document: default
+---
+
+# Data tables for recipes 
+*For the mid-term project I was assigned recipes Welsh Rarebit and Rice Pudding. I created the recipe tables with columns NDB_No, Amount, Measure and Ingredients. But in the final step where we were supposed to write our data to a csv file, I was not sure whether to include NDB_No or not. I skipped NDB_No for the final step.*
+
+```{r}
+food_des.dat <- read.table("FOOD_DES.txt",header=FALSE,sep="^",quote="~")
+names(food_des.dat) <- c("NDB_No","FdGrp_Cd","Long_Desc","Shrt_Desc",
+"ComName","ManufacName","Survey","Ref_desc","Refuse","SciName",
+"N_Factor","Pro_Factor","Fat_Factor","CHO_Factor")
+dim(food_des.dat)
+head(food_des.dat)
+summary(food_des.dat)
+str(food_des.dat)
+food_des.dat$Long_Desc <- as.character(food_des.dat$Long_Desc)
+food_des.dat$Shrt_Desc <- as.character(food_des.dat$Shrt_Desc)
+food_des.dat$ComName <- as.character(food_des.dat$ComName)
+food_des.dat$ManufacName <- as.character(food_des.dat$ManufacName)
+food_des.dat$Ref_desc <- as.character(food_des.dat$Ref_desc)
+```
+
+*I started off with reading the food.des.dat file into R and converted the descriptions into characters. I followed this by searching each ingredient in the esha RESEARCH list for the given recipe. Though, the number of ingredients given in the recipe were more than that given in the recipe, I prefered to stick with esha list as it would be helpful in further analysis. *
+
+# Welsh Rarebit 1936
+```{r}
+butter <- grep('(^B|b)utter', food_des.dat$Long_Desc, value = TRUE)
+butter <- butter[1]
+butter
+
+beer <- grep('(^B|b)eer', food_des.dat$Long_Desc, value = TRUE)
+beer <- beer[4]
+beer
+
+cheese <- grep('(C|c)heese|(C|c)heddar|', food_des.dat$Long_Desc, value = TRUE)
+cheese <- cheese[9]
+cheese
+
+sauce <- grep('(W|w)orcestershire', food_des.dat$Long_Desc, value = TRUE)
+sauce <- sauce[1]
+sauce
+
+
+WRB_1936 <- c(butter, cheese, beer)
+WRB_1936
+
+NBD_No <- food_des.dat[match(WRB_1936, food_des.dat$Long_Desc),]$NDB_No
+NBD_No
+
+Amount <-  c(1.00, 0.50, 0.50)
+Measure <- 'Tbs lb cup'
+
+
+
+Measure <- strsplit(Measure, split = " ")
+Measure <- unlist(Measure)
+
+Measure <- as.character(Measure)
+Measure
+
+Welsh_Rarebit_1936 <- data.frame(NBD_No, Amount, Measure, WRB_1936)
+
+Welsh_Rarebit_1936
+
+write.table(Welsh_Rarebit_1936, file="WelshRarebit1936.tab",row.names = FALSE, sep = "\t")
+
+
+```
+
+# Welsh Rarebit 2006
+```{r}
+
+WRB_2006 <- c(butter, beer, cheese, sauce)
+WRB_2006
+Recipe <- c()
+Amount <-  c(1.00, 1.00, 1.00, 1.00)
+Measure <- 'Tbs cup lb tsp'
+
+
+Measure <- strsplit(Measure, split = " ")
+Measure <- unlist(Measure)
+
+Measure <- as.character(Measure)
+Measure
+
+NBD_No <- food_des.dat[match(WRB_2006, food_des.dat$Long_Desc),]$NDB_No
+NBD_No
+
+Welsh_Rarebit_2006 <- data.frame(NBD_No, Amount, Measure, WRB_2006)
+
+Welsh_Rarebit_2006
+
+
+write.table(Welsh_Rarebit_2006, file="WelshRarebit2006.tab",row.names = FALSE, sep = "\t")
+```
+
+*For Welsh Rarebit, I searched butter, beer, cheese and worcestershire sauce from the food.des.dat data table. I matched the NDB No from the data table, once i finalised my ingredients from the list, using 'match' function. For measure and amount, I entered them manually. After this, I created separate data frames for both the recipes and wrote them to a 'tab' file.*
+
+# Rice Pudding 1936
+
+```{r}
+
+
+rice <- grep('^(R|r)ice', food_des.dat$Long_Desc, value = TRUE)
+rice <- rice[9]
+rice
+
+milk <- grep('^(M|m)ilk', food_des.dat$Long_Desc, value = TRUE)
+milk <- milk[4]
+milk
+
+sugar <- grep('^(S|s)ugar', food_des.dat$Long_Desc, value = TRUE)
+sugar <- sugar[3]
+sugar
+
+vanilla <- grep('^(V|v)anilla', food_des.dat$Long_Desc, value = TRUE)
+vanilla <- vanilla[1]
+vanilla
+
+
+
+
+
+pudding_1936 <- c(rice, milk, sugar)
+pudding_1936
+
+
+Amount <-  c(1.00, 6.00, 4.00)
+Measure <- 'cup cup Tbs'
+
+Measure <- strsplit(Measure, split = " ")
+Measure <- unlist(Measure)
+
+
+Measure <- as.character(Measure)
+Measure
+
+NBD_No <- food_des.dat[match(pudding_1936, food_des.dat$Long_Desc),]$NDB_No
+NBD_No
+
+RicePudding_1936 <- data.frame(NBD_No, Amount, Measure, pudding_1936)
+
+RicePudding_1936
+
+write.table(RicePudding_1936, file="RicePudding1936.tab",row.names = FALSE, sep = "\t")
+```
+
+# Rice Pudding 2006
+
+```{r}
+
+Amount <-  c(0.75, 4.00, 0.50, 0.50)
+Measure <- 'cup cup cup tsp'
+
+pudding_2006 <- c(rice, milk, sugar, vanilla)
+pudding_2006
+
+Measure <- strsplit(Measure, split = " ")
+Measure <- unlist(Measure)
+
+
+Measure <- as.character(Measure)
+Measure
+
+NBD_No <- food_des.dat[match(pudding_2006, food_des.dat$Long_Desc),]$NDB_No
+NBD_No
+
+RicePudding_2006 <- data.frame(NBD_No, Amount, Measure, pudding_2006)
+
+RicePudding_2006
+
+write.table(RicePudding_2006, file="RicePudding2006.tab",row.names = FALSE, sep = "\t")
+```
+
+*For Rice Pudding, I searched Rice, Milk, Sugar and Vanilla from the food.des.dat data table. Similarly, I matched the NDB No from the table, after finalising my ingredients from the list, using 'match'. For measure and amount, I entered them manually. After this, I created separate data frames for both the recipes and wrote them to a 'tab' file.*
+
+# Merging with Beef Stroganoff
+
+```{r}
+Beef_1997 <- read.table("BeefStroganoff.1997.tab")
+Beef_1997 <- Beef_1997[-1,]
+Beef_1997$Recipe <- 'Beef Stroganoff 1997'
+colnames(Beef_1997) <- NULL
+Beef_1997 <- Beef_1997[,c(4,1,2,3)]
+colnames(Beef_1997) <- c('Recipe', 'Amount', 'Measure', 'Ingredients')
+                    
+Beef_1997
+
+Beef_2006 <- read.table("BeefStroganoff.2006.tab")
+Beef_2006 <- Beef_2006[-1,]
+Beef_2006$Recipe <- 'Beef Stroganoff 2006'
+colnames(Beef_2006) <- NULL
+Beef_2006 <- Beef_2006[,c(4,1,2,3)]
+colnames(Beef_2006) <- c('Recipe', 'Amount', 'Measure', 'Ingredients')
+
+Beef_2006
+
+RicePudding_1936 <- read.table("RicePudding1936.tab", fill =TRUE, header = FALSE, sep = '\t')
+RicePudding_1936 <- RicePudding_1936[-1,]
+RicePudding_1936$Recipe <- c('Rice Pudding 1936', ' ', ' ')
+RicePudding_1936 <- RicePudding_1936[c(5, 2, 3, 4)]
+colnames(RicePudding_1936) <- c('Recipe', 'Amount', 'Measure', 'Ingredients')
+
+RicePudding_1936
+
+RicePudding_2006 <- read.table("RicePudding2006.tab", fill =TRUE, header = FALSE, sep = '\t')
+RicePudding_2006 <- RicePudding_2006[-1,]
+RicePudding_2006$Recipe <- c('Rice Pudding 2006', ' ', ' ', ' ')
+RicePudding_2006 <- RicePudding_2006[c(5, 2, 3, 4)]
+colnames(RicePudding_2006) <- c('Recipe', 'Amount', 'Measure', 'Ingredients')
+
+RicePudding_2006
+
+WelshRarebit_1936 <- read.table("WelshRarebit1936.tab", fill =TRUE, header = FALSE, sep = '\t')
+WelshRarebit_1936 <- WelshRarebit_1936[-1,]
+WelshRarebit_1936$Recipe <- c('Welsh Rarebit 1936', ' ', ' ')
+WelshRarebit_1936 <- WelshRarebit_1936[,c(5, 2, 3, 4)]
+colnames(WelshRarebit_1936) <- c('Recipe', 'Amount', 'Measure', 'Ingredients')
+
+WelshRarebit_1936
+
+WelshRarebit_2006 <- read.table("WelshRarebit2006.tab", fill =TRUE, header = FALSE, sep = '\t')
+WelshRarebit_2006 <- WelshRarebit_2006[-1,]
+WelshRarebit_2006$Recipe <- c('Welsh Rarebit 2006', ' ', ' ', ' ')
+WelshRarebit_2006 <- WelshRarebit_2006[,c(5, 2, 3, 4)]
+colnames(WelshRarebit_2006) <- c('Recipe', 'Amount', 'Measure', 'Ingredients')
+
+WelshRarebit_2006
+```
+
+*I imported all the 6 files ino R: Beef Stroganoff 1997, Beef Stroganoff 2006, Rice Pudding 1936, Rice Pudding 2006, Welsh Rarebit 1936 and Welsh Rarebit 2006. I removed the first row from all the tables which inculded NDB_No, amount, measure and ingredients and inserted a new column 'Recipe' into each table. This column had only the name of the recipe for first row and blank spaces for the rest. Then, I reordered the tables to get the them in the order: Recipe, Amount, Measure and Ingredients. Following this, I assigned new common column names to each recipe. This would later help in merging them together.*
+
+# Check errors
+
+```{r}
+m_WR <- merge(WelshRarebit_1936, WelshRarebit_2006, 'Ingredients')
+m_WR
+table(m_WR$Measure.x, m_WR$Measure.y)
+m_WR$Amount.x <- as.numeric(as.character(m_WR$Amount.x))
+m_WR$Amount.y <- as.numeric(as.character(m_WR$Amount.y))
+plot(m_WR$Amount.x, m_WR$Amount.y)
+m_WR
+
+m_RP <- merge(RicePudding_1936, RicePudding_2006, 'Ingredients')
+m_RP
+table(m_RP$Measure.x, m_RP$Measure.y)
+
+```
+
+*For checking any errors i created contingency tables for welsh rarebit and rice pudding recipes. For the welsh rarebit, nothing odd was observed as the measurements were uniform and amounts were as expected for both the recipes. One thing which can be observed is that the amount of ingredients increased from 1936 to 2006. For rice pudding, the only difference was that for measuring sugar they used table spoons in 1936, whereas, in 2006 cup was used.*
+
+
+
+
+```{r}
+
+merge_recipes <- rbind(Beef_1997, Beef_2006, RicePudding_1936, RicePudding_2006,
+                 WelshRarebit_1936, WelshRarebit_2006)
+merge_recipes
+#PMC - Recipes needs name and servings
+#write.table(merge_recipes, file="Recipes.csv",row.names = FALSE, sep = ",")
+
+```
+
+*After checkin all the details, I merged all the tables into a single dataframe and wrote it to a 'csv' file with the name 'Recipes'.*

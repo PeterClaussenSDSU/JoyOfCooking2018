@@ -1,0 +1,447 @@
+---
+title: "Midterm Project"
+author: "Set 50"
+date: "19 July 2018"
+output: html_document
+---
+Part A
+ Create recipes as data tables or dataframes in the required formate 
+ I decided to make 2 data tables of each recipe with 4 columns "NBD_No","Amount","Measures"and"Ingredients"
+````{r}
+#To get the NBD_No i first lookover the food.des.txt,i import this table
+food.des<-read.table("FOOD_DES.txt",header=FALSE,sep="^",quote="~")
+names(food.des)<-c("NBD_No","Code","Long_Info","Short_Info","Name","Manufacturename","Survey","Ref_desc","Ref","Scientificname","Nfactor","Pfactor","Ffactor","Cfactor")
+dim(food.des)
+head(food.des)
+summary(food.des)
+```
+#Recipe No.1 CucucumberMoussse.1936.dat
+Than i look over each ingredient of respective recipe and find the NBD_No as well as matching ingredient name
+# For gelatin, dry, unswettened
+```{r}
+"grep function is used for pattern matching, i used it to see the word which may be present in the column Long_Info in food.text and print it"
+Gelatin<-food.des[grep("gelatin",food.des$Long_Info,ignore.case=T),]
+Gelatin
+print(Gelatin[5,1:3])
+```
+Here the best match for ingredient gelatin,dry,unswettened is with NBD_No(19177)-Gelatins,dry power,unsweetened
+
+#For Ingrediet,"Water,generic"
+```{r}
+water<-food.des[grep("generic",food.des$Long_Info,ignore.case=T),]
+water
+```
+Here the best match for "Water,generic" is  with NBD_No(14555)-Water,bottled,generic
+#For Ingredients-vinegar,cider
+```{r}
+Vineger<-food.des[grep("vinegar",food.des$Long_Info,ignore.case=T),]
+Vineger
+print(Vineger[1,1:3])
+```
+Here the best match for "Vineger,cider" is  with NBD_No(2048)-Vineger, cider
+
+#For Ingredient-cucumber,fresh,withoutskin,chopped'
+```{r}
+cucumber<-food.des[grep("cucumber",food.des$Long_Info,ignore.case=T),]
+cucumber
+print(cucumber[2,1:3])
+
+```
+Here the best match for "cucumber,fresh,withoutskin,chopped" is  with NBD_No(11206)-Cucumber,peeled,raw
+#For Ingredient-crem,whipping,heavy
+```{r}
+cream<-food.des[grep("cream",food.des$Long_Info,ignore.case=T),]
+cream
+print(cream[8,1:3])
+
+```
+Here the best match for "cream,whipping,heavy" is  with NBD_No(1053)-Cream,fluid,heavy whipping
+
+Now as per the above information we can make a dataable for cucumbermousse.2006
+`````{r}
+#Now,for creating the data table,i used the data.frame function 
+CucucumberMoussse.2006.dat<-data.frame(
+  NBD_No=c(19172,14555,02048,11206,0105053),
+  Amount= c(1.25,3.00,2.00,1.00,0.50),
+  Measure=c('tsp','Tbs','tsp','cup','cup'),
+  Ingredient=c('Gelatin desserts, dry mix',
+              'Water, bottled, generic',
+              'Vinegar, cider',
+              'Cucumber, peeled',
+              'Cream, fluid, heavy whipping'))
+
+`````
+For cucumberMousse.1996 other ingredients are same except vineger, we have already lookover the vineger ingredients
+```{r}
+Vineger
+Vineger[2,1:3]
+```
+Veniger ingredients is best matched with Vinegar,distilled so we select that which has NBD_No-2053
+Now the table will be
+```{r}
+CucucumberMoussse.1936.dat<-data.frame(
+  NBD_No=c(19172,14555,02050,11206,0105053),
+  Amount= c(2.00,3.00,2.00,1.00,1.00),
+  Measure=c('tsp','Tbs','tsp','cup','cup'),
+  Ingredient=c('Gelatin desserts, dry mix',
+              'Water, bottled, generic',
+              'Vinegar, distilled',
+              'Cucumber, peeled',
+              'Cream, fluid, heavy whipping'))
+
+```
+
+
+
+#For Recipe Sukiyaki
+ Year.2006
+For Ingredients matching and NBD_No
+For Ingredient-beef roast,tenderloin,raw,0"trim
+````{r}
+bef<-food.des[grep("tenderloin",food.des$Long_Info,ignore.case=T),]
+bef
+print(bef[14,1:3])
+
+```
+Here the best match for "beef roast,tenderloin,raw,0"trim" is  with NBD_No(13439)-"Beef, loin, tenderloin steak, boneless, separable lean and fat, trimmed to 0" fat, all grades, cooked, grilled"
+For Ingredient-'onion,yellow,fresh,sliced'
+````{r}
+oni<-food.des[grep("onion",food.des$Long_Info,ignore.case=T),]
+oni
+print(oni[9,1:3])
+
+```
+Here the best match for 'onion,yellow,fresh,sliced' is  with NBD_No(131282)-"Onions,raw"
+
+For Ingredient-'green onion,fresh,tops and bulb,medium,41/8"',
+````{r}
+oni
+print(oni[18,1:3])
+
+```
+Here the best match for 'green onion,fresh,tops and bulb,medium,4 1/8"' is  with NBD_No(11291)-"Onions, spring or scallions (includes tops and bulb), raw"
+
+For Ingredient- 'mushroom,fresh,sliced'
+````{r}
+mus<-food.des[grep("mushroom",food.des$Long_Info,ignore.case=T),]
+mus
+print(mus[22,1:3])
+```
+Here the best match for 'mushroom,fresh,sliced' is  with NBD_No(11260)- Mushrooms, white, raw
+
+For Ingredient- 'cabbage,napa,fresh'
+````{r}
+cab<-food.des[grep("cabbage",food.des$Long_Info,ignore.case=T),]
+cab
+print(cab[1,1:3])
+```
+Here the best match for 'cabbage,napa,fresh' is  with NBD_No(11109)- Cabbage, raw
+
+For Ingredient- 'bamboo shoots,canned,sliced,drained'
+````{r}
+bam<-food.des[grep("bamboo",food.des$Long_Info,ignore.case=T),]
+bam
+print(bam[1,1:3])
+```
+Here the best match for 'bamboo shoots,canned,sliced,drained' is  with NBD_No(11026)- Bamboo shoots, raw
+
+For Ingredient- 'tofu,regular,with calcium sulfate,1/4 block'
+````{r}
+tof<-food.des[grep("tofu",food.des$Long_Info,ignore.case=T),]
+tof
+print(tof[29,1:3])
+```
+Here the best match for 'tofu,regular,with calcium sulfate,1/4 block' is  with NBD_No(16427)- Tofu, raw, regular, prepared with calcium sulfate
+
+For Ingredient- 'soy sauce,from soy & wheat'
+````{r}
+sau<-food.des[grep("soy sauce",food.des$Long_Info,ignore.case=T),]
+sau
+print(sau[1,1:3])
+```
+Here the best match for 'soy sauce,from soy & wheat' is  with NBD_No(16123)- Soy sauce made from soy and wheat (shoyu)
+
+For Ingredient- 'stock,chicken,prepared from recipe'
+````{r}
+sto<-food.des[grep("stock",food.des$Long_Info,ignore.case=T),]
+sto
+print(sto[3,1:3])
+```
+Here the best match for 'stock,chicken,prepared from recipe' is  with NBD_No(6172)- Soup, stock, chicken, home-prepared
+
+For Ingredient- 'sugar,white,granulated,granulated'
+````{r}
+sug<-food.des[grep("sugar",food.des$Long_Info,ignore.case=T),]
+sug
+print(sug[59,1:3])
+```
+Here the best match for 'sugar,white,granulated,granulated' is  with NBD_No(19335)- Sugars, granulated
+
+For Ingredient- 'oil,canola'
+````{r}
+ol<-food.des[grep("canola",food.des$Long_Info,ignore.case=T),]
+ol
+print(ol[1,1:3])
+```
+Here the best match for 'oil,canola' is  with NBD_No(4582)- Oil, canola
+
+For Ingredient- 'rice,white,cooked,long grain,unenriched'
+````{r}
+ric<-food.des[grep("rice",food.des$Long_Info,ignore.case=T),]
+ric
+print(ric[57,1:3])
+```
+Here the best match for 'rice,white,cooked,long grain,unenriched' is  with NBD_No(20045)- Rice, white, long-grain, regular, enriched, cooked
+
+Now the data table for 2006 will be
+```{r}
+Sukiyaki.2006.dat<-data.frame(
+  NBD_No=c(13439,131282,11291,11260,11109,11026,16427,16123,6172,19335,4582,20045),
+  Amount= c(2.00,0.50,6.00,2.00,2.00,2.00,0.50,0.25,0.50,1.00,3.00,4.00),
+  Measure=c('lb','cup','ea','cup','cup','cup','cup','cup','cup','tsp','Tbs','cup'),
+  Ingredient=c('Beef, loin, tenderloin steak, boneless, separable lean and fat,trimmed to 0" fat, all grades, cooked, grilled',
+               'Onions,raw',
+               'Onions, spring or scallions (includes tops and bulb), raw',
+               'Mushrooms, white, raw',
+               'Cabbage, raw',
+               'Bamboo shoots, raw',
+               'Tofu, raw, regular, prepared with calcium sulfate',
+               'Soy sauce made from soy and wheat (shoyu)',
+               'Soup, stock, chicken, home-prepared',
+               'Sugars, granulated',
+               'Oil, canola',
+               'Rice, white, long-grain, regular, enriched, cooked')
+)
+```
+For 1936
+Other ingredients than 2006 are 'suet,beef,raw'and 'stock,beef,prepared from recipe'
+
+For 'suet,beef,raw'
+````{r}
+sue<-food.des[grep("suet",food.des$Long_Info,ignore.case=T),]
+sue
+print(sue[1,1:3])
+```
+
+The ingredient'suet,beef,raw' is matched with NBD_No [13335]-Beef, variety meats and by-products, suet, raw
+For 'stock,beef,prepared from recipe',,, rows having stock has already determined
+````{r}
+sto
+print(sto[2,1:3])
+```
+The ingredient'stock,beef,prepared from recipe' is matched with NBD_No [6170]-Soup, stock, beef, home-prepared
+
+For 'green onion,fresh,tops and medium,4 1/8"'
+````{r}
+oni
+print(oni[19,1:3])
+```
+The ingredient 'green onion,fresh,tops and medium,4 1/8"' is matched with NBN_No [11292]-Onions, young green, tops only
+
+For bell pepper,green,fresh,medium,2 1/2"
+````{r}
+pep<-food.des[grep("pepper",food.des$Long_Info,ignore.case=T),]
+pep
+print(pep[43,1:3])
+```
+The ingredient bell pepper,green,fresh,medium,2 1/2" is matched with NBN_No [11979]-Peppers, jalapeno, raw. I didnt find the bell pepper so i choose jalapeno.
+
+For *celery stalk,fresh,medium,7.5"to 8"
+````{r}
+celry<-food.des[grep("celery",food.des$Long_Info,ignore.case=T),]
+celry
+print(celry[5,1:3])
+```
+The ingredient *celery stalk,fresh,medium,7.5"to 8" is best matched with NBN_No [11143]-Celery, raw.
+
+SO,the data table 1936 for sukiyaki recipe will be
+```{r}
+Sukiyaki.1936.dat<-data.frame(
+  NBD_No=c(1335,13439,6170,11026,11292,11979,11143,11260,16123,4582,20045),
+  Amount= c(0.25,2.50,2.50,2.00,20.00,2.00,2.00,0.50,0.25,2.00,5.00),
+  Measure=c('lb','lb','cup','cup','ea','ea','ea','lb','cup','Tbs','cup'),
+  Ingredient=c('Beef, variety meats and by-products, suet, raw',
+  'Beef, loin, tenderloin steak, boneless, separable lean and fat,trimmed to 0" fat, all grades, cooked, grilled',
+               'Soup, stock, beef, home-prepared',
+               'Bamboo shoots, raw',
+               'Onions, young green, tops only',
+               'Peppers, jalapeno, raw',
+               'celery , raw',
+               'Mushrooms, white, raw',
+               'Soy sauce made from soy and wheat (shoyu)',
+               'Sugars, granulated',
+               'Rice, white, long-grain, regular, enriched, cooked')
+)
+```
+Part B
+Export the datatables in tab file
+Exporting the table to tab file For CucumberMoussse
+```{r}
+#For exporting the data table that was formed in the Part A, i used write.table function to write the file in tab, i donot wish row.names to be given while writing the file so i keep row names as false and sep="\t"-since we are writing in tab, in file=".."... signifies the name we want to put to the tab file
+write.table(CucucumberMoussse.2006.dat,file="CucumberMoussse.2006.tab",sep="\t",
+            row.names=FALSE)
+write.table(CucucumberMoussse.1936.dat,file="CucumberMoussse.1936.tab",sep="\t",
+            row.names = FALSE)
+```
+
+Exporting the datatable of Sukiyaki to tab file
+```{r}
+write.table(Sukiyaki.2006.dat,file="Sukiyaki.2006.tab",sep="\t",row.names=FALSE)
+
+write.table(Sukiyaki.1936.dat,file="Sukiyaki.1936.tab",sep="\t",row.names=FALSE)
+
+```
+PartC
+Import the tab file and merge it with the example BeefStroganoff
+```{r}
+#Importing the tab file
+CucumberMoussse.2006<-read.table("CucumberMoussse.2006.tab",header=TRUE)
+CucumberMoussse.1936<-read.table("CucumberMoussse.1936.tab",header=TRUE)
+Sukiyaki.2006<-read.table("Sukiyaki.2006.tab",header=TRUE)
+Sukiyaki.1936<-read.table("Sukiyaki.1936.tab",header=TRUE)
+BeefStroganoff.1997<-read.table("BeefStroganoff.1997.tab",header=TRUE)
+BeefStroganoff.2006<-read.table("BeefStroganoff.2006.tab",header=TRUE)
+
+#Adding a Year column in each data table
+
+CucumberMoussse.2006$Year<-rep(2006,length(CucumberMoussse.2006$Amount))
+CucumberMoussse.1936$Year<-rep(1936,length(CucumberMoussse.1936$Amount))
+
+Sukiyaki.2006$Year<-rep(2006,length(Sukiyaki.2006$Amount))
+Sukiyaki.1936$Year<-rep(1936,length(Sukiyaki.1936$Amount))
+ 
+BeefStroganoff.1997$Year<-rep(1997,length(BeefStroganoff.1997$Amount))
+BeefStroganoff.2006$Year<-rep(2006,length(BeefStroganoff.2006$Amount))
+
+#Merging CucumberMousse.2006 and CucumberMouse.1936
+CucumberMoussse<-merge(CucumberMoussse.2006,CucumberMoussse.1936,by="NBD_No",all=TRUE)
+CucumberMoussse
+#Similarly for Sukiyaki and BeefStroganoff
+Sukiyaki<-merge(Sukiyaki.2006,Sukiyaki.1936,by="NBD_No",all=TRUE)
+BeefStroganoff<-merge(BeefStroganoff.2006,BeefStroganoff.1997,by="Year",all=TRUE)
+#Now merging the both recipes with example
+Recipe2<-merge(CucumberMoussse,Sukiyaki,by="NBD_No",all=TRUE)
+#Since,BeefStroganoff doesnot has NBD_No, i just keep NA as the value and create a column of NBD_NA
+BeefStroganoff$NBD_No<-rep(NA,length(BeefStroganoff))
+Recipe2plussbeef<-merge(Recipe2,BeefStroganoff,by="NBD_No",all=TRUE)
+Recipe2plussbeef
+```
+Hence We get the "Recipe2plussbeef" gives the result from merging the two recipes(CucumberMoussse and Sukiyaki with the given example)
+
+
+Part D
+Proof the data to check for errors
+#For checking the error/demonstrates that the data have been proofread for correctness.
+I chhose to check the measures,if there is difference in the measures of the common ingredients for recipe of not.
+```{r}
+#For cucumbermousse ,I do innerjoin by help of merge function than i use ggplot to create the plot with two measures as Y and common ingredients as X
+CucumberMoussse.common<-merge(CucumberMoussse.2006,CucumberMoussse.1936,by="Ingredient")
+CucumberMoussse.common
+#PMC took out depedency on tidyverse, ggplot is OK
+#library(tidyverse)
+library(ggplot2)
+  
+df<-data.frame(Measure1=CucumberMoussse.common$Measure.x ,
+               Measure2=CucumberMoussse.common$Measure.y,
+               Ingredient=CucumberMoussse.common$Ingredient)
+               
+ggplot(df) + 
+    geom_point(aes(Ingredient, Measure1, shape = 'Measure1')) + 
+    geom_point(aes(Ingredient, Measure2, shape = 'Measure2'))
+
+```
+This shows that there is no error in common ingredients measures in Cucumbermousse recipe between 1936 and 2006
+
+#Similarly For Sukiyaki
+````{r}
+Sukiyaki.common<-merge(Sukiyaki.2006,Sukiyaki.1936,by="Ingredient")
+Sukiyaki.common
+
+#library(tidyverse)
+
+df<-data.frame(Measure1=Sukiyaki.common$Measure.x,
+               Measure2=Sukiyaki.common$Measure.y,
+               Ingredient=Sukiyaki.common$Ingredient)
+               
+ggplot(df) + 
+    geom_point(aes(Ingredient, Measure1, shape = 'Measure1')) + 
+    geom_point(aes(Ingredient, Measure2, shape = 'Measure2')) 
+    
+````
+This shows that there is error in measures among to common incredients in Sikiyaki.
+#Correction of error
+The error in the measures can be corrected by making the changes like if the difference is in teaspon and cup, then 1st we should know the appropraiate conversion of it might be 10 teaspon is equals to 1 cup, than we can change the amount of the ingredient as per the unit conversion shows so that the result of analysis wont be affected by error.
+
+Now, I see how much the ammount of the common ingredients of recipe was vary between two 1936 and 2006
+For CucumberMousse
+```{r}
+CucumberMoussse.common
+df<-data.frame(amount1=CucumberMoussse.common$Amount.x ,
+               amount2=CucumberMoussse.common$Amount.y,
+               Ingredient=CucumberMoussse.common$Ingredient)
+               
+ggplot(df) + 
+    geom_point(aes(Ingredient, amount1, shape = 'amount1')) + 
+    geom_point(aes(Ingredient, amount2, shape = 'amount2'))
+````
+This shows that there is high change in amount of ingredient in 3rd common ingredient in CucumberMousse
+#Similarly for Sukiyaki
+````{r}
+df<-data.frame(amount1=Sukiyaki.common$Amount.x,
+               amount2=Sukiyaki.common$Amount.y,
+               Ingredient=Sukiyaki.common$Ingredient)
+               
+ggplot(df) + 
+    geom_point(aes(Ingredient, amount1, shape = 'amount1')) + 
+    geom_point(aes(Ingredient, amount2, shape = 'amount2'))
+````
+This shows that there is high change in amount of ingredient in 3rd common ingredient in Sukiyaki    
+
+##PartE
+Read recipe.csv,add for your recipe and than write table back to recipe.csv
+
+#Reading the recipes.csv
+````{r}
+recipes<-read.table("Recipes.csv",header=TRUE,sep=",")
+recipes
+```
+Making the dataframe of similar formate for recipes(Cucumber Mousse and Sukiyaki)
+```{r}
+recipe=data.frame(
+Recipe=c("Cucumber Mousse","Cucumber Mousse","Sukiyaki","Sukiyaki"),
+Year=c("1936","2006","1936","2006"),
+MinServings=c("6","4","10","6"),
+MaxServings=c("6","4","10","4"))
+recipe
+#Using rbind function to bind the both datatable
+Recipe<-rbind(recipes,recipe)
+#Again write the data table to file csv
+#PMC - need row names false so other Rmd will not fail
+write.csv(Recipe,  file="Recipes.csv",row.names=FALSE)
+
+```
+#demonstrates that the ingredients and units can be cross referenced into the WEIGHT and FOOD_DES table
+```{r}
+#Reading the wight.dat as data table
+weight.dat <- read.table("WEIGHT.txt",header=FALSE,sep="^",quote="~")
+names(weight.dat) <- c("NDB_No","Seq","Amount","Msre_Desc","Gm_Wgt","Num_Data_Pts","Std_Dev")
+head(weight.dat)
+summary(weight.dat)
+
+weight.dat$NDB_No
+#As both the table has "NBD_No" which is a unique number for each ingredients and its unit so it can be crossreferenced into the weight
+
+'For example the ingredient
+
+Rice, white, long-grain, regular, enriched, cooked'
+#Infood.des
+Rice<-food.des[grep("Rice, white, long-grain, regular, enriched, cooked",food.des$Long_Info,ignore.case=T),]
+Rice
+```
+It gave NBD_No 20045 so looking towards the value of NBd_nO 20045 in weight.dat
+#In weight.data
+```{r}
+X<-weight.dat[grep("20045",weight.dat$NDB_No),]
+X
+#This demonstrates that the ingredients and units can be cross referenced into the WEIGHT and FOOD_DES table
+```

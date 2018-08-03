@@ -1,0 +1,342 @@
+---
+title: "Joy Of Cooking Midterm Project Prep"
+author: "Set 7"
+date: "7/18/2018"
+output:
+  word_document: default
+  html_document: default
+---
+# Assigned Recipes : Recipes: Baked Pearl Tapioca Pudding and Baked Rice Pudding
+
+
+# Individual recipes has been entered as data tables or data frames (SAS or R) and exported to a common file format. The file name is composed of the recipe name and year. 
+The below data frame has ingredients based on the FOOD_DES data after using the GREP function. The code for grep functions are written below after importing the data from FOOD_DES files in part 2(bottom section of the document)
+
+**DataFrame Reference Table for NDB_No used**
+```{r}
+NDB_No<-c(20068,1077,1001,1123,19335,9152,2050,20447)
+Ingredient<-c("Tapioca, pearl, dry","Milk, whole, 3.25% milkfat, with added vitamin D","Butter, salted","Egg, whole, raw, fresh","Sugars, granulated","Lemon juice, raw","Vanilla extract","Rice, white, long-grain, parboiled, unenriched, cooked")
+
+FOOD_reference<-data.frame(NDB_No=NDB_No, Ingredient=Ingredient)
+FOOD_reference
+```
+
+**Data Frame for 1936 BakedPearlTapiocaPudding recipe**
+
+```{r}
+Amount <- c(0.50,4.00,1.50,2.00,0.33,1.50,4.00,1.00)
+Measure <- c("cup","cup","Tbs","lrg","cup","Tbs","Tbs","tsp") 
+Ingredient <- c("Tapioca, pearl, dry","Milk, whole, 3.25% milkfat, with added vitamin D","Butter, salted","Egg, whole, raw, fresh","Sugars, granulated","Lemon juice, raw","Sugars, granulated","Vanilla extract")
+NDB_No<-c(20068,1077,1001,1123,19335,9152,19335,2050)
+
+BakedPearlTapiocaPudding_1936<-data.frame(Amount =Amount, Unit = Measure, NDB_No=NDB_No, Ingredient = Ingredient)
+BakedPearlTapiocaPudding_1936
+```
+
+**Data Frame for 2006 BakedPearlTapiocaPudding recipe**
+
+```{r}
+Amount <- c(0.50,4.00,5.00,0.75,1.50)
+Measure <- c("cup","cup","lrg","cup","Tbs")
+Ingredient <- c("Tapioca, pearl, dry","Milk, whole, 3.25% milkfat, with added vitamin D","Egg, whole, raw, fresh","Sugars, granulated","Lemon juice, raw")
+NDB_No<-c(20068,1077,1123,19335,9152)
+BakedPearlTapiocaPudding_2006<-data.frame(Amount =Amount, Unit = Measure, NDB_No=NDB_No, Ingredient = Ingredient)
+BakedPearlTapiocaPudding_2006
+```
+
+
+**Data Frame for 1936 BakedRicePudding recipe**
+
+
+```{r}
+Amount <- c(2.00,1.33,3.50,1.00,2.00,1.00,1.00)
+Measure <- c("cup","cup","Tbs","Tbs","lrg","tsp","tsp")
+Ingredient <- c("Rice, white, long-grain, parboiled, unenriched, cooked","Milk, whole, 3.25% milkfat, with added vitamin D","Sugars, granulated","Butter, salted","Egg, whole, raw, fresh","Lemon juice, raw","Vanilla extract")
+NDB_No<-c(20447,1077,19335,1001,1123,9152,2050)
+BakedRicePudding_1936<-data.frame(Amount =Amount, Unit = Measure,NDB_No=NDB_No, Ingredient = Ingredient)
+BakedRicePudding_1936
+```
+
+
+**Data Frame for 2006 BakedRicePudding recipe**
+
+```{r}
+Amount <- c(2.00,1.33,6.00,2.00,2.00,1.00)
+Measure <- c("cup","cup","Tbs","Tbs","lrg","tsp")
+Ingredient <- c("Rice, white, long-grain, parboiled, unenriched, cooked","Milk, whole, 3.25% milkfat, with added vitamin D","Sugars, granulated","Butter, salted","Egg, whole, raw, fresh","Vanilla extract")
+NDB_No<-c(20447,1077,19335,1001,1123,2050)
+BakedRicePudding_2006<-data.frame(Amount =Amount, Unit = Measure, NDB_No=NDB_No, Ingredient = Ingredient)
+BakedRicePudding_2006
+```
+
+**Writing tables for the data**
+```{r}
+write.table(BakedPearlTapiocaPudding_1936, file ="BakedPearlTapiocaPudding_1936.tab")
+
+write.table(BakedPearlTapiocaPudding_2006, file ="BakedPearlTapiocaPudding_2006.tab")
+
+write.table(BakedRicePudding_1936, file ="BakedRicePudding_1936.tab")
+
+write.table(BakedRicePudding_2006, file ="BakedRicePudding_2006.tab")
+
+
+```
+
+**Getting path**
+```{r}
+getwd()
+```
+**Reading data from tab files**
+**My path for tab files is C:/Users/SAMSUNG/Desktop/DSU/Summer 2018/Statistical Programming/Mid Term/Recipe**
+```{r}
+BakedPearlTapiocaPudding.1936<- read.table(file = "BakedPearlTapiocaPudding_1936.tab",  sep="\t", header=TRUE)
+BakedPearlTapiocaPudding.1936
+
+BakedPearlTapiocaPudding.2006<- read.table(file = "BakedPearlTapiocaPudding_2006.tab",  sep="\t", header=TRUE)
+BakedPearlTapiocaPudding.2006
+
+BakedRicePudding.1936<- read.table(file = "BakedRicePudding_1936.tab",  sep="\t", header=TRUE)
+BakedRicePudding.1936
+
+BakedRicePudding.2006<- read.table(file = "BakedRicePudding_2006.tab",  sep="\t", header=TRUE)
+BakedRicePudding.2006
+```
+
+**Merging tables of two recipes with ingredient to plot graphs for checking if there are any errors**
+```{r}
+# Merging BakedPearlTapiocaPudding 1936 and 2006
+Merged_BakedPearlTapiocaPudding <- merge(BakedPearlTapiocaPudding_1936,BakedPearlTapiocaPudding_2006, by="Ingredient", all=TRUE)
+Merged_BakedPearlTapiocaPudding
+```
+```{r}
+# Merging BakedRicePudding 1936 and 2006
+Merged_BakedRicePudding <- merge(BakedRicePudding_1936,BakedRicePudding_2006,by="Ingredient", all=TRUE)
+Merged_BakedRicePudding
+```
+**Plotting graph between Merged_BakedPearlTapiocaPudding amount of 1936 and 2006**
+```{r}
+plot(Merged_BakedPearlTapiocaPudding$Ingredient,Merged_BakedPearlTapiocaPudding$Amount.x,main="BakedPearlTapiocaPudding : Amount 1936 based on ingredient", xlab="Ingredient", ylab="Amount 1936", col="red")
+```
+```{r}
+plot(Merged_BakedPearlTapiocaPudding$Ingredient,Merged_BakedPearlTapiocaPudding$Amount.y,main="BakedPearlTapiocaPudding: Amount 2006 based on ingredient", xlab="Ingredient", ylab="Amount 2006", col="blue")
+```
+
+**Comparing both above**
+```{r}
+plot(Merged_BakedPearlTapiocaPudding$Ingredient,Merged_BakedPearlTapiocaPudding$Amount.y,pch=19,main="BakedPearlTapiocaPudding : Amount 1936(bar) vs 2006(points) based on ingredient", xlab="Ingredient", ylab="Amount", col="blue")
+points(Merged_BakedPearlTapiocaPudding$Ingredient,Merged_BakedPearlTapiocaPudding$Amount.x,main="BakedPearlTapiocaPudding : Amount 1936(bar) vs 2006(points) based on ingredient", xlab="Ingredient", ylab="Amount", col="red")
+
+```
+The above plot where symbol for 1936 is red points and symbol for 2006 is a bar verifies that I have taken right data and there are no errors in the data intake.
+
+**Plotting graph between Merged_BakedRicePudding amount of 1936 and 2006**
+```{r}
+plot(Merged_BakedRicePudding$Ingredient,Merged_BakedRicePudding$Amount.x,pch=19,main="Merged_BakedRicePudding : Amount 1936 based on ingredient", xlab="Ingredient", ylab="Amount 1936", col="green")
+```
+
+```{r}
+plot(Merged_BakedRicePudding$Ingredient,Merged_BakedRicePudding$Amount.y,main="Merged_BakedRicePudding : Amount 1936 based on ingredient", xlab="Ingredient", ylab="Amount 2006", col="orange")
+
+```
+
+**Comparing both above**
+```{r}
+plot(Merged_BakedRicePudding$Ingredient,Merged_BakedRicePudding$Amount.y,pch=19,main="Merged_BakedRicePudding : Amount 1936(bar) vs 2006(points) based on ingredient", xlab="Ingredient", ylab="Amount", col="orange")
+points(Merged_BakedRicePudding$Ingredient,Merged_BakedRicePudding$Amount.x,pch=19,main="Merged_BakedRicePudding : Amount 1936(bar) vs 2006(points) based on ingredient", xlab="Ingredient", ylab="Amount", col="green")
+
+```
+The above graphs show verifies that I have taken right values and there is no error in data intake. **
+
+The below portion is intentionally written as plain text as I have already checked errors and plotted graphs above. Its just the alternate method of contingency table mentioned below
+
+table(BakedPearlTapiocaPudding_1936$Ingredient,BakedPearlTapiocaPudding_1936$Unit)
+plot(BakedPearlTapiocaPudding_1936$Ingredient,BakedPearlTapiocaPudding_1936$Amount, las=2)
+
+table(BakedPearlTapiocaPudding_2006$Ingredient,BakedPearlTapiocaPudding_2006$Unit)
+plot(BakedPearlTapiocaPudding_2006$Ingredient,BakedPearlTapiocaPudding_2006$Amount, las=2)
+
+table(BakedRicePudding_1936$Ingredient,BakedRicePudding_1936$Unit)
+plot(BakedRicePudding_1936$Ingredient,BakedRicePudding_1936$Amount, las=2)
+
+table(BakedRicePudding_2006$Ingredient,BakedRicePudding_2006$Unit)
+plot(BakedRicePudding_2006$Ingredient,BakedRicePudding_2006$Amount, las=2)
+
+
+
+
+**Minimum and Maximum Serving values of the recipes and created a file for servings**
+```{r}
+MinServings = c(12, 8, 8, 8)
+MaxServings = c(12, 8, 8, 8)
+servings <- data.frame (MinServings, MaxServings)
+write.csv(servings, file = "Servings.csv")
+```
+
+
+**All the required tables binded here which will be used to merge with the  Beef Stroganoff tables in the later part of document**
+```{r}
+Myrec<-rbind(BakedPearlTapiocaPudding_1936,BakedPearlTapiocaPudding_2006,BakedRicePudding_1936,BakedRicePudding_2006)
+Myrec
+
+```
+
+**Splitting the details of recipe ( recipe name and year) and storing in a data frame**
+```{r}
+BTP_1936<-lapply(strsplit('BakedPearlTapiocaPudding.1936',split=".", fixed = TRUE),trimws)
+BTP_2006<-lapply(strsplit('BakedPearlTapiocaPudding.2006',split=".", fixed = TRUE),trimws)
+BRP_1936<-lapply(strsplit('BakedRicePudding.1936',split=".", fixed = TRUE),trimws)
+BRP_2006<-lapply(strsplit('BakedRicePudding.2006',split=".", fixed = TRUE),trimws)
+
+RecipeData<-data.frame(c(BTP_1936,BTP_2006,BRP_1936,BRP_2006),stringsAsFactors=FALSE)
+rownames(RecipeData)<- c("Recipe", "Year")
+colnames(RecipeData)<-NULL
+#data frame for one CSV file with Recipe name and year splitted values
+RecipeName <-(t(RecipeData))
+RecipeName
+#another frame with Recipe name, year and Servings based on example of Beef Stroganoff for another CSV file**
+RecipeWithServings<- cbind(RecipeName, servings)
+RecipeWithServings
+```
+
+**Generating the CSV file with both the recipe names and year as rows**
+```{r}
+write.csv(RecipeName, file = "RecipeName.csv", row.names = FALSE)
+```
+**Generating the CSV file for recipe names, year and servings as rows**
+```{r}
+write.csv(RecipeWithServings, file = "RecipeWithServings.csv", row.names = FALSE)
+```
+
+**Combining the data of sample file for Beef Stroganoff with my recipe data with servings**
+```{r}
+Recipe1 <-read.csv(file = "Recipes.csv",  sep="\t", header=TRUE)
+Recipe2 <- read.csv(file = "RecipeWithServings.csv",  sep="\t", header=TRUE)
+My_Recipe<-rbind(Recipe1, Recipe2)
+```
+**Output CSV for combined data**
+```{r}
+write.csv(My_Recipe, file = "My_Recipe.csv", row.names = FALSE)
+```
+**Now getting the final table with all recipe details along with name and year**
+```{r}
+Rec_1 = matrix(rep(RecipeName[1,], length(BakedPearlTapiocaPudding_1936$Amount)),ncol=2, byrow = T)
+Rec_2 = matrix(rep(RecipeName[2,], length(BakedPearlTapiocaPudding_2006$Amount)),ncol=2, byrow = T)
+Rec_3 = matrix(rep(RecipeName[3,], length(BakedRicePudding_1936$Amount)),ncol=2, byrow = T)
+Rec_4 = matrix(rep(RecipeName[4,], length(BakedRicePudding_2006$Amount)),ncol=2, byrow = T)
+
+AllRecipe<-rbind(Rec_1,Rec_2,Rec_3,Rec_4)
+colnames(AllRecipe)<- c("Recipe", "Year")
+
+```
+```{r}
+Final <- cbind(AllRecipe,Myrec)
+names(Final)[names(Final) == "Unit"] <- "Measure"
+Final
+```
+**Output CSV file for Final table**
+```{r}
+write.csv(Final, file = "FinalRecipe.csv", row.names = FALSE)
+```
+
+
+# Programmatically reading all recipe files in a directory, importing them as data tables, add columns for name and year by parsing the file name 
+
+# Part 1 - Assign Recipes
+
+First, generate a list of all files in the Recipes folder.
+```{r,eval=FALSE}
+#recipes <- list.files(path = "../data/Recipes", pattern = '*.pdf')
+recipes <- list.files(path = "C:/Users/SAMSUNG/Desktop/DSU/Summer 2018/Statistical Programming/Mid Term/Recipe/Recipes", pattern = '*.pdf')
+recipes
+```
+
+
+Make this reproducible.
+```{r,eval=FALSE}
+set.seed(10010)
+```
+
+Create two randomly sampled list of recipe files and cycle this list through 80 rows
+
+```{r,eval=FALSE}
+recipe.pairs <- matrix(c(sample(recipes),sample(recipes)),ncol=2,nrow=106)
+recipe.pairs
+```
+
+Are there any pairs across rows?
+
+```{r,eval=FALSE}
+sum(recipe.pairs[,1]==recipe.pairs[,2])
+```
+
+Write to a table
+
+```{r,eval=FALSE}
+write.csv(recipe.pairs, file="Recipe.Table.csv",row.names = FALSE)
+```
+
+Read the table in and print:
+
+```{r,eval=FALSE}
+Recipe.Table <- read.csv("Recipe.Table.csv",header=FALSE,skip=1)
+print(Recipe.Table)
+```
+
+
+
+
+# Part 2 - Check Nutrient Data.
+
+We will be using the USDA food nutrient database, found at https://www.ars.usda.gov/northeast-area/beltsville-md-bhnrc/beltsville-human-nutrition-research-center/nutrient-data-laboratory/docs/usda-national-nutrient-database-for-standard-reference/
+
+Run this to make sure your system can read the required nutrient database tables.
+```{r}
+weight.dat <- read.table("WEIGHT.txt",header=FALSE,sep="^",quote="~")
+names(weight.dat) <- c("NDB_No","Seq","Amount","Msre_Desc","Gm_Wgt","Num_Data_Pts","Std_Dev")
+head(weight.dat)
+summary(weight.dat)
+```
+
+
+```{r}
+food_des.dat <- read.table("FOOD_DES.txt",header=FALSE,sep="^",quote="~")
+names(food_des.dat) <- c("NDB_No","FdGrp_Cd","Long_Desc","Shrt_Desc",
+"ComName","ManufacName","Survey","Ref_desc","Refuse","SciName",
+"N_Factor","Pro_Factor","Fat_Factor","CHO_Factor")
+dim(food_des.dat)
+head(food_des.dat)
+summary(food_des.dat)
+```
+**Using the below GREP functions, I have extracted what is the exact data in the FOOD_DES file and then according to that I have changed all ingredients and re-run the entire code. #NDB_No  is also mentioned** 
+grep(pattern="[bB]utter", food_des.dat$Long_Desc, ignore.case = TRUE, value=TRUE) #NDB_No 1001
+grep(pattern="[rR]ice, white, long-grain,", food_des.dat$Long_Desc, ignore.case = TRUE, value=TRUE) # NDB_No 20447
+grep(pattern="[Tt]apioca", food_des.dat$Long_Desc, ignore.case = TRUE, value=TRUE) #NDB_No 20068
+grep(pattern="[mM]ilk, whole", food_des.dat$Long_Desc, ignore.case = TRUE, value=TRUE) #NDB_No 1077
+grep(pattern="[eE]gg", food_des.dat$Long_Desc, ignore.case = TRUE, value=TRUE) #NDB_No 1123
+grep(pattern="[eE]xtract", food_des.dat$Long_Desc, ignore.case = TRUE, value=TRUE) #NDB_No 2050
+grep(pattern="[sS]ugar", food_des.dat$Long_Desc, ignore.case = TRUE, value=TRUE) #NDB_No 19335
+grep(pattern="[jJ]uice", food_des.dat$Long_Desc, ignore.case = TRUE, value=TRUE) #NDB_No 9152
+**Recreated file after changing ingredients**
+
+**Below information and code can be helpful if there is any confusion for the actual values I have used and their NBD_No values**
+
+grep(pattern="Tapioca, pearl, dry", food_des.dat$Long_Desc, ignore.case = TRUE, value=TRUE)
+grep(pattern="Milk, whole, 3.25% milkfat, with added vitamin D", food_des.dat$Long_Desc, ignore.case = TRUE, value=TRUE)
+grep(pattern="Butter, salted", food_des.dat$Long_Desc, ignore.case = TRUE, value=TRUE)
+grep(pattern="Egg, whole, raw, fresh", food_des.dat$Long_Desc, ignore.case = TRUE, value=TRUE)
+grep(pattern="Sugars, granulated", food_des.dat$Long_Desc, ignore.case = TRUE, value=TRUE)
+grep(pattern="Vanilla extract", food_des.dat$Long_Desc, ignore.case = TRUE, value=TRUE)
+grep(pattern="Lemon juice, raw", food_des.dat$Long_Desc, ignore.case = TRUE, value=TRUE)
+grep(pattern="Rice, white, long-grain, parboiled, unenriched, cooked", food_des.dat$Long_Desc, ignore.case = TRUE, value=TRUE)
+
+for(coune in 1:length(food_des.dat$NDB_No)){
+if(food_des.dat[coune,3]=='Butter, salted'){print(food_des.dat[coune,1])}}
+
+```{r}
+nut_data.dat <- read.table("NUT_DATA.txt",header=FALSE,sep="^",quote="~")
+names(nut_data.dat) <- c("NDB_No","Nutr_No","Nutr_Val","Num_Data_Pts","Std_Error",
+"Src_Cd","Deriv_Cd","Ref_NDB_No","Add_Nutr_Mark","Num_Studies",
+"Min","Max","DF","Low_EB","Up_EB","Stat_cmt","AddMod_Date")
+head(nut_data.dat)
+summary(nut_data.dat)
+```

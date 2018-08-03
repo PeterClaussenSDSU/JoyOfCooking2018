@@ -1,0 +1,264 @@
+---
+title: "Midterm Project"
+author: "Set 18"
+date: "July 17, 2018"
+output:
+  word_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Instructions
+
+This document runs a process that will format recipe data for 2 recipes, "Eggs in a Nest" and "Scalloped Potatoes", so that it can be used for further calculations. 
+
+You are required to take the provided recipe documents and use it to create separate data frames for input into 2 separate files.
+
+You are also required to take the provided servings data from the provided recipe documents and export it, along with the recipe name and year, into the provided Recipes.csv file.
+
+```{r}
+
+#This will generate a data frame that includes data from the basic "Eggs in a Nest" recipe circa 1936, with the NDB_No included.  The matches were done manually with a combination of single match and picking the best one.
+
+Eggs_in_a_Nest1936.df <- data.frame(
+  Recipe = c("Eggs in a Nest"),
+  Year = c(1936),
+  Amount = c(2.00,5.00,2.67,4.00,0.25,2.00),
+  Measure = c("cups","Tbs","oz","lrg","cup","Tbs"),
+  NDB_No = c(11371,01077,07029,01123,18069,01001),
+  Ingredients = c("Potatoes, mashed, home-prepared, whole milk and margarine added","Milk, whole, 3.25% milkfat, without added vitamin A and vitamin D","Ham, sliced, regular (approximately 11% fat)","Egg, whole, raw, fresh","Bread, white, commercially prepared (includes soft bread crumbs)","Butter, salted")
+)
+Eggs_in_a_Nest1936.df
+
+#This will generate a data frame that includes data from the basic "Eggs in a Nest" recipe circa 2006, with the NDB_No included.  The matches were done manually with a combination of single match and picking the best one.
+
+Eggs_in_a_Nest2006.df <- data.frame(
+  Recipe = c("Eggs in a Nest"),
+  Year = c(2006),
+  Amount = c(2.00,5.00,2.67,4.00,0.25,2.00),
+  Measure = c("cups","Tbs","oz","lrg","cup","Tbs"),
+  NDB_No = c(11371,01077,07029,01123,18069,01001),
+  Ingredients = c("Potatoes, mashed, home-prepared, whole milk and margarine added","Milk, whole, 3.25% milkfat, without added vitamin A and vitamin D","Ham, sliced, regular (approximately 11% fat)","Egg, whole, raw, fresh","Bread, white, commercially prepared (includes soft bread crumbs)","Butter, salted")
+  )
+Eggs_in_a_Nest2006.df
+
+
+#This will generate a data frame that includes data from the basic "Scalloped Potatoes" recipe circa 1936, with the NDB_No included.  The NDB_no matches were done manually with a combination of single match and picking the best one. The original recipe does not specify what kind of grated cheese to use, so Parmesan is being substitued in because there is not a shredded cheddar listing provided in the FOOD_DES.txt file.
+
+Scalloped_Potatoes1936.df <- data.frame(
+  Recipe = c("Scalloped Potatoes"),
+  Year = c(1936),
+  Amount = c(4.00,3.00,3.00,1.50,0.25,0.75),
+  Measure = c("cups","Tbs","Tbs","cups","lb","cup"),
+  NDB_No = c(11354,01001,20082,01077,01032,11943),
+  Ingredients = c("Potatoes, white, flesh and skin, raw","Butter, salted","Wheat flour, white, all-purpose, self-rising, enriched","Milk, whole, 3.25% milkfat, with added vitamin D","Cheese, parmesan, grated","Pimento, canned")
+)
+Scalloped_Potatoes1936.df
+
+#This will generate a data frame that includes data from the basic "Scalloped Potatoes" recipe circa 2006, with the NDB_No included.  The matches were done manually with a combination of single match and picking the best one. The recipe calls for 0.5 cup of grated Parmesan instead of the 0.25 cups of shredded cheddar in the Esha research document, so the Parmesan is being substituted in. Also, there is not a shredded cheddar listing provided in the FOOD_DES.txt file.
+
+Scalloped_Potatoes2006.df<- data.frame(
+  Recipe = c("Scalloped Potatoes"),
+  Year = c(2006),
+  Amount = c(3.00,10.75,1.50,0.50),
+  NDB_No = c(11354,06043,01077,01032),
+  Measure = c("cups","oz","cups","cup"),
+  Ingredients = c("Potatoes, white, flesh and skin, raw","Soup, cream of mushroom, canned, condensed","Milk, whole, 3.25% milkfat, with added vitamin D","Cheese, parmesan, grated")
+)
+Scalloped_Potatoes2006.df
+
+
+```
+
+```{r}
+#This following code will export the previously created data frames to individual tab delimited files.
+
+#The data frame for the 1936 is being written to a tab-delimited file.
+write.table(Eggs_in_a_Nest1936.df, "Eggs_in_a_Nest.1936.tab", sep="\t",row.names=F)
+
+#The data frame for the 2006 is being written to a tab-delimited file.
+write.table(Eggs_in_a_Nest2006.df, "Eggs_in_a_Nest.2006.tab", sep="\t",row.names=F)
+
+#The data frame for the 1936 is being written to a tab-delimited file.
+write.table(Scalloped_Potatoes1936.df, "Scalloped_Potatoes.1936.tab", sep="\t",row.names=F)
+
+#The data frame for the 2006 is being written to a tab-delimited file.
+write.table(Scalloped_Potatoes2006.df, "Scalloped_Potatoes.2006.tab", sep="\t",row.names=F)
+
+
+```
+
+```{r}
+
+#This following code will read and import the 2 files created above to verify they were created correctly.  The files will then be merged with sample data for the Beef Stroganoff recipes in the next section.
+
+#Assigning path to TAB file to variable PathToEIN1936
+PathToEIN1936 = "Eggs_in_a_Nest.1936.tab"
+
+#Assigning data from TAB file to data frame
+Eggs_in_a_Nest1936.df <- read.delim(PathToEIN1936,header=TRUE,skip= 0,sep = "\t",as.is=TRUE)
+
+#Assigning path to TAB file to variable PathTo2006
+PathToEIN2006 = "Eggs_in_a_Nest.2006.tab"
+
+#Assigning data from TAB file to data frame
+Eggs_in_a_Nest2006.df <- read.delim(PathToEIN2006,header=TRUE,skip= 0,sep = "\t",as.is=TRUE)
+
+#Assigning path to TAB file to variable PathTo1936
+PathToSP1936 = "Scalloped_Potatoes.1936.tab"
+
+#Assigning data from TAB file to data frame
+Scalloped_Potatoes1936.df <- read.delim(PathToSP1936,header=TRUE,skip= 0,sep = "\t",as.is=TRUE)
+
+#Assigning path to TAB file to variable PathTo2006
+PathToSP2006 = "Scalloped_Potatoes.2006.tab"
+
+#Assigning data from TAB file to data frame
+Scalloped_Potatoes2006.df <- read.delim(PathToSP2006,header=TRUE,skip= 0,sep = "\t",as.is=TRUE)
+
+
+#Assigning path to TAB file to variable PathToBS1997
+PathToBS1997 = "BeefStroganoff.1997.tab"
+
+#Assigning data from TAB file to data frame
+Beef_Stroganoff1997.df <- read.delim(PathToBS1997,header=TRUE,skip= 0,sep = "",as.is=TRUE)
+
+
+#Assigning path to TAB file to variable PathToBS2006
+PathToBS2006 = "BeefStroganoff.2006.tab"
+
+#Assigning data from TAB file to data frame
+Beef_Stroganoff2006.df <- read.delim(PathToBS2006,header=TRUE,skip= 0,sep = "",as.is=TRUE)
+
+```
+
+
+
+```{r}
+
+
+#Now that the files have been verified, it is time to merge the 2 data frames.
+
+Eggs_in_a_Nest1936 <- Eggs_in_a_Nest1936.df
+Eggs_in_a_Nest2006 <- Eggs_in_a_Nest2006.df
+
+Eggs_in_a_Nest1936_2006 <- merge.data.frame(Eggs_in_a_Nest1936.df,Eggs_in_a_Nest2006.df,all = TRUE)
+colnames(Eggs_in_a_Nest1936_2006) <- c("Recipe","Year","Amount","Measure","Ndb_No","Ingredients")
+
+Eggs_in_a_Nest1936_2006
+
+
+#Now that the files have been verified, it is time to merge the 2 data frames.
+Scalloped_Potatoes1936 <- Scalloped_Potatoes1936.df
+Scalloped_Potatoes2006 <- Scalloped_Potatoes2006.df
+
+Scalloped_Potatoes1936_2006 <- merge.data.frame(Scalloped_Potatoes1936,Scalloped_Potatoes2006,all = TRUE)
+
+colnames(Scalloped_Potatoes1936_2006) <- c("Recipe","Year","Amount","Measure","Ndb_No","Ingredients")
+
+Scalloped_Potatoes1936_2006
+
+
+#We are now merging the 2 data frames into one data frame so that in can be merged with the Beef Stroganoff recipe data.
+EIN_SPDataMerge <- merge.data.frame(Eggs_in_a_Nest1936_2006,Scalloped_Potatoes1936_2006, all = TRUE)
+colnames(EIN_SPDataMerge) <- c("Recipe","Year","Amount","Measure","Ndb_No","Ingredients")
+
+EIN_SPDataMerge
+
+
+#Now we are going to update the recipe descriptions for the Beef Stroganoff recipes to match the descriptions in the FOOD_DES.tx file and add the NDB numbers into each dataframe.
+
+Beef_Stroganoff1997 <- data.frame(
+Recipe = c("Beef Stroganoff"),
+Year = c(1997),
+Amount = Beef_Stroganoff1997.df$Amount,
+Measure = Beef_Stroganoff1997.df$Measure,
+NDB_No = c(13786,01001,20082,06170,01074,02046),
+Ingredients = c("Beef, chuck eye roast, boneless, America's Beef Roast, separable lean and fat, trimmed to 0\" fat, all grades, raw","Butter, salted","Wheat flour, white, all-purpose, self-rising, enriched","Soup, stock, beef, home-prepared","Sour cream, imitation, cultured","Mustard, prepared, yellow")
+)
+Beef_Stroganoff1997
+
+
+Beef_Stroganoff2006 <- data.frame(
+Recipe = c("Beef Stroganoff"),
+Year = c(2006),
+Amount = Beef_Stroganoff2006.df$Amount,
+Measure = Beef_Stroganoff2006.df$Measure,
+NDB_No = c(13786,04582,01001,11282,11238,06170,01074,02046),
+Ingredients = c("Beef, chuck eye roast, boneless, America's Beef Roast, separable lean and fat, trimmed to 0\" fat, all grades, raw","Oil, canola","Butter, salted","Onions, raw","Mushrooms, shiitake, raw","Soup, stock, beef, home-prepared","Sour cream, imitation, cultured","Mustard, prepared, yellow")
+)
+Beef_Stroganoff2006
+
+
+#It is time to merge the merged data frame from the "Eggs in a Nest" and "Scallopped Potatoes" recipes with the Beef Stroganoff 1997 and 2006 recipe data.
+
+BeefStrog1997_2006 <- merge.data.frame(Beef_Stroganoff1997,Beef_Stroganoff2006,all = TRUE)
+colnames(BeefStrog1997_2006) <- c("Recipe","Year","Amount","Measure","Ndb_No","Ingredients")
+
+BeefStrog1997_2006
+
+EIN_SP_Beef_Strog_DataMerge <- merge.data.frame(EIN_SPDataMerge,BeefStrog1997_2006,all = TRUE)
+
+colnames(EIN_SP_Beef_Strog_DataMerge) <- c("Recipe","Year","Amount","Measure","Ndb_No","Ingredients")
+
+EIN_SP_Beef_Strog_DataMerge
+
+
+
+
+```
+
+
+```{r}
+#This section will verify that the data in both the 1936 and 2006 data sets match. If there is a match then the match function will return the vector of the position of the first vector (recipe) in the second vector (recipe);Otherwise an '0' result has been set to return if there is no match. No match is a possible indicator that different ingredients were used at the time each recipe was created, different measurements used between the years, or the incorrect measurements were used on of the recipes relative to the other.
+
+match(Eggs_in_a_Nest1936$Ingredients,Eggs_in_a_Nest2006$Ingredients,nomatch = 0)
+match(Eggs_in_a_Nest1936$Amount,Eggs_in_a_Nest2006$Amount,nomatch = 0)
+match(Eggs_in_a_Nest1936$Measure,Eggs_in_a_Nest2006$Measure,nomatch = 0)
+
+match(Scalloped_Potatoes1936$Ingredients,Scalloped_Potatoes2006$Ingredients,nomatch = 0)
+match(Scalloped_Potatoes1936$Amount,Scalloped_Potatoes2006$Amount,nomatch = 0)
+match(Scalloped_Potatoes1936$Measure,Scalloped_Potatoes2006$Measure,nomatch = 0)
+
+```
+
+
+```{r}
+#This section will import the Recipes.csv file and once file is imported the recipe data will be appended to the existing data in the file;After the append is complete, the Recipes.csv file will be exported out with the new data.
+
+Recipes_csv_import <- read.csv(file="Recipes.csv", header=TRUE, sep=",")
+
+Eggs_in_a_Nest1936_import <- data.frame(matrix(c("Eggs in a Nest","1936","4","4"),nrow = 1,ncol = 4))
+colnames(Eggs_in_a_Nest1936_import) <- c("Recipe","Year","MinServings","MaxServings")
+
+Recipes_csv_exportEIN <- rbind.data.frame(Recipes_csv_import,Eggs_in_a_Nest1936_import)
+
+Eggs_in_a_Nest2006_import <- data.frame(matrix(c("Eggs in a Nest","2006","4","4"),nrow = 1,ncol = 4))
+colnames(Eggs_in_a_Nest2006_import) <- c("Recipe","Year","MinServings","MaxServings")
+
+Recipes_csv_exportEIN <- rbind.data.frame(Recipes_csv_exportEIN,Eggs_in_a_Nest2006_import)
+
+#The Recipes file will now be exported out to as CSV again with its new data
+write.table(Recipes_csv_exportEIN, "Recipes.csv", sep=",",row.names=F)
+
+Scalloped_Potatoes1936_import <- data.frame(matrix(c("Scalloped Potatoes","1936","8","8"),nrow = 1,ncol = 4))
+colnames(Scalloped_Potatoes1936_import) <- c("Recipe","Year","MinServings","MaxServings")
+
+Recipes_csv_exportSP <- rbind.data.frame(Recipes_csv_exportEIN,Scalloped_Potatoes1936_import)
+
+Scalloped_Potatoes2006_import <- data.frame(matrix(c("Scalloped Potatoes","2006","6","6"),nrow = 1,ncol = 4))
+colnames(Scalloped_Potatoes2006_import) <- c("Recipe","Year","MinServings","MaxServings")
+
+Recipes_csv_exportSP <- rbind.data.frame(Recipes_csv_exportSP,Scalloped_Potatoes2006_import)
+
+#The Recipes file will now be exported out to as CSV again with its new data
+write.table(Recipes_csv_exportSP, "Recipes.csv", sep=",",row.names=F)
+
+
+
+
+```
+

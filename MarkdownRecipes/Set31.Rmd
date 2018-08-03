@@ -1,0 +1,1157 @@
+---
+title: "Midterm Project"
+author: "Set 31"
+date: "7/20/2018"
+output:
+  pdf_document: default
+  html_document: default
+  word_document: default
+---
+
+
+
+# Part 1 - Setting up the file
+
+Here I have two steps that I'm performing
+
+1) I'm setting up my working directory, and printing it to ensure that I'm pointed at the right folder before we begin our work.
+
+2) Checking if the BeefStroganoff files exist. If the file.exists command turns out to be false then stop here and bring the files into your working directory
+
+
+
+```{r}
+
+#Setting path of the working directory to where I want the files to save down to.
+setwd("./")
+getwd()
+
+#Checking if beef stroganoff file exists in current working directory
+file.exists("BeefStroganoff.1997.tab")
+
+#Checking if beef stroganoff file exists in current working directory
+file.exists("BeefStroganoff.2006.tab")
+```
+
+
+# Part 2 - Creating Recipe Files and writing as a tab file to the current working directory
+
+The recipes assigned to me where Steamd Plum Pudding & Welse Rarebit. Below I am creating a dataframe for each year (1936 & 2006) by each recipe and writing as text document. I printed each dataframe so I can ensure that the content was correct and also become more familiar with the recipes themselves.
+
+```{r}
+
+#Steamed Plum Pudding 1936 dataframe and writing to a tab file in the current working directory
+SteamedPP36 <- data.frame(Amount=c(1.0, 1.0, 1.0, 0.5, 6.0, 7.0, 4.0, 0.5, 3.0),
+                   Measure=c('cup','lb','lb','lb','Tbs','lrg','Tbs','cup','cup'),
+                   Ingredient=c('flour,bread,white,enriched','suet,beef,raw','raisins,without seeds,packed cup','candied fruit','sugar,white,granulated,granulated','egg,raw','cream,whipping,heavy','brandy,90 proof','bread crumbs,plain,dry,grated'))
+
+write.table(SteamedPP36, "SteamedPlumPudding.1936.tab", sep = "\t")
+SteamedPP36
+
+#Steamed Plum Pudding 2006 dataframe and writing to a tab file in the current working directory
+SteamedPP06 <- data.frame(Amount=c(2.67,2.0,1.5,8.0,1.0,4.0,0.83,0.33),
+                   Measure=c('cup','cup','cup','oz','cup','lrg','cup','cup'),
+                   Ingredient=c('raisins,without seeds,packed cup','currants, zante, dried','flour,all purpose,self rising,enriched','suet,beef,raw','sugar,brown,dark','egg,raw','brandy,90 proof','sherry,cooking'))
+
+write.table(SteamedPP06, "SteamedPlumPudding.2006.tab", sep = "\t")
+SteamedPP06
+
+#Creating Welsh Rarebit 1936 dataframe and writing to a tab file in current working directory
+WelshRB36 <- data.frame(Amount=c(1.0,0.5,0.5),
+                   Measure=c('Tbs','lb','cup'),
+                   Ingredient=c('butter,salted','cheese,cheddar,shredded','beer'))
+
+write.table(WelshRB36, "WelshRarebit.1936.tab", sep = "\t")
+WelshRB36
+
+#Welsh Rarebit 2006 dataframe and writing to a tab file in current working directory
+WelshRB06 <- data.frame(Amount=c(1.0,1.0,1.0,1.0),
+                   Measure=c('Tbs','cup','lb','tsp'),
+                   Ingredient=c('butter,salted','beer','cheese,cheddar,shredded','worcestershire sauce'))
+
+write.table(WelshRB06, "WelshRarebit.2006.tab", sep = "\t")
+WelshRB06
+
+
+```
+
+# Part 3 - Reading all recipe files in current working directory and merging them
+
+In this step we will load and merge together the BeefStorganoff, Steamed Plum Pudding, & Welsh Rarebit recipes.
+
+-I first listed each file in my current working directory that ended in a .tab. Any recipe that isn't a .tab file will not work here, and will either have to be reformatted as a tab file, or the code will have to be changed in order to allow for that.
+
+-We strip the .tab from the filename as we read it, in order allow us to split by `.` 
+
+-We append to an empty dataframe named appeneded files
+
+-This step is to verify that we can read in files and append them together
+
+```{r}
+
+##Read all files from current working directory that have a ".tab" in it
+filenames <- list.files(path="./",
+    pattern="*.tab$")
+#filenames
+
+
+#Creating empty dataframe to store the appended files
+appended_files <- data.frame(Amount=double(),
+                              Measure=character(),
+                              Ingredient=character(),
+                              Year=integer(),
+                              Recipe=character())
+
+#Looping through all filenames
+for (i in 1:length(filenames)) {
+  
+  #If filename has .tab in the name of it remove it
+  filename <- gsub(".tab","",filenames[i])
+  #print(filename)
+  
+  #Seperating file names by the  '.' symbol. For merging everyone else's files this might have to be tweaked a little bit if their naming convention is a little different
+  filename <- unlist(strsplit(filename, split="\\."))  # for dot seperator use \\.
+  #print(filename)
+  
+  #Importing data and storing as data
+  data <- read.table(filenames[i], header = T, sep = "")
+  #print(data)
+
+  #Explicitly assigning Name and Year to the read table
+  data$Year <- rep(filename[2],nrow(data))
+  #print(as.character(filename[2]))
+  data$Recipe <- rep(filename[1],nrow(data))
+  #print(as.character(filename[1]))
+  
+  #Appending read table to dataframe
+  appended_files <- rbind(appended_files,data)
+  
+}
+
+print(appended_files)
+
+```
+
+#Part 4 - Ingredient Matching
+
+Now that we have have verified that we can re-import Steamed Plum Pudding and Welsh Rarebit and append them together with Beef Stroganoff we are going to start finding the closest match to our ingredients in the FOOD Description table and then use that description number `unique key` to pull the Gm_Wgt from the WEIGHT file.
+
+I'm going to start with the Steamed Plum Pudding 1936 recipe. When I find an appropriate match I will record the NBD_No in appropriate named vector for the recipe and store the Gm_Wgt in the appropriate vector for the recipe. I will be using grepl to approximate match and narrow down the list of ingredients from the FOOD_DES table.
+
+Before we being we need to load the FOOD Description table and the WEIGHT Table and create our empty vectors
+
+
+```{r}
+#Loading Weight Table
+
+if (
+#Checking if weight file exists in our directory
+file.exists("WEIGHT.txt")==TRUE) {
+  
+  #If the file exists then we are going to load it 
+  WEIGHT <- read.table('WEIGHT.txt', header = F, sep = "^", quote="~")
+  names(WEIGHT) <- c("NBD_No","Seq","Amount","Msre_Desc","Gm_Wgt","Num_Data_Pts","Std_Dev")
+} else print('WEIGHT.txt is not in current working directory')
+
+head(WEIGHT,3)
+
+#Loading food desc Table
+
+if (
+#Checking if food desc exists in our directory
+file.exists("FOOD_DES.txt")==TRUE) {
+  
+  #If the file exists then we are going to load it as data
+  FOOD_DES <- read.table('FOOD_DES.txt', header = F, sep = "^", quote="~")
+  names(FOOD_DES) <- c("NBD_No","FdGrp_Cd","Long_Desc","Shrt_Desc","ComName","ManufacName","Survey","Ref_desc","Refuse","SciName","N_Factor","Pro_Factor","Fat_Factor","CHO_Factor")
+} else print('FOOD_DES.txt is not in current working directory')
+
+head(FOOD_DES,3)
+
+```
+
+
+```{r}
+#Creation of empty vectors for storing information
+
+#Steamed Plum Pudding 1936 NBD_No's
+NBD_SPP1936 <- c()
+SPP1936_converted_Gm_Wgt <- c()
+
+#Steamed Plum Pudding 2006 Gm_Wgts
+NBD_SPP2006 <- c()
+SPP2006_converted_Gm_Wgt <- c()
+
+#Welsh Rarebit 1936 NBD_No's
+NBD_WR1936 <- c()
+WR1936_converted_Gm_Wgt <- c()
+
+#Welsh Rarebit 2006 Gm_Wgts
+NBD_WR2006 <- c()
+WR2006_converted_Gm_Wgt <- c()
+
+
+```
+
+
+
+
+#Steamed Plum Pudding 1936:
+
+
+Ingredient: *flour,bread,white,enriched*
+
+I was able to narrow down the list of ingredients to 21 possible matches by using `FOOD_DES$Long_Desc[grepl('*flour[, ]*white*',FOOD_DES$Long_Desc)]`
+
+
+I chose to use "Wheat flour, white, bread, enriched" as my ingredient because I need basic enriched flour for this recipe. Using the following command I found the NBD_No and cross-referenced that to the WEIGHTs table. It only returned one result with the same measurement of 'cup'.
+
+
+Description from Weights table = 'Wheat flour, white, bread, enriched'
+NBD_No = 20083
+Original Mesurement = 1 cup
+Weight Table Measurement = cup   -- no conversion needed
+Gm_Wgt = 137
+
+```{r}
+
+Description <- FOOD_DES$Long_Desc[grepl('*flour[, ]*white*',FOOD_DES$Long_Desc)]
+location <- grep('*flour[, ]*white*',FOOD_DES$Long_Desc)
+nbd_no <- FOOD_DES$NBD_No[grep('*flour[, ]*white*',FOOD_DES$Long_Desc)]
+data.frame(Descrip = Description, loc = location, nbd = nbd_no)
+
+
+#Manually entering NBD_No to pull WEIGHT Table rows
+WEIGHT[which(WEIGHT$NBD_No == 20083),c('NBD_No','Seq','Amount','Msre_Desc','Gm_Wgt')]
+
+#Storinig NBD No to matrix
+NBD_SPP1936 <- c(NBD_SPP1936, '20083')
+#Storing Gm_Wgt to matrix
+SPP1936_converted_Gm_Wgt <- WEIGHT[which(WEIGHT$NBD_No == 20083),c('Gm_Wgt')]
+
+```
+
+
+Ingredient: *suet,beef,raw*
+
+I was able to narrow down the list of ingredients to 1 possible match by using `FOOD_DES$Long_Desc[grepl('suet',FOOD_DES$Long_Desc)]`
+
+
+Since I only had one result I cross-referenced that to the WEIGHTs table. It returned two sequences with measurements of ounce. This is different from the recipe's measurement of 1 lb. In order to convert ounces to pounds I used sequence 1. There are 16 oz in a pound so I multiplied the Gm_Wgt by 16 to get the Gm_Weight I'd use for suet,beef,raw.
+
+
+Description from Weights table = 'Beef, variety meats and by-products, suet, raw'
+NBD_No = 13335
+Original Mesurement = 1 lb
+Weight Table Measurement = 1 oz   -- conversion needed
+Gm_Wgt_converted = 453.6 oz
+
+```{r}
+Description <- FOOD_DES$Long_Desc[grepl('suet',FOOD_DES$Long_Desc)]
+location <- grep('suet',FOOD_DES$Long_Desc)
+nbd_no <- FOOD_DES$NBD_No[grep('suet',FOOD_DES$Long_Desc)]
+data.frame(Descrip = Description, loc = location, nbd = nbd_no)
+
+
+#Manually entering NBD_No to pull WEIGHT Table rows
+WEIGHT_subselect <- WEIGHT[which(WEIGHT$NBD_No == 13335),]
+
+#Filtering only by Seq 1
+WEIGHT_subselect <- WEIGHT_subselect[WEIGHT_subselect$Seq==1,]
+
+#Multiplyin Gm_Wgt by 16 make it equal to a 1 lb in 1936 recipe
+WEIGHT_subselect$Conversion <- WEIGHT_subselect$Gm_Wgt * 16
+WEIGHT_subselect
+
+#Storinig NBD No to matrix
+NBD_SPP1936 <- c(NBD_SPP1936, '13335')
+#Storing Gm_Wgt to matrix
+SPP1936_converted_Gm_Wgt <- c(SPP1936_converted_Gm_Wgt,453.6)
+
+```
+
+
+Ingredient: *raisins,without seeds,packed cup*
+
+I was able to narrow down the list of ingredients to 11 possible matchs by using `FOOD_DES$Long_Desc[grepl('Raisin',FOOD_DES$Long_Desc)]`
+
+
+I chose to use "Raisins, golden, seedless" as the original recipe called for raisins without seeds. This returned two results with measurements in cups. I chose to use the packed raisin measurement because the original recipe called for packed raisins. This is different from the recipe's measurement of 1 lb. I decided to convert the cup measurement to lbs using *www.theelevatedkitchen.com/guides/7* website. 1 lb of raisins ~= 3 cups
+
+
+Description from Weights table = 'Raisins, golden, seedless'
+NBD_No = 9297
+Original Mesurement = 1 lb
+Weight Table Measurement = 1 cup   -- conversion needed
+Gm_Wgt_converted = 495
+
+```{r}
+Description <- FOOD_DES$Long_Desc[grepl('Raisin',FOOD_DES$Long_Desc)]
+location <- grep('Raisin',FOOD_DES$Long_Desc)
+nbd_no <- FOOD_DES$NBD_No[grep('Raisin',FOOD_DES$Long_Desc)]
+data.frame(Descrip = Description, loc = location, nbd = nbd_no)
+
+
+#Manually entering NBD_No to pull WEIGHT Table rows
+WEIGHT_subselect <- WEIGHT[which(WEIGHT$NBD_No == 9297),]
+
+#Filtering only by Seq 1
+WEIGHT_subselect <- WEIGHT_subselect[WEIGHT_subselect$Seq==1,]
+
+#Multiplyin Gm_Wgt by 3 make it equal to 1 lb in 1936 recipe
+WEIGHT_subselect$Conversion <- WEIGHT_subselect$Gm_Wgt * 3
+WEIGHT_subselect
+
+#Storinig NBD No to matrix
+NBD_SPP1936 <- c(NBD_SPP1936, '9297')
+#Storing Gm_Wgt to matrix
+SPP1936_converted_Gm_Wgt <- c(SPP1936_converted_Gm_Wgt,495)
+
+```
+
+
+Ingredient: *candied fruit*
+
+I was able to narrow down the list of ingredients to 5 possible matchs by using `FOOD_DES$Long_Desc[grepl('^[C|c]andi[a-zA-z, ]*fruit',FOOD_DES$Long_Desc)]
+
+
+I tried to use "Candied fruit" as the original recipe called for canied fruit but that didn't return a match from the Weights table. Therefore I used "Candies, soft fruit and nut squares". This returned one result with a measurement in pieces. I couldn't find a good way to convert pieces into pounds so I used 15 pieces. I divided the Gm_Wgt by 3 to convert into piece and then multiplied by 15
+
+
+Description from Weights table = 'Candies, soft fruit and nut squares'
+NBD_No = 19866
+Original Mesurement = 1 lb
+Weight Table Measurement = 3 pieces    -- conversion needed
+Gm_Wgt_converted = 210
+
+```{r}
+Description <- FOOD_DES$Long_Desc[grepl('^[C|c]andi[a-zA-z, ]*fruit',FOOD_DES$Long_Desc)]
+location <- grep('^[C|c]andi[a-zA-z, ]*fruit',FOOD_DES$Long_Desc)
+nbd_no <- FOOD_DES$NBD_No[grep('^[C|c]andi[a-zA-z, ]*fruit',FOOD_DES$Long_Desc)]
+data.frame(Descrip = Description, loc = location, nbd = nbd_no)
+
+
+#Manually entering NBD_No to pull WEIGHT Table rows
+WEIGHT_subselect <- WEIGHT[which(WEIGHT$NBD_No == 19866),]
+
+#Filtering only by Seq 1
+#WEIGHT_subselect <- WEIGHT_subselect[WEIGHT_subselect$Seq==1,]
+
+#Multiplyin Gm_Wgt by 3 make it equal to 1 lb in 1936 recipe
+WEIGHT_subselect$Conversion <- (WEIGHT_subselect$Gm_Wgt / 3) * 15
+WEIGHT_subselect
+
+#Storinig NBD No to matrix
+NBD_SPP1936 <- c(NBD_SPP1936, '19866')
+#Storing Gm_Wgt to matrix
+SPP1936_converted_Gm_Wgt <- c(SPP1936_converted_Gm_Wgt,210)
+```
+
+
+Ingredient: *sugar,white,granulated,granulated*
+
+I was able to narrow down the list of ingredients to 22 possible matchs by using `FOOD_DES$Long_Desc[grepl('Sugar',FOOD_DES$Long_Desc)]`
+
+
+I tried to use "Sugars, granulated" as the original recipe called for white granulated sugar but I didn't want to use that measurement because it was in packets. Therefore I used "Sugars, powdered". This returned one result with a measurement in cups. The original recipe called for tablespoons. There are typically 16 Tbs in one cup. Therefore I took the original measure of 6 Tbs and divided that by 16 to get 0.375 cups. I then multiplied that by the Gm_Wgt from the WEIGHTS table to get 45.
+
+
+Description from Weights table = 'Sugars, powdered'
+NBD_No = 19336
+Original Mesurement = 6 Tbs
+Weight Table Measurement = 1 cup   -- conversion needed
+Gm_Wgt_converted = 45
+
+```{r}
+Description <- FOOD_DES$Long_Desc[grepl('Sugar',FOOD_DES$Long_Desc)]
+location <- grep('Sugar',FOOD_DES$Long_Desc)
+nbd_no <- FOOD_DES$NBD_No[grep('Sugar',FOOD_DES$Long_Desc)]
+data.frame(Descrip = Description, loc = location, nbd = nbd_no)
+
+
+#Manually entering NBD_No to pull WEIGHT Table rows
+WEIGHT_subselect <- WEIGHT[which(WEIGHT$NBD_No == 19336),]
+
+#Filtering only by Seq 1
+WEIGHT_subselect <- WEIGHT_subselect[WEIGHT_subselect$Seq==1,]
+
+#Multiplyin Gm_Wgt by 3 make it equal to 1 lb in 1936 recipe
+WEIGHT_subselect$Conversion <- WEIGHT_subselect$Gm_Wgt * 0.375
+WEIGHT_subselect
+
+#Storinig NBD No to matrix
+NBD_SPP1936 <- c(NBD_SPP1936, '19336')
+#Storing Gm_Wgt to matrix
+SPP1936_converted_Gm_Wgt <- c(SPP1936_converted_Gm_Wgt,45)
+```
+
+
+Ingredient: *egg,raw*
+
+I was able to narrow down the list of ingredients to 14 possible matchs by using `FOOD_DES$Long_Desc[grepl('Egg[a-zA-z, ]*raw',FOOD_DES$Long_Desc)]`
+
+
+I choose to use "Egg, whole, raw, fresh" as the original recipe called for 7 raw eggs in a measurement of large. This returned one result from the WEIGHTs table with a measurement in large therefore I didn't need to do any conversion except multiple the Gm_Wgt by 7 to get 350.
+
+
+Description from Weights table = 'Egg, whole, raw, fresh'
+NBD_No = 1123
+Original Mesurement = lrg
+Weight Table Measurement = lrg  -- no conversion needed
+Gm_Wgt_converted = 350
+
+```{r}
+Description <- FOOD_DES$Long_Desc[grepl('Egg[a-zA-z, ]*raw',FOOD_DES$Long_Desc)]
+location <- grep('Egg[a-zA-z, ]*raw',FOOD_DES$Long_Desc)
+nbd_no <- FOOD_DES$NBD_No[grep('Egg[a-zA-z, ]*raw',FOOD_DES$Long_Desc)]
+data.frame(Descrip = Description, loc = location, nbd = nbd_no)
+
+
+#Manually entering NBD_No to pull WEIGHT Table rows
+WEIGHT_subselect <- WEIGHT[which(WEIGHT$NBD_No == 1123),]
+
+#Filtering only by Seq 1
+WEIGHT_subselect <- WEIGHT_subselect[WEIGHT_subselect$Seq==1,]
+
+#Multiplyin Gm_Wgt by 3 make it equal to 1 lb in 1936 recipe
+WEIGHT_subselect$Conversion <- WEIGHT_subselect$Gm_Wgt * 7
+WEIGHT_subselect
+
+#Storinig NBD No to matrix
+NBD_SPP1936 <- c(NBD_SPP1936, '1123')
+#Storing Gm_Wgt to matrix
+SPP1936_converted_Gm_Wgt <- c(SPP1936_converted_Gm_Wgt,350)
+```
+
+Ingredient: *cream,whipping,heavy*
+
+I was able to narrow down the list of ingredients to 1 possible matchs by using `FOOD_DES$Long_Desc[grepl('Cream[a-zA-z, ]*heavy',FOOD_DES$Long_Desc)]`
+
+The original recipe called for tablespoons, and the WEIGHTs table measurement was in cups. There are typically 16 Tbs in one cup. Therefore I took the original measure of 4 TBS and divided that by 16 = 0.25. I then multiplied that by the Gm_Wgt from the WEIGHTS table to get 30.
+
+
+Description from Weights table = 'Cream, fluid, heavy whipping'
+NBD_No = 1053
+Original Mesurement = 4 Tbs
+Weight Table Measurement = 1 cup  -- conversion needed
+Gm_Wgt_converted = 30
+
+```{r}
+Description <- FOOD_DES$Long_Desc[grepl('Cream[a-zA-z, ]*heavy',FOOD_DES$Long_Desc)]
+location <- grep('Cream[a-zA-z, ]*heavy',FOOD_DES$Long_Desc)
+nbd_no <- FOOD_DES$NBD_No[grep('Cream[a-zA-z, ]*heavy',FOOD_DES$Long_Desc)]
+data.frame(Descrip = Description, loc = location, nbd = nbd_no)
+
+
+#Manually entering NBD_No to pull WEIGHT Table rows
+WEIGHT_subselect <- WEIGHT[which(WEIGHT$NBD_No == 1053),]
+
+#Filtering only by Seq 1
+WEIGHT_subselect <- WEIGHT_subselect[WEIGHT_subselect$Seq==1,]
+
+#Multiplyin Gm_Wgt by 3 make it equal to 1 lb in 1936 recipe
+WEIGHT_subselect$Conversion <- WEIGHT_subselect$Gm_Wgt * 0.25
+WEIGHT_subselect
+
+#Storinig NBD No to matrix
+NBD_SPP1936 <- c(NBD_SPP1936, '1053')
+#Storing Gm_Wgt to matrix
+SPP1936_converted_Gm_Wgt <- c(SPP1936_converted_Gm_Wgt,30)
+```
+
+
+Ingredient: *brandy,90 proof*
+
+I was able to narrow down the list of ingredients to 52 possible matchs by using `FOOD_DES$Long_Desc[grepl('Alcoholic beverage',FOOD_DES$Long_Desc)]`
+
+
+I choose to use "Alcoholic beverage, distilled, all (gin, rum, vodka, whiskey) 90 proof" because the original recipe was calling for 90 proof brandy and there wasn't any specific brandy description. The original recipe called for 1/2 a cup, and I choose the WEIGHTs table measurement sequence 1 which was in 1 fl oz. There are typically 8 fl oz. in one cup. Therefore I took the WEIGHTs table measurement and just multiplied it by 4 because there would be 4 fl oz. in half a cup.
+
+
+Description from Weights table = 'Alcoholic beverage, distilled, all (gin, rum, vodka, whiskey) 90 proof'
+NBD_No = 14551
+Original Mesurement = 0.5 cups
+Weight Table Measurement = 1 fl oz.  -- conversion needed
+Gm_Wgt_converted = 111.2
+
+```{r}
+Description <- FOOD_DES$Long_Desc[grepl('Alcoholic beverage',FOOD_DES$Long_Desc)]
+location <- grep('Alcoholic beverage',FOOD_DES$Long_Desc)
+nbd_no <- FOOD_DES$NBD_No[grep('Alcoholic beverage',FOOD_DES$Long_Desc)]
+data.frame(Descrip = Description, loc = location, nbd = nbd_no)
+
+
+#Manually entering NBD_No to pull WEIGHT Table rows
+WEIGHT_subselect <- WEIGHT[which(WEIGHT$NBD_No == 14551),]
+
+#Filtering only by Seq 1
+WEIGHT_subselect <- WEIGHT_subselect[WEIGHT_subselect$Seq==1,]
+
+#Multiplyin Gm_Wgt by 3 make it equal to 1 lb in 1936 recipe
+WEIGHT_subselect$Conversion <- WEIGHT_subselect$Gm_Wgt * 4
+WEIGHT_subselect
+
+#Storinig NBD No to matrix
+NBD_SPP1936 <- c(NBD_SPP1936, '14551')
+#Storing Gm_Wgt to matrix
+SPP1936_converted_Gm_Wgt <- c(SPP1936_converted_Gm_Wgt,111.2)
+```
+
+Ingredient: *bread crumbs,plain,dry,grated*
+
+I was able to narrow down the list of ingredients to 1 possible matchs by using `FOOD_DES$Long_Desc[grepl('crumbs[a-zA-Z, ]*plain',FOOD_DES$Long_Desc)]`
+
+
+I choose to use sequence 2 from the WEIGHTs table because it was in cups and the original recipe called for it in cups. The original recipe called for 3 cups of bread crumbs so I needed to multiple the Gm_Wgt by 3 because the Gm_Wgt was in 1 cup.
+
+
+Description from Weights table = 'Bread, crumbs, dry, grated, plain'
+NBD_No = 18079
+Original Mesurement = 3 cups
+Weight Table Measurement = 1 cup.  -- multiplication needed
+Gm_Wgt_converted = 324
+
+```{r}
+Description <- FOOD_DES$Long_Desc[grepl('crumbs[a-zA-Z, ]*plain',FOOD_DES$Long_Desc)]
+location <- grep('crumbs[a-zA-Z, ]*plain',FOOD_DES$Long_Desc)
+nbd_no <- FOOD_DES$NBD_No[grep('crumbs[a-zA-Z, ]*plain',FOOD_DES$Long_Desc)]
+data.frame(Descrip = Description, loc = location, nbd = nbd_no)
+
+
+#Manually entering NBD_No to pull WEIGHT Table rows
+WEIGHT_subselect <- WEIGHT[which(WEIGHT$NBD_No == 18079),]
+
+#Filtering only by Seq 1
+WEIGHT_subselect <- WEIGHT_subselect[WEIGHT_subselect$Seq==2,]
+
+#Multiplyin Gm_Wgt by 3 make it equal to 1 lb in 1936 recipe
+WEIGHT_subselect$Conversion <- WEIGHT_subselect$Gm_Wgt *3
+WEIGHT_subselect
+
+#Storinig NBD No to matrix
+NBD_SPP1936 <- c(NBD_SPP1936, '18079')
+#Storing Gm_Wgt to matrix
+SPP1936_converted_Gm_Wgt <- c(SPP1936_converted_Gm_Wgt,324)
+```
+
+
+
+
+#Steamed Plum Pudding 2006:
+
+
+Ingredient: *raisins,without seeds,packed cup*
+
+This ingredient was the same from the 1936 recipe so I used the same NBD_No of 9297. However the measurement's were different. The 1936 recipe called for 1lb. THe 2006 recipe calls for 2.67 cups. Because the Weights table sequence 1 is in cups all I had to do was multiply by 2.67 to get the correct Gm_Wgt
+
+
+```{r}
+Description <- FOOD_DES$Long_Desc[grepl('Raisin',FOOD_DES$Long_Desc)]
+location <- grep('Raisin',FOOD_DES$Long_Desc)
+nbd_no <- FOOD_DES$NBD_No[grep('Raisin',FOOD_DES$Long_Desc)]
+data.frame(Descrip = Description, loc = location, nbd = nbd_no)
+
+
+#Manually entering NBD_No to pull WEIGHT Table rows
+WEIGHT_subselect <- WEIGHT[which(WEIGHT$NBD_No == 9297),]
+
+#Filtering only by Seq 1
+WEIGHT_subselect <- WEIGHT_subselect[WEIGHT_subselect$Seq==1,]
+
+#Multiplyin Gm_Wgt by 2.67 
+WEIGHT_subselect$Conversion <- WEIGHT_subselect$Gm_Wgt * 2.67
+WEIGHT_subselect
+
+
+#Storinig NBD No to matrix
+NBD_SPP2006 <- c(NBD_SPP2006, '9297')
+#Storing Gm_Wgt to matrix
+SPP2006_converted_Gm_Wgt <- c(SPP2006_converted_Gm_Wgt,440.55)
+```
+
+
+
+Ingredient: *currants, zante, dried*
+
+I was able to narrow down the list of ingredients to 3 possible matchs by using `FOOD_DES$Long_Desc[grepl('Currants[a-zA-Z, ]',FOOD_DES$Long_Desc)]`. I thought this was a good match because the recipe called for zante, dried which was in the ingredient name.
+
+
+The original recipe called for 2 cups and the WEIGHTs table is in 1 cup. Therefore to get the correct Gm_Wgt I multiplied the Gm_Wgt by 2.
+
+
+Description from Weights table = 'Currants, zante, dried'
+NBD_No = 18079
+Original Mesurement = 3 cups
+Weight Table Measurement = 1 cup.  -- multiplication needed
+Gm_Wgt_converted = 324
+
+```{r}
+Description <- FOOD_DES$Long_Desc[grepl('Currants[a-zA-Z, ]',FOOD_DES$Long_Desc)]
+location <- grep('Currants[a-zA-Z, ]',FOOD_DES$Long_Desc)
+nbd_no <- FOOD_DES$NBD_No[grep('Currants[a-zA-Z, ]',FOOD_DES$Long_Desc)]
+data.frame(Descrip = Description, loc = location, nbd = nbd_no)
+
+
+#Manually entering NBD_No to pull WEIGHT Table rows
+WEIGHT_subselect <- WEIGHT[which(WEIGHT$NBD_No == 9085),]
+
+#Filtering only by Seq 2
+#WEIGHT_subselect <- WEIGHT_subselect[WEIGHT_subselect$Seq==2,]
+
+#Multiplyin Gm_Wgt by 2
+WEIGHT_subselect$Conversion <- WEIGHT_subselect$Gm_Wgt * 2
+WEIGHT_subselect
+
+
+#Storinig NBD No to matrix
+NBD_SPP2006 <- c(NBD_SPP2006, '9085')
+#Storing Gm_Wgt to matrix
+SPP2006_converted_Gm_Wgt <- c(SPP2006_converted_Gm_Wgt,288)
+```
+
+Ingredient: *flour,all purpose,self rising,enriched*
+
+I was able to narrow down the list of ingredients to 7 possible matchs by using `FOOD_DES$Long_Desc[grepl('self-rising',FOOD_DES$Long_Desc)]`. Even though the ingredient didn't have white in its name it had self-rising which I thought would be one of the most important attributes to have.
+
+
+The original recipe called for 1.5 cups and the WEIGHTs table is in 1 cup. Therefore to get the correct Gm_Wgt I multiplied the Gm_Wgt by 1.5.
+
+
+Description from Weights table = 'Wheat flour, white, all-purpose, self-rising, enriched '
+NBD_No = 20082
+Original Mesurement = 1.5 cups
+Weight Table Measurement = 1 cup.  -- no conversion needed
+Gm_Wgt_converted = 187.5
+
+```{r}
+Description <- FOOD_DES$Long_Desc[grepl('self-rising',FOOD_DES$Long_Desc)]
+location <- grep('self-rising',FOOD_DES$Long_Desc)
+nbd_no <- FOOD_DES$NBD_No[grep('self-rising',FOOD_DES$Long_Desc)]
+data.frame(Descrip = Description, loc = location, nbd = nbd_no)
+
+
+#Manually entering NBD_No to pull WEIGHT Table rows
+WEIGHT_subselect <- WEIGHT[which(WEIGHT$NBD_No == 20082),]
+
+#Filtering only by Seq 2
+#WEIGHT_subselect <- WEIGHT_subselect[WEIGHT_subselect$Seq==2,]
+
+#Multiplyin Gm_Wgt by 1.5
+WEIGHT_subselect$Conversion <- WEIGHT_subselect$Gm_Wgt * 1.5
+WEIGHT_subselect
+
+
+#Storinig NBD No to matrix
+NBD_SPP2006 <- c(NBD_SPP2006, '20082')
+#Storing Gm_Wgt to matrix
+SPP2006_converted_Gm_Wgt <- c(SPP2006_converted_Gm_Wgt,187.5)
+```
+
+Ingredient: *suet,beef,raw*
+
+I was able to narrow down the list of ingredients to 1 possible matchs by using `FOOD_DES$Long_Desc[grepl('suet',FOOD_DES$Long_Desc)]`.
+
+
+The original recipe called for 8 ounces and the WEIGHTs table had sequences in 1 and/ 4 ounces. I choose to use sequence one in 1 oz. To get the correct Gm_Wgt I multiplied the Gm_Wgt by 8
+
+
+Description from Weights table = 'Beef, variety meats and by-products, suet, raw'
+NBD_No = 13335
+Original Mesurement = 8 oz
+Weight Table Measurement = 1 oz  -- no conversion needed
+Gm_Wgt_converted = 904
+
+```{r}
+Description <- FOOD_DES$Long_Desc[grepl('suet',FOOD_DES$Long_Desc)]
+location <- grep('suet',FOOD_DES$Long_Desc)
+nbd_no <- FOOD_DES$NBD_No[grep('suet',FOOD_DES$Long_Desc)]
+data.frame(Descrip = Description, loc = location, nbd = nbd_no)
+
+
+#Manually entering NBD_No to pull WEIGHT Table rows
+WEIGHT_subselect <- WEIGHT[which(WEIGHT$NBD_No == 13335	),]
+
+#Filtering only by Seq 2
+WEIGHT_subselect <- WEIGHT_subselect[WEIGHT_subselect$Seq==2,]
+
+#Multiplyin Gm_Wgt by 8
+WEIGHT_subselect$Conversion <- WEIGHT_subselect$Gm_Wgt * 8 
+WEIGHT_subselect
+
+
+#Storinig NBD No to matrix
+NBD_SPP2006 <- c(NBD_SPP2006, '13335')
+#Storing Gm_Wgt to matrix
+SPP2006_converted_Gm_Wgt <- c(SPP2006_converted_Gm_Wgt,904)
+```
+
+Ingredient: *sugar,brown,dark*
+
+I was able to narrow down the list of ingredients to 1 possible matchs by using `FOOD_DES$Long_Desc[grepl('Sugar[a-zA-Z, ]*brown*',FOOD_DES$Long_Desc)]`.
+
+
+The original recipe called for 1 cup and the WEIGHTs table had 5 sequences. I choose to take the 'cup packed' sequence because usually when following a recipe they'll call for packed cups of sugar. I took the Gm_Wgt as is. 
+
+
+Description from Weights table = 'Sugars, brown'
+NBD_No = 19334
+Original Mesurement = 1 cup
+Weight Table Measurement = 1 cup  -- no conversion needed
+Gm_Wgt_converted = 220
+
+```{r}
+Description <- FOOD_DES$Long_Desc[grepl('Sugar[a-zA-Z, ]*brown*',FOOD_DES$Long_Desc)]
+location <- grep('Sugar[a-zA-Z, ]*brown*',FOOD_DES$Long_Desc)
+nbd_no <- FOOD_DES$NBD_No[grep('Sugar[a-zA-Z, ]*brown*',FOOD_DES$Long_Desc)]
+data.frame(Descrip = Description, loc = location, nbd = nbd_no)
+
+
+#Manually entering NBD_No to pull WEIGHT Table rows
+WEIGHT_subselect <- WEIGHT[which(WEIGHT$NBD_No == 19334	),]
+
+#Filtering only by Seq 2
+WEIGHT_subselect <- WEIGHT_subselect[WEIGHT_subselect$Seq==2,]
+WEIGHT_subselect
+
+#Storinig NBD No to matrix
+NBD_SPP2006 <- c(NBD_SPP2006, '19334')
+#Storing Gm_Wgt to matrix
+SPP2006_converted_Gm_Wgt <- c(SPP2006_converted_Gm_Wgt,220)
+```
+
+
+Ingredient: *egg,raw*
+
+This ingredient was the same from the 1936 recipe so I used the same NBD_No of 1123. However the measurement's were different. The 1936 recipe called for 7 eggs and the 2006 recipe calls for 4 eggs. Because the Weights table is by one egg all I had to do was multiply by 4 to get the correct Gm_Wgt.
+
+```{r}
+Description <- FOOD_DES$Long_Desc[grepl('Egg[a-zA-z, ]*raw',FOOD_DES$Long_Desc)]
+location <- grep('Egg[a-zA-z, ]*raw',FOOD_DES$Long_Desc)
+nbd_no <- FOOD_DES$NBD_No[grep('Egg[a-zA-z, ]*raw',FOOD_DES$Long_Desc)]
+data.frame(Descrip = Description, loc = location, nbd = nbd_no)
+
+
+#Manually entering NBD_No to pull WEIGHT Table rows
+WEIGHT_subselect <- WEIGHT[which(WEIGHT$NBD_No == 1123),]
+
+#Filtering only by Seq 1
+WEIGHT_subselect <- WEIGHT_subselect[WEIGHT_subselect$Seq==1,]
+
+#Multiplyin Gm_Wgt by 4
+WEIGHT_subselect$Conversion <- WEIGHT_subselect$Gm_Wgt * 4
+WEIGHT_subselect
+
+#Storinig NBD No to matrix
+NBD_SPP2006 <- c(NBD_SPP2006, '1123')
+#Storing Gm_Wgt to matrix
+SPP2006_converted_Gm_Wgt <- c(SPP2006_converted_Gm_Wgt,200)
+
+```
+
+Ingredient: *brandy,90 proof*
+
+This ingredient was the same from the 1936 recipe so I used the same NBD_No of 14551. However the measurement's were different. The 1936 recipe called for 0.5 cups and the 2006 recipe calls for 0.83 cups. Using a cup to fluid ounce converter online I was able to calculate 0.83 cups = 6.64 fluid ounces. To get the proper Gm_Wgt I then multipied it by 6.64 because it was in 1 fl oz.
+
+```{r}
+Description <- FOOD_DES$Long_Desc[grepl('Alcoholic beverage',FOOD_DES$Long_Desc)]
+location <- grep('Alcoholic beverage',FOOD_DES$Long_Desc)
+nbd_no <- FOOD_DES$NBD_No[grep('Alcoholic beverage',FOOD_DES$Long_Desc)]
+data.frame(Descrip = Description, loc = location, nbd = nbd_no)
+
+
+#Manually entering NBD_No to pull WEIGHT Table rows
+WEIGHT_subselect <- WEIGHT[which(WEIGHT$NBD_No == 14551),]
+
+#Filtering only by Seq 1
+WEIGHT_subselect <- WEIGHT_subselect[WEIGHT_subselect$Seq==1,]
+
+#Multiplyin Gm_Wgt by 6.63
+WEIGHT_subselect$Conversion <- WEIGHT_subselect$Gm_Wgt * 6.63
+WEIGHT_subselect
+
+#Storinig NBD No to matrix
+NBD_SPP2006 <- c(NBD_SPP2006, '14551')
+#Storing Gm_Wgt to matrix
+SPP2006_converted_Gm_Wgt <- c(SPP2006_converted_Gm_Wgt,184.31)
+
+```
+
+
+Ingredient: *sherry, cooking*
+
+I was able to narrow down the list of ingredients to 14 possible match by using `FOOD_DES$Long_Desc[grepl('wine',FOOD_DES$Long_Desc)]`. Sherry is a wine made from white grapes, so I chose to use 'Alcoholic beverage, wine, table, white'. I was not able to find sherry as description anywhere within the Description table
+
+
+The WEIGHTs table returned 2 different sequences. I chose to use sequence one in 1 fl oz. because I could more easily convert that then 1 serving. The recipe calls for 0.33 cups. Using a converted online 0.33 cups = 2.64 fluid ounces. In order to get the correct Gm_Wgt I needed to multiply the Gm_Wgt by 2.64.
+
+
+Description from Weights table = 'Alcoholic beverage, wine, table, white'
+NBD_No = 14106
+Original Mesurement = 0.33 cups
+Weight Table Measurement = 1 fl oz.  -- conversion required
+Gm_Wgt_converted = 77.6
+
+```{r}
+Description <- FOOD_DES$Long_Desc[grepl('wine[a-zA-Z, ]*white',FOOD_DES$Long_Desc)]
+location <- grep('wine[a-zA-Z, ]*white',FOOD_DES$Long_Desc)
+nbd_no <- FOOD_DES$NBD_No[grep('wine[a-zA-Z, ]*white',FOOD_DES$Long_Desc)]
+data.frame(Descrip = Description, loc = location, nbd = nbd_no)
+
+
+#Manually entering NBD_No to pull WEIGHT Table rows
+WEIGHT_subselect <- WEIGHT[which(WEIGHT$NBD_No == 14106),]
+
+#Filtering only by Seq 1
+WEIGHT_subselect <- WEIGHT_subselect[WEIGHT_subselect$Seq==1,]
+
+#Multiplyin Gm_Wgt by 2.64
+WEIGHT_subselect$Conversion <- WEIGHT_subselect$Gm_Wgt * 2.64
+WEIGHT_subselect
+
+#Storinig NBD No to matrix
+NBD_SPP2006 <- c(NBD_SPP2006, '14106')
+#Storing Gm_Wgt to matrix
+SPP2006_converted_Gm_Wgt <- c(SPP2006_converted_Gm_Wgt,77.6)
+```
+
+
+# Welsh Rarebit 1936
+
+Ingredient: *butter, salted*
+
+I was able to narrow down the list of ingredients to 1 possible match by using `FOOD_DES$Long_Desc[grepl('Butter, salted',FOOD_DES$Long_Desc)]`
+
+
+The WEIGHTs table returned four different choices. I choose sequence 2 because the measurement was in 1 tbsp, and the recipe is in Tbs. Since there are 3 teaspoons in 1 tablespoon I multipled the Gm_Wgt column by 3 to get the correct Gm_Wgt.
+
+
+Description from Weights table = 'Butter, salted'
+NBD_No = 1001
+Original Mesurement = 1.0 Tbs
+Weight Table Measurement = 1 tbsp.  -- multiplication needed
+Gm_Wgt_converted = 42.6
+
+```{r}
+Description <- FOOD_DES$Long_Desc[grepl('Butter, salted',FOOD_DES$Long_Desc)]
+location <- grep('Butter, salted',FOOD_DES$Long_Desc)
+nbd_no <- FOOD_DES$NBD_No[grep('Butter, salted',FOOD_DES$Long_Desc)]
+data.frame(Descrip = Description, loc = location, nbd = nbd_no)
+
+
+#Manually entering NBD_No to pull WEIGHT Table rows
+WEIGHT_subselect <- WEIGHT[which(WEIGHT$NBD_No == 1001),]
+
+#Filtering only by Seq 2
+WEIGHT_subselect <- WEIGHT_subselect[WEIGHT_subselect$Seq==2,]
+
+#Multiplyin Gm_Wgt by 3
+WEIGHT_subselect$Conversion <- WEIGHT_subselect$Gm_Wgt * 3
+WEIGHT_subselect
+
+#Storinig NBD No to matrix
+NBD_WR1936 <- c(NBD_WR1936, '1001')
+#Storing Gm_Wgt to matrix
+WR1936_converted_Gm_Wgt <- c(WR1936_converted_Gm_Wgt,42.6)
+```
+
+
+Ingredient: *cheese,cheddar,shredded*
+
+I was able to narrow down the list of ingredients to 4 possible match by using `FOOD_DES$Long_Desc[grepl('Cheese[, ]*cheddar*',FOOD_DES$Long_Desc)]`. I chose to use 'Cheese, cheddar (Includes foods for USDA's Food Distribution Program)' because I didn't see anything that stated shredded, and I didn't want to select sliced or nonfat cheese. If you searched for cheese and shredded, `grepl('[C|c]heese[a-zA-Z, ]*shredded*`, you only got cheese, parmesan, shredded and I needed cheddar cheese not parmesan cheese.
+
+
+The WEIGHTs table returned five different sequences. I chose sequence 3 because it allowed me to fill the requirement of shredded that I wasn't able to in the description search. The recipe states 1/2 lb of cheese and the WEIGHTs table is by 1 cup. I was able to find online https://www.goodcooking.com/conversions/ingrmeas.htm that approximately 1 cup of grated cheese is 4 ounces. With 16 ounces in a pound I'll multiply that measurement by 2 to get 1/2 lb of cheese. Therefore I need to multiply Gm_Wgt by 2 to get the correct Gm_Wgt
+
+
+Description from Weights table = 'Cheese, cheddar (Includes foods for USDA's Food Distribution Program)'
+NBD_No = 1009
+Original Mesurement = 0.5 lb
+Weight Table Measurement = 1 cup  -- conversion needed
+Gm_Wgt_converted = 226
+
+```{r}
+Description <- FOOD_DES$Long_Desc[grepl('Cheese[, ]*cheddar*',FOOD_DES$Long_Desc)]
+location <- grep('Cheese[, ]*cheddar*',FOOD_DES$Long_Desc)
+nbd_no <- FOOD_DES$NBD_No[grep('Cheese[, ]*cheddar*',FOOD_DES$Long_Desc)]
+data.frame(Descrip = Description, loc = location, nbd = nbd_no)
+
+
+#Manually entering NBD_No to pull WEIGHT Table rows
+WEIGHT_subselect <- WEIGHT[which(WEIGHT$NBD_No == 1009),]
+
+#Filtering only by Seq 3
+WEIGHT_subselect <- WEIGHT_subselect[WEIGHT_subselect$Seq==3,]
+
+#Multiplyin Gm_Wgt by 2
+WEIGHT_subselect$Conversion <- WEIGHT_subselect$Gm_Wgt * 2
+WEIGHT_subselect
+
+#Storinig NBD No to matrix
+NBD_WR1936 <- c(NBD_WR1936, '1009')
+#Storing Gm_Wgt to matrix
+WR1936_converted_Gm_Wgt <- c(WR1936_converted_Gm_Wgt,226)
+```
+
+
+Ingredient: *beer*
+
+I was able to narrow down the list of ingredients to 13 possible match by using `FOOD_DES$Long_Desc[grepl('beer',FOOD_DES$Long_Desc)]`. I chose to use "Alcoholic beverage, beer, regular, all" because the recipe doesn't specify light or dark beer, so I figured regular would fit the bill for that.
+
+
+The WEIGHTs table returned 2 different sequences. The recipe asks for 0.5 cups of beer, and the WEIGHTs table is in fl oz, and cups. I chose sequence 1, which was fl oz., because I can convert more easily to cups. There are 8 fluid ounces in 1 cup. To get half a cup I'll divid the fluid ouces by 2 and then muliply 4 by the Gm_Wgt to get the correct Gm_Wgt.
+
+
+Description from Weights table = 'Alcoholic beverage, beer, regular, all  '
+NBD_No = 14003
+Original Mesurement = 0.5 lb
+Weight Table Measurement = 1 fl oz.  -- conversion needed
+Gm_Wgt_converted = 118.8
+
+```{r}
+Description <- FOOD_DES$Long_Desc[grepl('beer',FOOD_DES$Long_Desc)]
+location <- grep('beer',FOOD_DES$Long_Desc)
+nbd_no <- FOOD_DES$NBD_No[grep('beer',FOOD_DES$Long_Desc)]
+data.frame(Descrip = Description, loc = location, nbd = nbd_no)
+
+
+#Manually entering NBD_No to pull WEIGHT Table rows
+WEIGHT_subselect <- WEIGHT[which(WEIGHT$NBD_No == 14003),]
+
+#Filtering only by Seq 1
+WEIGHT_subselect <- WEIGHT_subselect[WEIGHT_subselect$Seq==1,]
+
+#Multiplyin Gm_Wgt by 4
+WEIGHT_subselect$Conversion <- WEIGHT_subselect$Gm_Wgt * 4
+WEIGHT_subselect
+
+#Storinig NBD No to matrix
+NBD_WR1936 <- c(NBD_WR1936, '14003')
+#Storing Gm_Wgt to matrix
+WR1936_converted_Gm_Wgt <- c(WR1936_converted_Gm_Wgt,118.8)
+```
+
+# Welsh Rarebit 2006
+
+Ingredient: *butter,salted*
+
+This ingredient was the same from the 1936 recipe so I used the same NBD_No of 1001. The measurements were also the same so I kept the converstion the same.
+
+
+```{r}
+Description <- FOOD_DES$Long_Desc[grepl('Butter, salted',FOOD_DES$Long_Desc)]
+location <- grep('Butter, salted',FOOD_DES$Long_Desc)
+nbd_no <- FOOD_DES$NBD_No[grep('Butter, salted',FOOD_DES$Long_Desc)]
+data.frame(Descrip = Description, loc = location, nbd = nbd_no)
+
+
+#Manually entering NBD_No to pull WEIGHT Table rows
+WEIGHT_subselect <- WEIGHT[which(WEIGHT$NBD_No == 1001),]
+
+#Filtering only by Seq 2
+WEIGHT_subselect <- WEIGHT_subselect[WEIGHT_subselect$Seq==2,]
+
+#Multiplyin Gm_Wgt by 3
+WEIGHT_subselect$Conversion <- WEIGHT_subselect$Gm_Wgt * 3
+WEIGHT_subselect
+
+#Storinig NBD No to matrix
+NBD_WR2006 <- c(NBD_WR2006, '1001')
+#Storing Gm_Wgt to matrix
+WR2006_converted_Gm_Wgt <- c(WR2006_converted_Gm_Wgt,42.6)
+```
+
+Ingredient: *beer*
+
+This ingredient was the same from the 1936 recipe so I used the same NBD_No of 14003. The measurements stayed in the same unit, however the 2006 recipe now calls for 1 cup of beer. Therefore for the conversion from fl oz. to cups I will multiply by 8.
+
+```{r}
+Description <- FOOD_DES$Long_Desc[grepl('beer',FOOD_DES$Long_Desc)]
+location <- grep('beer',FOOD_DES$Long_Desc)
+nbd_no <- FOOD_DES$NBD_No[grep('beer',FOOD_DES$Long_Desc)]
+data.frame(Descrip = Description, loc = location, nbd = nbd_no)
+
+
+#Manually entering NBD_No to pull WEIGHT Table rows
+WEIGHT_subselect <- WEIGHT[which(WEIGHT$NBD_No == 14003),]
+
+#Filtering only by Seq 1
+WEIGHT_subselect <- WEIGHT_subselect[WEIGHT_subselect$Seq==1,]
+
+#Multiplyin Gm_Wgt by 4
+WEIGHT_subselect$Conversion <- WEIGHT_subselect$Gm_Wgt * 8
+WEIGHT_subselect
+
+#Storinig NBD No to matrix
+NBD_WR2006 <- c(NBD_WR2006, '14003')
+#Storing Gm_Wgt to matrix
+WR2006_converted_Gm_Wgt <- c(WR2006_converted_Gm_Wgt,237.6)
+```
+
+Ingredient: *cheese,cheddar,shredded*
+
+This ingredient was the same from the 1936 recipe so I used the same NBD_No of 1009. The measurements stayed in the same unit, however the 2006 recipe now calls for 1 lb of cheese. Therefore for the conversion from cup to lbs I will now multiply by 8.
+
+```{r}
+Description <- FOOD_DES$Long_Desc[grepl('Cheese[, ]*cheddar*',FOOD_DES$Long_Desc)]
+location <- grep('Cheese[, ]*cheddar*',FOOD_DES$Long_Desc)
+nbd_no <- FOOD_DES$NBD_No[grep('Cheese[, ]*cheddar*',FOOD_DES$Long_Desc)]
+data.frame(Descrip = Description, loc = location, nbd = nbd_no)
+
+
+#Manually entering NBD_No to pull WEIGHT Table rows
+WEIGHT_subselect <- WEIGHT[which(WEIGHT$NBD_No == 1009),]
+
+#Filtering only by Seq 3
+WEIGHT_subselect <- WEIGHT_subselect[WEIGHT_subselect$Seq==3,]
+
+#Multiplyin Gm_Wgt by 2
+WEIGHT_subselect$Conversion <- WEIGHT_subselect$Gm_Wgt * 8
+WEIGHT_subselect
+
+#Storinig NBD No to matrix
+NBD_WR2006 <- c(NBD_WR2006, '1009')
+#Storing Gm_Wgt to matrix
+WR2006_converted_Gm_Wgt <- c(WR2006_converted_Gm_Wgt,904)
+```
+
+
+Ingredient: *worcestershire sauce*
+
+I was able to narrow down the list of ingredients to 1 possible match by using `FOOD_DES$Long_Desc[grepl('worcestershire',FOOD_DES$Long_Desc)]`
+
+The WEIGHTs table returned 2 different sequences. The first sequence is 1 tablespoon and the second sequence is 1 cup. The recipe calls for 1 tablespoon so I chose the 1st sequence. 
+
+Description from Weights table = 'Sauce, worcestershire'
+NBD_No = 6971
+Original Mesurement = 1 tsp
+Weight Table Measurement = 1 tbsp  -- conversion needed
+Gm_Wgt_converted = 226
+
+```{r}
+Description <- FOOD_DES$Long_Desc[grepl('worcestershire',FOOD_DES$Long_Desc)]
+location <- grep('worcestershire',FOOD_DES$Long_Desc)
+nbd_no <- FOOD_DES$NBD_No[grep('worcestershire',FOOD_DES$Long_Desc)]
+data.frame(Descrip = Description, loc = location, nbd = nbd_no)
+
+
+#Manually entering NBD_No to pull WEIGHT Table rows
+WEIGHT_subselect <- WEIGHT[which(WEIGHT$NBD_No == 6971),]
+
+#Filtering only by Seq 1
+WEIGHT_subselect <- WEIGHT_subselect[WEIGHT_subselect$Seq==1,]
+WEIGHT_subselect
+
+#Storinig NBD No to matrix
+NBD_WR2006 <- c(NBD_WR2006, '6971')
+#Storing Gm_Wgt to matrix
+WR2006_converted_Gm_Wgt <- c(WR2006_converted_Gm_Wgt,17)
+```
+
+
+
+#Step 5 -- Checking length of vectors
+
+This is a data verification step just to ensure that my vector lengths are the same within each recipe / year for the NBD No. & Gm_Wgt No.
+
+
+```{r}
+
+# Vectors for Steamed Plum Pudding 1936
+NBD_SPP1936
+SPP1936_converted_Gm_Wgt
+
+length(NBD_SPP1936)
+length(SPP1936_converted_Gm_Wgt)
+
+# Vectors for Steamed Plum Pudding 2006
+NBD_SPP2006
+SPP2006_converted_Gm_Wgt
+
+length(NBD_SPP2006)
+length(SPP2006_converted_Gm_Wgt)
+
+# Vectors for Welse Rarebit 1936
+NBD_WR1936
+WR1936_converted_Gm_Wgt
+
+length(NBD_WR1936)
+length(WR1936_converted_Gm_Wgt)
+
+
+# Vectors for Welse Rarebit 2006
+NBD_WR2006
+WR2006_converted_Gm_Wgt
+
+length(NBD_WR2006)
+length(WR2006_converted_Gm_Wgt)
+
+```
+
+# Step 6 -- Merging our created vectors of NBD No. & Gm_Wgt with the recipes
+
+In this step we will add the NBD No. & Gm_Wgt to each recipe. This step is very similar to Step 3 but I'm limiting it by the specific recipes assigned to me. I don't want to try and add NBD No. $ Gm_Wgt to Beef Stroganoff because I didn't pull the data for those.
+
+Once that has been accomplised we will export the dataframes again. This export will be the final export of the files. 
+
+
+
+
+```{r}
+filenames <- list.files(path="C:/Users/MMSPECLAY/Desktop/Personal/DSU/STAT 700_Statistical_Programming/Midterm_Project/assigned_recipes",
+    pattern="*.tab$")
+filenames
+```
+
+
+
+```{r}
+filenames <- c("SteamedPlumPudding.1936.tab","SteamedPlumPudding.2006.tab","WelshRarebit.1936.tab","WelshRarebit.2006.tab")
+
+
+#Looping through all filenames
+for (i in 1:length(filenames)) {
+  
+  #If filename has .tab in the name of it remove it
+  filename <- gsub(".tab","",filenames[i])
+  
+  #Seperating file names by the  '.' symbol. For merging everyone else's files this might have to be tweaked a little bit if their naming convention is a little different
+  filename <- unlist(strsplit(filename, split="\\."))  # for dot seperator use \\.
+  
+  #Importing data and storing as data
+  data <- read.table(filenames[i], header = T, sep = "")
+
+
+  #Explicitly assigning Name and Year to the read in table
+  data$Year <- rep(filename[2],nrow(data))
+  data$Recipe <- rep(filename[1],nrow(data))
+  
+  #Assigning NBD No. & Gm_Wgt and writing table again
+  if (filename[1] == 'SteamedPlumPudding' & filename[2] == '1936') {
+      data$NBD_No <- NBD_SPP1936
+      data$Gm_Wgt <- SPP1936_converted_Gm_Wgt
+      write.table(data, "SteamedPlumPudding.1936.tab", sep = "\t")
+      } else if (filename[1] == 'SteamedPlumPudding' & filename[2] == '2006') {
+      data$NBD_No <- NBD_SPP2006
+      data$Gm_Wgt <- SPP2006_converted_Gm_Wgt
+      write.table(data, "SteamedPlumPudding.2006.tab", sep = "\t")
+      } else if (filename[1] == 'WelshRarebit' & filename[2] == '1936') {
+      data$NBD_No <- NBD_WR1936
+      data$Gm_Wgt <- WR1936_converted_Gm_Wgt   
+      write.table(data, "WelshRarebit.1936.tab", sep = "\t")
+      } else if (filename[1] == 'WelshRarebit' & filename[2] == '2006') {
+      data$NBD_No <- NBD_WR2006
+      data$Gm_Wgt <- WR2006_converted_Gm_Wgt
+      write.table(data, "WelshRarebit.2006.tab", sep = "\t")
+      }
+  
+  
+  #Reordering columns
+  data <- data[c("Year","Recipe","Amount","Measure","Ingredient","NBD_No","Gm_Wgt")]
+  print(data)
+  #data <- NULL
+}  
+  
+```
+
+
+

@@ -1,0 +1,135 @@
+---
+title: "MidTermProject"
+author: "Set 27"
+date: "July 17, 2018"
+output:
+  html_document: default
+---
+
+The recipes assigned and used in this project are "Chicken Salad" and "Brussels Sprouts with Chestnuts" for year 1936 and 2006. First create a data table from vectors for each listed recipe above. Each data table includes three columns; "Amount", "Unit" and "Ingredient". The data in the pdf file is difficult to import in R. It is a scanned document converted to pdf format. So the tables are ceated and populated manually. 
+```{r}
+ChickenSalad36 <- data.frame(
+                         Amount=c(8,1,1),
+                         Measure=c("oz","cup","cup"),
+                         Ingredient=c("chicken, 60/40 white & dark meat, frozen, cooked, ready to pull,low sodium, food service", "celery, fresh, diced","mayonnaise"))
+
+BrusSprout36 <- data.frame(
+                         Amount=c(2.0,0.5,3.0,0.25),
+                         Measure=c("cup","lb","Tbs","cup"),
+                         Ingredient=c("brussels sprouts, cooked, drained", "chestnuts, european, cooked","butter, salted", "water, generic"))
+
+ChickenSalad06 <- data.frame(
+                         Amount=c(8,1,0.5),
+                         Measure=c("oz","cup","cup"),
+                         Ingredient=c("chicken, 60/40 white & dark meat, frozen, cooked, ready to pull,low sodium, food service", "celery, fresh, diced","mayonnaise"))
+
+BrusSprout06 <- data.frame(
+                         Amount=c(2,8,1,1,1),
+                         Measure=c("Tbs","Tbs","lb","lb","cup"),
+                         Ingredient=c("butter, salted","shallots, fresh, chopped", "chestnuts, european, raw","brussels sprouts, fresh","water, generic"))
+
+print(ChickenSalad36)
+print(BrusSprout36)
+print(BrusSprout06)
+```
+The minimum and maximum servings for all four recipes are stored in a table. Data is read and entered manually from the pdf files.
+
+```{r}  
+df_recipe <- data.frame(Recipe=c("Chicken Salad 1936","Chicken Salad 2006","Brussels Sprouts with Chestnuts 1936","Brussels Sprouts with Chestnuts 2006"), MinServings=c(8,4,6,6), MaxServings=c(8,4,6,6))
+print(df_recipe)
+```
+Write each individual recipe to a tab delimited file. The name of the tab file should be comprised of the recipe file name and the year of the recipe. Having the recipe name and year as a file name will help in locating and matching recipes.
+```{r}
+#export to a tab delimited file
+write.table(ChickenSalad36, "ChickenSalad.1936.tab", row.names=FALSE, sep=" ")
+write.table(ChickenSalad06, "ChickenSalad.2006.tab", row.names=FALSE, sep=" ")
+write.table(BrusSprout36, "BrusSprout.1936.tab", row.names=FALSE, sep=" ")
+write.table(BrusSprout06, "BrusSprout.2006.tab", row.names=FALSE, sep=" ")
+```
+Read in each tab file and add Recipe and Year. Both recipe and year coumns are populated manually from the name of the tab file.
+```{r}
+# files <- list.files(path = getwd(), pattern = '*.tab')
+recChicSalad36 <- cbind(read.table("ChickenSalad.1936.tab",header=TRUE), Recipe='ChickenSalad', Year='1936')
+recChicSalad06 <- cbind(read.table("ChickenSalad.2006.tab",header=TRUE), Recipe='ChickenSalad', Year='2006')
+recBrusSprout36 <- cbind(read.table("BrusSprout.1936.tab",header=TRUE), Recipe='BrusSprout', Year='1936')
+recBrusSprout06 <- cbind(read.table("BrusSprout.2006.tab",header=TRUE), Recipe='BrusSprout', Year='2006')
+```
+
+Read in Beef Stroganoff tab file into data table. There are two of them one for year 1997 and another for year 2006. Just like the other recipes, Recipe and Year columns are created and populated from the file name. The next step is merging and joining all tab files read in.  This helps other people to create the same data table and merge with theirs. The tables are merged by columns Recipe and Ingredient. They 
+are common accross all tables. Add a new column "NDB_NO" to merged and joined tables. This column will be used to store the IDs of ingredients from the reference table.
+```{r}
+recBeefStr97 <- cbind(read.table("BeefStroganoff.1997.tab",header=TRUE), Recipe='BeefStroganoff', Year='1997')
+recBeefStr06 <- cbind(read.table("BeefStroganoff.2006.tab",header=TRUE), Recipe='BeefStroganoff', Year='2006')
+
+#merge recipes by ingredient
+df_ChickSalad<-merge(x=recChicSalad36, y=recChicSalad06, by=c("Recipe","Ingredient"))
+df_BrusSprout<-merge(x=recBrusSprout36, y=recBrusSprout06, by=c("Recipe","Ingredient") )
+df_BeefStr<-merge(x=recBeefStr97, y=recBeefStr06, by=c("Recipe","Ingredient") )
+
+#join all tables
+df_merged_recipes <- rbind(df_ChickSalad, df_BrusSprout, df_BeefStr)
+#add column to store NDB_NO 
+df_merged_recipes<- cbind(df_merged_recipes, NDB_NO= rep(0)) 
+```
+Download the USDA food nutrient database, found at https://www.ars.usda.gov/northeast-area/beltsville-md-bhnrc/beltsville-human-nutrition-research-center/nutrient-data-laboratory/docs/usda-national-nutrient-database-for-standard-reference/. Following the link "ASCII files", download the zipped file and unpack it to a folder. Import "Weight" and "Food_Des" into tables. Demonstrate the ingredients and units can be cross-referenced between USDA files and recipes in hand.
+
+```{r}
+weight.dat <- read.table("WEIGHT.txt",header=FALSE,sep="^",quote="~")
+names(weight.dat) <- c("NDB_No","Seq","Amount","Msre_Desc","Gm_Wgt","Num_Data_Pts","Std_Dev")
+
+food_des.dat <- read.table("FOOD_DES.txt",header=FALSE,sep="^",quote="~")
+names(food_des.dat) <- c("NDB_No","FdGrp_Cd","Long_Desc","Shrt_Desc",
+"ComName","ManufacName","Survey","Ref_desc","Refuse","SciName",
+"N_Factor","Pro_Factor","Fat_Factor","CHO_Factor")
+```
+Compile a list of ingredients from the merged file. Find matches for imported ingredients against the USDA nutrition database. Since it is not exact match, there are unmatched records and also for some ingredients there area multiple entries. So determine the closest match that exists in food_des table for each ingredient and update the merged table with them. The next step is to iterate through each row in the merged table and update NDB_NO with the NDB_NO of Foods_Des table.
+```{r}
+key_ingredient<-df_merged_recipes$Ingredient
+print(key_ingredient)
+#find matches for the list 
+food_des.dat[grepl(paste(key_ingredient, collapse = "|"),as.character(food_des.dat$Long_Desc),ignore.case = TRUE),3]
+
+#create the list of close match ingredients from food_des table
+desMatched <- c('Celery, raw','Chicken, dark meat, thigh, meat only, with added solution, cooked, braised', 'Salad dressing, mayonnaise, regular', 'Butter, salted', 'Beverages, water, tap, municipal', 'Beef, loin, tenderloin roast, boneless, separable lean and fat, trimmed to 0" fat, all grades, raw', 'Butter, salted', 'Mustard, prepared, yellow', 'Cream, sour, cultured','Soup, stock, beef, home-prepared') 
+
+#update ingredients with food_des long_desc
+df_merged_recipes$Ingredient<- desMatched
+#loop thru each row in merged table and insert NDB_NO
+for(i in 1 : nrow(df_merged_recipes)){
+    df_merged_recipes$NDB_NO[i]<-
+      print(food_des.dat[food_des.dat$Long_Desc == df_merged_recipes$Ingredient[i],1])
+}
+print(df_merged_recipes)
+```
+Using Plots is a quick way of viewing inconsistencies in the data. For instance, if we plot the merged recipes for Beef Stroganoff 1997 vs 2006, we can see where the measures are not consistent. The same amount, in this case amount = 3 have different measures (cup, Tbs). There are a couple of differences displayed on the graph. But generally speaking the plot should be linear. 
+
+```{r}
+#plot by Measure to show inconsistent e.g. measure 3cup v 3tbs
+plot(df_BeefStr$Amount.x, df_BeefStr$Amount.y)
+```
+
+By creating a contingency table we can check for mismatches in measurement between ingredients. In the below contingency table for Beef Stroganoff recipes, the mismatches are "cup to tsp"" and "Tbs to tsp". 
+```{r}
+#contingency table
+table(df_BeefStr$Measure.x, df_BeefStr$Measure.y)
+
+#No mismatches in my assigned reciipes
+table(df_merged_recipes$Measure.x, df_merged_recipes$Measure.y)
+
+```
+
+Read the Recipes.csv, append rows for recipes assigned, then write the table back to Recipes.csv. We would be able to determine the file names for your recipes by concatentating Recipe and Year, removing white space if necessary.
+
+```{r}
+#function to get number of chars from right
+right = function (string, char){
+  substr(string,nchar(string)-(char-1),nchar(string))
+}
+#read recipes.csv to a variable
+rcsv <- read.csv('Recipes.csv')
+#append rows to recipes
+rcsv <- rbind(rcsv, cbind(df_recipe, Year= right(as.character(df_recipe$Recipe), 4)))
+#write back reipes csv file
+write.table(rcsv, "Recipes.csv", row.names=FALSE, sep=",")
+print(rcsv)
+```

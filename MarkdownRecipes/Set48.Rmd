@@ -1,0 +1,304 @@
+---
+title: "Joy Of Cooking Midterm Project Prep"
+author: "Set 48"
+date: "7/25/2018"
+output:
+  word_document: default
+  pdf_document: default
+  html_document: default
+---
+
+# Part 1 - Assign Recipes
+
+First, generate a list of all files in the Recipes folder.
+```{r,eval=FALSE}
+#recipes <- list.files(path = "../data/Recipes", pattern = '*.pdf')
+recipes <- list.files(path = "~/Desktop/Recipes.csv", pattern = '*.pdf')
+recipes
+```
+
+Make this reproducible.
+```{r,eval=FALSE}
+set.seed(10010)
+```
+
+Create two randomly sampled list of recipe files and cycle this list through 80 rows
+
+```{r,eval=FALSE}
+recipe.pairs <- matrix(c(sample(recipes),sample(recipes)),ncol=2,nrow=80)
+recipe.pairs
+```
+
+Are there any pairs across rows?
+
+```{r,eval=FALSE}
+sum(recipe.pairs[,1]==recipe.pairs[,2])
+```
+
+Write to a table
+
+```{r,eval=FALSE}
+write.csv(recipe.pairs, file="Recipe.Table.csv",row.names = FALSE)
+```
+
+
+
+# Part 2 - Check Nutrient Data.
+
+We will be using the USDA food nutrient database, found at https://www.ars.usda.gov/northeast-area/beltsville-md-bhnrc/beltsville-human-nutrition-research-center/nutrient-data-laboratory/docs/usda-national-nutrient-database-for-standard-reference/
+
+Run this to make sure your system can read the required nutrient database tables.
+```{r}
+weight.dat <- read.table("WEIGHT.txt",header=FALSE,sep="^",quote="~")
+names(weight.dat) <- c("NDB_No","Seq","Amount","Msre_Desc","Gm_Wgt","Num_Data_Pts","Std_Dev")
+head(weight.dat)
+summary(weight.dat)
+```
+
+```{r}
+food_des.dat <- read.table("FOOD_DES.txt",header=FALSE,sep="^",quote="~")
+names(food_des.dat) <- c("NDB_No","FdGrp_Cd","Long_Desc","Shrt_Desc",
+"ComName","ManufacName","Survey","Ref_desc","Refuse","SciName",
+"N_Factor","Pro_Factor","Fat_Factor","CHO_Factor")
+dim(food_des.dat)
+head(food_des.dat)
+summary(food_des.dat)
+```
+
+```{r}
+nut_data.dat <- read.table("NUT_DATA.txt",header=FALSE,sep="^",quote="~")
+names(nut_data.dat) <- c("NDB_No","Nutr_No","Nutr_Val","Num_Data_Pts","Std_Error",
+"Src_Cd","Deriv_Cd","Ref_NDB_No","Add_Nutr_Mark","Num_Studies",
+"Min","Max","DF","Low_EB","Up_EB","Stat_cmt","AddMod_Date")
+head(nut_data.dat)
+summary(nut_data.dat)
+```
+
+
+#Grep Functions:
+grep(pattern="[pP]otatoes", food_des.dat$Long_Desc, ignore.case = TRUE, value=TRUE) #NDB_No 11367
+grep(pattern="[pP]eppers, green, sweet", food_des.dat$Long_Desc, ignore.case = TRUE, value=TRUE) # NDB_No 11333
+grep(pattern="[oO]nions,yellow", food_des.dat$Long_Desc, ignore.case = TRUE, value=TRUE) #NDB_No 11286
+grep(pattern="[fF]lour, white, enriched", food_des.dat$Long_Desc, ignore.case = TRUE, value=TRUE) #NDB_No 20082
+grep(pattern="[mM]ilk", food_des.dat$Long_Desc, ignore.case = TRUE, value=TRUE) #NDB_No 01211
+grep(pattern="[bB]read, crumbs, dry", food_des.dat$Long_Desc, ignore.case = TRUE, value=TRUE) #NDB_No 18079
+grep(pattern="[bB]utter", food_des.dat$Long_Desc, ignore.case = TRUE, value=TRUE) #NDB_No 1001
+grep(pattern="[rR]ice, white, long-grain", food_des.dat$Long_Desc, ignore.case = TRUE, value=TRUE) # NDB_No 20446
+grep(pattern="[sS]ugars, granulated", food_des.dat$Long_Desc, ignore.case = TRUE, value=TRUE) # NDB_No 19335
+grep(pattern="[vV]anilla", food_des.dat$Long_Desc, ignore.case = TRUE, value=TRUE) # NDB_No 2050
+
+
+
+#Below are the NDB_No used:
+
+```{r}
+NDB_No=c(11367,11333,11286,20082,01211,18079,1001,20046,19335,2050)
+Ingredient=c("Potatoes, boiled, cooked without skin, flesh, without salt","Peppers, sweet, green, raw","Onions, yellow, sauteed","Wheat flour, white, all-purpose, self-rising, enriched","Milk, whole, 3.25% milkfat, without added vitamin A and vitamin D","Bread, crumbs, dry, grated, plain","Butter, salted","Rice, white, long-grain, parboiled, enriched, dry","Sugars, granulated","Vanilla extract")
+
+FOOD_reference=data.frame(NDB_No=NDB_No, Ingredient=Ingredient)
+FOOD_reference
+```
+
+#1936 LeftoverPotatoes:
+
+```{r}
+Amount = c(6.00,1.00,1.00,1.00,1.00,0.25,2.00)
+Measure = c("ea","ea","ea","Tbs","cup","cup","Tbs") 
+Ingredient = c("Potatoes, boiled, cooked without skin, flesh, without salt","Peppers, sweet, green, raw","Onions, yellow, sauteed","Wheat flour, white, all-purpose, self-rising, enriched","Milk, whole, 3.25% milkfat, without added vitamin A and vitamin D","Bread, crumbs, dry, grated, plain","Butter, salted")
+NDB_No=c(11367,11333,11286,20082,01211,18079,1001)
+
+LeftoverPotatoes_1936=data.frame(Amount =Amount, Unit = Measure, NDB_No=NDB_No, Ingredient = Ingredient)
+LeftoverPotatoes_1936
+```
+
+#2006 LeftoverPotatoes:
+
+```{r}
+Amount = c(6.00,1.00,1.00,1.00,1.00,0.25,2.00)
+Measure = c("ea","ea","ea","Tbs","cup","cup","Tbs")
+Ingredient = c("Potatoes, boiled, cooked without skin, flesh, without salt","Peppers, sweet, green, raw","Onions, yellow, sauteed","Wheat flour, white, all-purpose, self-rising, enriched","Milk, whole, 3.25% milkfat, without added vitamin A and vitamin D","Bread, crumbs, dry, grated, plain","Butter, salted")
+NDB_No=c(11367,11333,11286,20082,01211,18079,1001)
+LeftoverPotatoes_2006=data.frame(Amount =Amount, Unit = Measure, NDB_No=NDB_No, Ingredient = Ingredient)
+LeftoverPotatoes_2006
+```
+
+
+#1936 StovetopRicePudding:
+
+
+```{r}
+Amount = c(1.00,6.00,4.00)
+Measure = c("cup","cup","Tbs")
+Ingredient = c("Rice, white, long-grain, parboiled, enriched, dry","Milk, whole, 3.25% milkfat, without added vitamin A and vitamin D","Sugars, granulated")
+NDB_No=c(20046,01211,19335)
+StovetopRicePudding_1936=data.frame(Amount =Amount, Unit = Measure,NDB_No=NDB_No, Ingredient = Ingredient)
+StovetopRicePudding_1936
+```
+
+
+#2006 StovetopRicePudding:
+
+```{r}
+Amount = c(0.75,4.00,0.50,0.50)
+Measure = c("cup","cup","cup","Tbs")
+Ingredient = c("Rice, white, long-grain, parboiled, enriched, dry","Milk, whole, 3.25% milkfat, without added vitamin A and vitamin D","Sugars, granulated","Vanilla extract")
+NDB_No=c(20046,01211,19335,2050)
+StovetopRicePudding_2006=data.frame(Amount =Amount, Unit = Measure, NDB_No=NDB_No, Ingredient = Ingredient)
+StovetopRicePudding_2006
+```
+
+# Below are the tables for the data:
+
+```{r}
+write.table(LeftoverPotatoes_1936, file ="LeftoverPotatoes_1936.tab")
+
+write.table(LeftoverPotatoes_2006, file ="LeftoverPotatoes_2006.tab")
+
+write.table(StovetopRicePudding_1936, file ="StovetopRicePudding_1936.tab")
+
+write.table(StovetopRicePudding_2006, file ="StovetopRicePudding_2006.tab")
+
+
+```
+
+
+```{r}
+getwd()
+```
+
+```{r}
+LeftoverPotatoes.1936= read.table(file = "LeftoverPotatoes_1936.tab",  sep="\t", header=TRUE)
+LeftoverPotatoes.1936
+
+LeftoverPotatoes.2006= read.table(file = "LeftoverPotatoes_2006.tab",  sep="\t", header=TRUE)
+LeftoverPotatoes.2006
+
+StovetopRicePudding.1936= read.table(file = "StovetopRicePudding_1936.tab",  sep="\t", header=TRUE)
+StovetopRicePudding.1936
+
+StovetopRicePudding.2006= read.table(file = "StovetopRicePudding_2006.tab",  sep="\t", header=TRUE)
+StovetopRicePudding.2006
+```
+
+#Below i will check for any errors:
+
+```{r}
+# Merging LeftoverPotatoes 1936 and 2006
+Merged_LeftoverPotatoes = merge(LeftoverPotatoes_1936,LeftoverPotatoes_2006, by="Ingredient", all=TRUE)
+Merged_LeftoverPotatoes
+```
+```{r}
+# Merging StovetopRicePudding 1936 and 2006
+Merged_StovetopRicePudding = merge(StovetopRicePudding_1936,StovetopRicePudding_2006,by="Ingredient", all=TRUE)
+Merged_StovetopRicePudding
+```
+
+#Below are the graphs for Merged_LeftoverPotatoes 1936 and 2006
+```{r}
+plot(Merged_LeftoverPotatoes$Ingredient,Merged_LeftoverPotatoes$Amount.x,main="LeftoverPotatoes1936", xlab="Ingredient", ylab="Amount 1936", col="blue")
+```
+```{r}
+plot(Merged_LeftoverPotatoes$Ingredient,Merged_LeftoverPotatoes$Amount.y,main="LeftoverPotatoes2006", xlab="Ingredient", ylab="Amount 2006", col="yellow")
+```
+
+#Comparison
+```{r}
+plot(Merged_LeftoverPotatoes$Ingredient,Merged_LeftoverPotatoes$Amount.y,pch=4,main="LeftoverPotatoes1936vs2006", xlab="Ingredient", ylab="Amount", col="yellow")
+points(Merged_LeftoverPotatoes$Ingredient,Merged_LeftoverPotatoes$Amount.x,main="LeftoverPotatoes1936vs2006 based on ingredient", xlab="Ingredient", ylab="Amount", col="blue",pch=4)
+
+```
+#We  can see from the comparison that both receipes during 1936 and 2006 used the same ingredients hence there is no difference or error.
+
+
+#Below i have plotted the graphs for StovetopRicePudding 1936 and 2006:
+
+```{r}
+plot(Merged_StovetopRicePudding$Ingredient,Merged_StovetopRicePudding$Amount.x,pch=4,main="Merged_StovetopRicePudding1936", xlab="Ingredient", ylab="Amount 1936", col="Purple")
+```
+
+```{r}
+plot(Merged_StovetopRicePudding$Ingredient,Merged_StovetopRicePudding$Amount.y,main="Merged_StovetopRicePudding2006", xlab="Ingredient", ylab="Amount 2006", col="brown",pch=4)
+
+```
+
+```{r}
+plot(Merged_StovetopRicePudding$Ingredient,Merged_StovetopRicePudding$Amount.y,pch=4,main="Merged_StovetopRicePudding1936vs2006", xlab="Ingredient", ylab="Amount", col="brown")
+points(Merged_StovetopRicePudding$Ingredient,Merged_StovetopRicePudding$Amount.x,pch=4,main="Merged_StovetopRicePudding1936vs2006", xlab="Ingredient", ylab="Amount", col="purple")
+
+```
+#By looking at the comparison between these two graphs we can see that there is a huge difference in the forth bar that is vanilla extract as this is the one ingredient that was not used in 1936. We can also see that there is a different in the amount of ingredients used in the two receipes over the years.
+
+#Below are the Minimum and Maximum Serving values :
+```{r}
+MinServings = c(6, 6, 8, 8)
+MaxServings = c(6, 6, 8, 8)
+servings = data.frame (MinServings, MaxServings)
+write.csv(servings, file = "Servings.csv")
+```
+
+
+```{r}
+Myrec=rbind(LeftoverPotatoes_1936,LeftoverPotatoes_2006,StovetopRicePudding_1936,StovetopRicePudding_2006)
+Myrec
+
+```
+
+#Below i will split:
+
+```{r}
+LP_1936=lapply(strsplit('LeftoverPotatoes.1936',split=".", fixed = TRUE),trimws)
+LP_2006=lapply(strsplit('LeftoverPotatoes.2006',split=".", fixed = TRUE),trimws)
+SRP_1936=lapply(strsplit('StovetopRicePudding.1936',split=".", fixed = TRUE),trimws)
+SRP_2006=lapply(strsplit('StovetopRicePudding.2006',split=".", fixed = TRUE),trimws)
+
+RecipeData=data.frame(c(LP_1936,LP_2006,SRP_1936,SRP_2006),stringsAsFactors=FALSE)
+rownames(RecipeData)= c("Recipe", "Year")
+colnames(RecipeData)=NULL
+#data frame for one CSV file with Recipe name and year splitted values
+RecipeName =(t(RecipeData))
+RecipeName
+#another frame with Recipe name, year and Servings based on example of Beef Stroganoff for another CSV file**
+RecipeWithServings= cbind(RecipeName, servings)
+RecipeWithServings
+```
+
+
+#Below is the file for recipe names, year and servings:
+```{r}
+write.csv(RecipeWithServings, file = "RecipeWithServings.csv", row.names = FALSE)
+```
+
+# I have combined Beef Stroganoff recipe below:
+```{r}
+Recipe1 =read.csv(file = "Recipes.csv", sep="\t", header=TRUE)
+Recipe2 = read.csv(file = "RecipeWithServings.csv", sep="\t", header=TRUE)
+My_Recipe=rbind(Recipe1, Recipe2)
+```
+
+```{r}
+write.csv(My_Recipe, file = "My_Recipe.csv", row.names = FALSE)
+```
+
+#Final 
+
+```{r}
+Rec_1 = matrix(rep(RecipeName[1,], length(LeftoverPotatoes_1936$Amount)),ncol=2, byrow = T)
+Rec_2 = matrix(rep(RecipeName[2,], length(LeftoverPotatoes_2006$Amount)),ncol=2, byrow = T)
+Rec_3 = matrix(rep(RecipeName[3,], length(StovetopRicePudding_1936$Amount)),ncol=2, byrow = T)
+Rec_4 = matrix(rep(RecipeName[4,], length(StovetopRicePudding_2006$Amount)),ncol=2, byrow = T)
+
+AllRecipe=rbind(Rec_1,Rec_2,Rec_3,Rec_4)
+colnames(AllRecipe)= c("Recipe", "Year")
+
+```
+```{r}
+Final = cbind(AllRecipe,Myrec)
+names(Final)[names(Final) == "Unit"] <- "Measure"
+Final
+```
+
+#Below is the Final Receipe:
+
+```{r}
+write.csv(Final, file = "FinalRecipe.csv", row.names = FALSE)
+```

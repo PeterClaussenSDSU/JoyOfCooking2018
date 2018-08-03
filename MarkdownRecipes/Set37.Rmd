@@ -1,0 +1,722 @@
+---
+title: "MidTerm_Project"
+author: "Set 37"
+date: "July 21, 2018"
+output:
+  pdf_document: default
+  word_document: default
+  html_document: default
+---
+
+# Part 1 - Assign Recipes
+
+```{r}
+#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@#
+#@@@@  1. Creating data tables for your assigned recipes  @@@@#
+#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@#
+
+#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@#
+#@@@@  Recipe : Sweet and Sour Brisket @@@@#
+#@@@@            Year : 1936           @@@@# 
+#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@#
+
+
+Sweet_and_Sour_Brisket_1936 <- data.frame(
+  Amount=c(3,2,0.25,1.5,0.25,0.25,1,0.5,1.5,0.25),
+  Measure=c("lb","Tbs","cup","cup","cup","cup","Tbs","tsp","tsp","cup"),
+  Ingredient=c("beef brisket, flat half, raw, 0'' trim, URMIS 1623",
+"Butter, salted","onion, yellow,fresh,chopped","tomatoes,whole,
+canned,unsalted","bell pepper,green,fresh,chopped",
+"celery,fresh, diced","flour,all purpose,self rising,enriched","sugar,white,
+granulated,granulated","vinegar,distilled","cream,whipping,heavy"))
+```
+
+### Comment:
+I have created a data frame of Sweet and Sour Brisket Recipe of year 1936 with column names as Amount, Measure, Ingredient.
+
+
+```{r}
+#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@#
+#@@@@  Recipe : Sweet and Sour Brisket @@@@#
+#@@@@            Year : 2006           @@@@# 
+#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@#
+
+
+Sweet_and_Sour_Brisket_2006 <- data.frame(
+  Amount=c(3.5,3,1,2,0.5,0.5,1,0.5,0.5),
+  Measure=c("lb","ea","Tbs","ea","cup","cup","cup","cup","cup"), 
+  Ingredient=c("beef brisket, flat half, raw, 0'' trim, URMIS 1623",
+               "garlic cloves,fresh","oil, canola",
+               "onion,yellow,fresh,large","wine,red",
+               "stock,beef,prepared from recipe",
+               "chili sauce,tomato","vinegar,cider","sugar,brown,dark"))
+```
+
+### Comment:
+I have created a data frame of Sweet and Sour Brisket Recipe of year 2006 with column names as Amount, Measure, Ingredient.
+
+
+```{r}
+#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@#
+#@@@@          Recipe : Hot Slaw       @@@@#
+#@@@@            Year : 1936           @@@@# 
+#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@#
+
+
+Hot_Slaw_1936 <- data.frame(
+  Amount=c(3,3,1,2,1),
+  Measure=c("cup","Tbs","Tbs","Tbs","ea"),
+  Ingredient=c("cabbage,fresh,shredded","vinegar,distilled",
+               "sugar,white,granulated,granulated",
+               "Butter, salted","apple,fresh,large,3 1/4''"))
+```
+
+### Comment:
+I have created a data frame of Hot Slaw Recipe of year 1936 with column names as Amount, Measure, Ingredient.
+
+
+```{r}
+#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@#
+#@@@@          Recipe : Hot Slaw       @@@@#
+#@@@@            Year : 2006           @@@@# 
+#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@#
+
+
+Hot_Slaw_2006 <- data.frame(
+  Amount=c(0.5,3,1,3),
+  Measure=c("lb","Tbs","Tbs","cup"), 
+  Ingredient=c("bacon,raw,cured","vinegar,cider",
+               "sugar,brown,packed","cabbage,fresh,shredded"))
+```
+
+### Comment:
+I have created a data frame of Hot Slaw Recipe of year 2006 with column names as Amount, Measure, Ingredient.
+
+
+```{r}
+#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@#
+
+# Matching Ingredient to the Long Description in the FOOD_DES
+
+# Reading FOOD_DES.txt file
+food_des.dat <- read.table("FOOD_DES.txt",header=FALSE,sep="^",quote="~")
+names(food_des.dat) <- c("NDB_No","FdGrp_Cd","Long_Desc","Shrt_Desc",
+"ComName","ManufacName","Survey","Ref_desc","Refuse","SciName",
+"N_Factor","Pro_Factor","Fat_Factor","CHO_Factor")
+
+
+# grep function is used for pattern matching
+# rbind function is used for combine the data by rows
+
+#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@#
+#@@@@  Recipe : Sweet and Sour Brisket @@@@#
+#@@@@            Year : 1936           @@@@# 
+#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@#
+
+New_Ingredients_SSB_1936 <- rbind(
+  
+# Matching "beef brisket, flat half, raw, 0'' trim, URMIS 1623" #
+# Matched "Beef, brisket, flat half, separable lean only, trimmed to 0" fat, select, cooked, braised"#
+# It is Matched Appropriate or most suitable in the FOOD_DES  #
+# It is Partially Matched #
+food_des.dat[grep(
+'^beef[[:punct:]].brisket[[:punct:]].flat.half[[:punct:]].separable.lean.only[[:punct:]].trimmed to 0" fat[[:punct:]].select',food_des.dat$Long_Desc, ignore.case = TRUE),c(1,3)],
+
+# Matching "butter,salad" #
+# Matched "Butter, salted"#
+# It is Matched Exactly in the FOOD_DES  #
+food_des.dat[grep(
+'^butter[[:punct:]].salted',food_des.dat$Long_Desc,ignore.case = TRUE,fixed = FALSE), c(1,3)],
+
+# Matching "onion, yellow,fresh,chopped" #
+# Matched "Onions, yellow, sauteed"#
+# It is Matched Appropriate or most suitable in the FOOD_DES  #
+# It is Partially Matched #
+food_des.dat[grep(
+'^onions[[:punct:]].yellow',food_des.dat$Long_Desc,ignore.case = TRUE,fixed = FALSE), c(1,3)],
+
+# Matching "tomatoes,whole,canned,unsalted" #
+# Matched "Tomatoes, red, ripe, canned, packed in tomato juice, no salt added"#
+# It is Matched Appropriate or most suitable in the FOOD_DES  #
+# It is Partially Matched #
+food_des.dat[grep(
+'^tomatoes[[:punct:]].red[[:punct:]].ripe[[:punct:]].canned[[:punct:]].packed.in.tomato juice[[:punct:]].no.salt.added',food_des.dat$Long_Desc,ignore.case = TRUE,fixed = FALSE), c(1,3)],
+
+# Matching "bell pepper,green,fresh,chopped" #
+# Matched "Peppers, sweet, green, frozen, chopped, unprepared"#
+# It is Matched Appropriate or most suitable in the FOOD_DES  #
+# It is Partially Matched #
+food_des.dat[grep(
+'^peppers[[:punct:]].sweet[[:punct:]].green[[:punct:]].frozen[[:punct:]].chopped[[:punct:]].unprepared',
+food_des.dat$Long_Desc,ignore.case = TRUE,fixed = FALSE), c(1,3)],
+
+# Matching "celery,fresh, diced" #
+# Matched "Celery, raw"#
+# It is Matched Appropriate or most suitable in the FOOD_DES  #
+# It is Partially Matched #
+food_des.dat[grep(
+'^celery[[:punct:]].raw',food_des.dat$Long_Desc,ignore.case = TRUE,fixed = FALSE), c(1,3)],
+
+# Matching "flour,all purpose,self rising,enriched" #
+# Matched "Wheat flour, white, all-purpose, self-rising, enriched"#
+# It is Matched Appropriate or most suitable in the FOOD_DES  #
+# It is Partially Matched #
+food_des.dat[grep(
+'^wheat.flour[[:punct:]].white[[:punct:]].all-purpose[[:punct:]].self-rising',
+food_des.dat$Long_Desc,ignore.case = TRUE,fixed = FALSE), c(1,3)],
+
+# Matching "sugar,white,granulated,granulated" #
+# Matched "Sugars, granulated"#
+# It is Matched Appropriate or most suitable in the FOOD_DES  #
+# It is Partially Matched #
+food_des.dat[grep(
+'^sugars[[:punct:]].granulated',food_des.dat$Long_Desc,ignore.case = TRUE,fixed = FALSE), c(1,3)],
+
+# Matching "vinegar,distilled" #
+# Matched "Vinegar, distilled"#
+# It is Matched Exactly in the FOOD_DES  #
+food_des.dat[grep(
+"^vinegar[[:punct:]].distilled",food_des.dat$Long_Desc, ignore.case = TRUE),c(1,3)],
+
+# Matching "cream,whipping,heavy" #
+# Matched "Cream, whipped, cream topping, pressurized"#
+# It is Matched Appropriate or most suitable in the FOOD_DES  #
+# It is Partially Matched #
+food_des.dat[grep(
+"^cream[[:punct:]].whipped",food_des.dat$Long_Desc, ignore.case = TRUE),c(1,3)]
+)
+
+#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@#
+#@@@@  Recipe : Sweet and Sour Brisket @@@@#
+#@@@@            Year : 2006           @@@@# 
+#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@#
+
+New_Ingredients_SSB_2006 <- rbind(
+
+# Matching "beef brisket, flat half, raw, 0'' trim, URMIS 1623" #
+# Matched "Beef, brisket, flat half, separable lean only, trimmed to 0" fat, select, cooked, braised"#
+# It is Matched Appropriate or most suitable in the FOOD_DES  #
+# It is Partially Matched #
+food_des.dat[grep(
+'^beef[[:punct:]].brisket[[:punct:]].flat.half[[:punct:]].separable.lean.only[[:punct:]].trimmed to 0" fat[[:punct:]].select',food_des.dat$Long_Desc, ignore.case = TRUE),c(1,3)],
+
+# Matching "garlic cloves,fresh" #
+# Matched "Garlic, raw" #
+# It is Matched Appropriate or most suitable in the FOOD_DES  #
+# It is Partially Matched #
+food_des.dat[grep("^garlic[[:punct:]]",food_des.dat$Long_Desc, ignore.case = TRUE),c(1,3)],
+
+# Matching "oil, canola" #
+# Matched "Oil, canola"#
+# It is Matched Exactly in the FOOD_DES  #
+food_des.dat[grep("^oil[[:punct:]].canola", food_des.dat$Long_Desc, ignore.case = TRUE),c(1,3)],
+
+# Matching "onion,yellow,fresh,large" #
+# Matched "Onions, spring or scallions (includes tops and bulb), raw"#
+# It is Matched Appropriate or most suitable in the FOOD_DES  #
+# It is Partially Matched #
+food_des.dat[grep("^onions[[:punct:]].spring", food_des.dat$Long_Desc, ignore.case = TRUE),c(1,3)],
+
+# Matching "wine,red" #
+# Matched "Alcoholic beverage, wine, table, red"#
+# It is Matched Appropriate or most suitable in the FOOD_DES  #
+# It is Partially Matched #
+food_des.dat[grep(
+"^Alcoholic beverage[[:punct:]].wine[[:punct:]].table[[:punct:]].red$", 
+food_des.dat$Long_Desc, ignore.case = TRUE),c(1,3)],
+
+# Matching "stock,beef,prepared from recipe" #
+# Matched "Soup, stock, beef, home-prepared"#
+# It is Matched Appropriate or most suitable in the FOOD_DES  #
+# It is Partially Matched #
+food_des.dat[grep(
+"^soup[[:punct:]].stock[[:punct:]].beef", food_des.dat$Long_Desc, ignore.case = TRUE),c(1,3)],
+
+# Matching "chili sauce,tomato" #
+# Matched "Sauce, tomato chili sauce, bottled, with salt"#
+# It is Matched Appropriate or most suitable in the FOOD_DES  #
+# It is Partially Matched #
+food_des.dat[grep(
+"^sauce[[:punct:]].tomato.chili.sauce", food_des.dat$Long_Desc, ignore.case = TRUE),c(1,3)],
+
+# Matching "vinegar,cider" #
+# Matched "Vinegar, cider"#
+# It is Matched Exactly in the FOOD_DES  #
+food_des.dat[grep("^vinegar[[:punct:]].cider", food_des.dat$Long_Desc, ignore.case = TRUE),c(1,3)],
+
+# Matching "sugar,brown,dark" #
+# Matched "Sugar, turbinado"#
+# It is Matched Appropriate or most suitable in the FOOD_DES  #
+# It is Partially Matched #
+food_des.dat[grep(
+"^sugar[[:punct:]].turbinado",food_des.dat$Long_Desc, ignore.case = TRUE, fixed = FALSE),c(1,3)]
+)
+
+#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@#
+#@@@@          Recipe : Hot Slaw       @@@@#
+#@@@@            Year : 1936           @@@@# 
+#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@#
+
+New_Ingredients_HS_1936 <- rbind(
+  
+# Matching "cabbage,fresh,shredded" #
+# Matched "Cabbage, raw"#
+# It is Matched Appropriate or most suitable in the FOOD_DES  #
+# It is Partially Matched #
+food_des.dat[grep(
+"^Cabbage[[:punct:]].raw",food_des.dat$Long_Desc, ignore.case = TRUE, fixed = FALSE),c(1,3)],
+
+# Matching "vinegar,distilled" #
+# Matched "Vinegar, distilled"#
+# It is Matched Exactly in the FOOD_DES  #
+food_des.dat[grep(
+"^vinegar[[:punct:]].distilled",food_des.dat$Long_Desc, ignore.case = TRUE),c(1,3)],
+
+# Matching "sugar,white,granulated,granulated" #
+# Matched "Sugars, granulated"#
+# It is Matched Appropriate or most suitable in the FOOD_DES  #
+# It is Partially Matched #
+food_des.dat[grep(
+'^sugars[[:punct:]].granulated',food_des.dat$Long_Desc,ignore.case = TRUE,fixed = FALSE), c(1,3)],
+
+# Matching "butter,salad" #
+# Matched "Butter, salted"#
+# It is Matched Exactly in the FOOD_DES  #
+food_des.dat[grep(
+'^butter[[:punct:]].salted',food_des.dat$Long_Desc,ignore.case = TRUE,fixed = FALSE), c(1,3)],
+
+# Matching "apple,fresh,large,3 1/4''" #
+# Matched "Apples, frozen, unsweetened, unheated (Includes foods for USDA's Food Distribution Program)"#
+# It is Matched Appropriate or most suitable in the FOOD_DES  #
+# It is Partially Matched #
+food_des.dat[grep(
+"^apples[[:punct:]].frozen[[:punct:]].unsweetened[[:punct:]].unheated",
+food_des.dat$Long_Desc,ignore.case = TRUE, fixed = FALSE),c(1,3)]
+)
+
+#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@#
+#@@@@          Recipe : Hot Slaw       @@@@#
+#@@@@            Year : 2006           @@@@# 
+#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@#
+
+New_Ingredients_HS_2006 <- rbind(
+
+# Matching "bacon,raw,cured" #
+# Matched "Pork, cured, bacon, unprepared"#
+# It is Matched Appropriate or most suitable in the FOOD_DES  #
+# It is Partially Matched #
+food_des.dat[grep(
+"^pork[[:punct:]].cured[[:punct:]].bacon[[:punct:]].unprepared",food_des.dat$Long_Desc, 
+ignore.case = TRUE, fixed = FALSE),c(1,3)],
+
+# Matching "vinegar,cider" #
+# Matched "Vinegar, cider"#
+# It is Matched Exactly in the FOOD_DES  #
+food_des.dat[grep(
+"^vinegar[[:punct:]].cider", food_des.dat$Long_Desc, ignore.case = TRUE),c(1,3)],
+
+# Matching "sugar,brown,packed" #
+# Matched "Sugar, turbinado"#
+# It is Matched Appropriate or most suitable in the FOOD_DES  #
+# It is Partially Matched #
+food_des.dat[grep(
+"^sugar[[:punct:]].turbinado",food_des.dat$Long_Desc, ignore.case = TRUE, fixed = FALSE),c(1,3)],
+
+# Matching "cabbage,fresh,shredded" #
+# Matched "Cabbage, raw"#
+# It is Matched Appropriate or most suitable in the FOOD_DES  #
+# It is Partially Matched #
+food_des.dat[grep(
+"^Cabbage[[:punct:]].raw",food_des.dat$Long_Desc, ignore.case = TRUE, fixed = FALSE),c(1,3)]
+)
+
+#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@#
+#@@@@    Recipe : BeefStroganoff       @@@@#
+#@@@@      Year : 1997                 @@@@# 
+#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@#
+
+
+New_Ingredients_BS_1997 <- rbind(
+  
+# Matching "beef roast, tenderloin, raw, 0" trim" #
+# Matched "Beef, loin, tenderloin roast, boneless, separable lean only, trimmed to 0" fat, select, raw"#
+# It is Matched Appropriate or most suitable in the FOOD_DES  #
+# It is Partially Matched #
+food_des.dat[grep(
+'^beef[[:punct:]].loin[[:punct:]].tenderloin.roast[[:punct:]].boneless[[:punct:]].separable.lean.only[[:punct:]].trimmed.to.0".fat[[:punct:]].select',food_des.dat$Long_Desc, ignore.case = TRUE, fixed = FALSE),c(1,3)],
+
+# Matching "butter,salad" #
+# Matched "Butter, salted"#
+# It is Matched Exactly in the FOOD_DES  #
+food_des.dat[grep(
+'^butter[[:punct:]].salted',food_des.dat$Long_Desc,ignore.case = TRUE,fixed = FALSE), c(1,3)],
+
+# Matching "flour,all purpose,self rising,enriched" #
+# Matched "Wheat flour, white, all-purpose, self-rising, enriched"#
+# It is Matched Appropriate or most suitable in the FOOD_DES  #
+# It is Partially Matched #
+food_des.dat[grep(
+'^wheat.flour[[:punct:]].white[[:punct:]].all-purpose[[:punct:]].self-rising',
+food_des.dat$Long_Desc,ignore.case = TRUE,fixed = FALSE), c(1,3)],
+
+# Matching "stock, beef, prepared from recipe" #
+# Matched "Soup, stock, beef, home-prepared"#
+# It is Matched Appropriate or most suitable in the FOOD_DES  #
+# It is Partially Matched #
+food_des.dat[grep(
+"^soup[[:punct:]].stock[[:punct:]].beef", food_des.dat$Long_Desc, ignore.case = TRUE),c(1,3)],
+
+# Matching "sour cream, cultured" #
+# Matched "Cream, sour, cultured"#
+# It is Matched Appropriate or most suitable in the FOOD_DES  #
+# It is Partially Matched #
+food_des.dat[grep(
+"^cream[[:punct:]].sour[[:punct:]].cultured",food_des.dat$Long_Desc, 
+ignore.case = TRUE,  fixed = FALSE),c(1,3)],
+
+# Matching "mustard, dijon" #
+# Matched "Mustard, prepared, yellow"#
+# It is Matched Appropriate or most suitable in the FOOD_DES  #
+# It is Partially Matched #
+food_des.dat[grep(
+"^mustard[[:punct:]]|.(D|d)ijon",food_des.dat$Long_Desc, ignore.case = TRUE, fixed = FALSE),c(1,3)]
+)
+
+#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@#
+#@@@@    Recipe : BeefStroganoff       @@@@#
+#@@@@      Year : 2006                 @@@@# 
+#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@#
+
+New_Ingredients_BS_2006 <- rbind(
+  
+# Matching "beef roast, tenderloin, raw, 0" trim" #
+# Matched "Beef, loin, tenderloin roast, boneless, separable lean only, trimmed to 0" fat, select, raw"#
+# It is Matched Appropriate or most suitable in the FOOD_DES  #
+# It is Partially Matched #
+food_des.dat[grep(
+'^beef[[:punct:]].loin[[:punct:]].tenderloin.roast[[:punct:]].boneless[[:punct:]].separable.lean.only[[:punct:]].trimmed.to.0".fat[[:punct:]].select',food_des.dat$Long_Desc, ignore.case = TRUE, fixed = FALSE),c(1,3)],
+
+# Matching "oil, canola" #
+# Matched "Oil, canola"#
+# It is Matched Exactly in the FOOD_DES  #
+food_des.dat[grep(
+"^oil[[:punct:]].canola", food_des.dat$Long_Desc, ignore.case = TRUE),c(1,3)],
+
+# Matching "butter,salad" #
+# Matched "Butter, salted"#
+# It is Matched Exactly in the FOOD_DES  #
+food_des.dat[grep(
+'^butter[[:punct:]].salted',food_des.dat$Long_Desc,ignore.case = TRUE,fixed = FALSE), c(1,3)],
+
+# Matching "onion, yellow, fresh, medium, 2 1/2\" #
+# Matched "Onions, yellow, sauteed"#
+# It is Matched Appropriate or most suitable in the FOOD_DES  #
+# It is Partially Matched #
+food_des.dat[grep(
+"^onions[[:punct:]].yellow", food_des.dat$Long_Desc, ignore.case = TRUE),c(1,3)],
+
+# Matching "mushrooms, fresh" #
+# Matched "Mushrooms, white, raw"#
+# It is Matched Appropriate or most suitable in the FOOD_DES  #
+# It is Partially Matched #
+food_des.dat[grep(
+"^mushrooms[[:punct:]].white[[:punct:]].raw", food_des.dat$Long_Desc, ignore.case = TRUE),c(1,3)],
+
+# Matching "stock, beef, prepared from recipe" #
+# Matched "Soup, stock, beef, home-prepared"#
+# It is Matched Appropriate or most suitable in the FOOD_DES  #
+# It is Partially Matched #
+food_des.dat[grep(
+"^soup[[:punct:]].stock[[:punct:]].beef", food_des.dat$Long_Desc, ignore.case = TRUE),c(1,3)],
+
+# Matching "sour cream, cultured" #
+# Matched "Cream, sour, cultured"#
+# It is Matched Appropriate or most suitable in the FOOD_DES  #
+# It is Partially Matched #
+food_des.dat[grep(
+"^cream[[:punct:]].sour[[:punct:]].cultured",food_des.dat$Long_Desc, 
+ignore.case = TRUE,  fixed = FALSE),c(1,3)],
+
+# Matching "mustard, dijon" #
+# Matched "Mustard, prepared, yellow"#
+# It is Matched Appropriate or most suitable in the FOOD_DES  #
+# It is Partially Matched #
+food_des.dat[grep("^mustard[[:punct:]]|.(D|d)ijon",food_des.dat$Long_Desc, 
+                  ignore.case = TRUE, fixed = FALSE),c(1,3)]
+)
+
+
+#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@#
+```
+
+### Comment:
+In the above chunk i used a grep function which is used for pattern matching. And rbind function is used for combine the data by rows.
+
+
+```{r}
+#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@#
+#@@@@   Printing data tables for your assigned recipes  @@@@#
+#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@#
+
+#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@#
+#@@@@  Recipe : Sweet and Sour Brisket @@@@#
+#@@@@            Year : 1936           @@@@# 
+#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@#
+
+Recipes = c("Sweet and Sour Brisket")
+Year=c(1936)
+Sweet_and_Sour_Brisket1936 <- data.frame(
+  Recipes,Year,Sweet_and_Sour_Brisket_1936$Amount,
+  Sweet_and_Sour_Brisket_1936$Measure,New_Ingredients_SSB_1936)
+row.names(Sweet_and_Sour_Brisket1936) <- c()
+colnames(Sweet_and_Sour_Brisket1936) <- c("Recipes","Year","Amount","Measure","NDB_No","Ingredient")
+print(Sweet_and_Sour_Brisket1936)   # Printing Sweet_and_Sour_Brisket1936
+
+
+#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@#
+#@@@@  Recipe : Sweet and Sour Brisket @@@@#
+#@@@@            Year : 2006           @@@@# 
+#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@#
+
+Recipes = c("Sweet and Sour Brisket")
+Year=c(2006)
+Sweet_and_Sour_Brisket2006 <- data.frame(
+  Recipes,Year,Sweet_and_Sour_Brisket_2006$Amount,
+  Sweet_and_Sour_Brisket_2006$Measure,New_Ingredients_SSB_2006)
+row.names(Sweet_and_Sour_Brisket2006) <- c()
+colnames(Sweet_and_Sour_Brisket2006) <- c("Recipes","Year","Amount","Measure","NDB_No","Ingredient")
+print(Sweet_and_Sour_Brisket2006) # Printing Sweet_and_Sour_Brisket2006
+
+
+#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@#
+#@@@@          Recipe : Hot Slaw       @@@@#
+#@@@@            Year : 1936           @@@@# 
+#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@#
+
+Recipes = c("Hot Slaw")
+Year=c(1936)
+Hot_Slaw1936 <- data.frame(Recipes,Year,Hot_Slaw_1936$Amount,
+                           Hot_Slaw_1936$Measure,New_Ingredients_HS_1936)
+row.names(Hot_Slaw1936) <- c()
+colnames(Hot_Slaw1936) <- c("Recipes","Year","Amount","Measure","NDB_No","Ingredient")
+print(Hot_Slaw1936)    # Printing Hot_Slaw1936
+
+
+#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@#
+#@@@@          Recipe : Hot Slaw       @@@@#
+#@@@@            Year : 2006           @@@@# 
+#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@#
+
+Recipes = c("Hot Slaw")
+Year=c(2006)
+Hot_Slaw2006 <- data.frame(Recipes,Year,Hot_Slaw_2006$Amount,
+                           Hot_Slaw_2006$Measure,New_Ingredients_HS_2006)
+row.names(Hot_Slaw2006) <- c()
+colnames(Hot_Slaw2006) <- c("Recipes","Year","Amount","Measure","NDB_No","Ingredient")
+print(Hot_Slaw2006)     # Hot_Slaw2006
+```
+
+### Comment:
+I have printing a Sweet and Sour Brisket & Hot Slaw Recipe of year 1936 & 2006 with column names as Amount, Measure, NDB_No, Ingredient. When i match Ingredient to the Long Description in the FOOD_DES, it shows me a corresponding column NBD_No. Finally printed the Sweet and Sour Brisket & Hot Slaw Recipe of year 1936 & 2006.
+
+
+```{r}
+#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@#
+#@@@@   2. Writing each individual recipe to a tab delimited file     @@@@#
+#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@#
+
+
+write.table(Sweet_and_Sour_Brisket1936,"Sweet_and_Sour_Brisket1936.tab",row.names = FALSE)
+write.table(Sweet_and_Sour_Brisket2006,"Sweet_and_Sour_Brisket2006.tab",row.names = FALSE)
+write.table(Hot_Slaw1936,"Hot_Slaw1936.tab",row.names = FALSE)
+write.table(Hot_Slaw2006,"Hot_Slaw2006.tab",row.names = FALSE)
+```
+
+### Comment:
+After creating the data tables i write them into a file with .tab extension.
+
+
+```{r}
+#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@#
+#@@@@   3. Reading each tab file, and merging into the tables     @@@@#
+#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@#
+
+
+# Reading BeefStroganoff Recipies from .tab extension files
+
+BeefStroganoff.1997 = read.table("BeefStroganoff.1997.tab",header = TRUE,stringsAsFactors = FALSE) 
+BeefStroganoff.2006 = read.table("BeefStroganoff.2006.tab",header = TRUE,stringsAsFactors = FALSE)
+
+# BeefStroganoff.1997 Recipe
+BeefStroganoff.1997$Ingredient <- NULL
+Recipes = c("BeefStroganoff")
+Year=c(1997)
+Combine_Beef97 <- cbind(Recipes,Year,BeefStroganoff.1997,New_Ingredients_BS_1997)
+row.names(Combine_Beef97) <- c()
+colnames(Combine_Beef97) <- c("Recipes","Year","Amount","Measure","NDB_No","Ingredient")
+# Printing BeefStroganoff.1997 Recipe
+Combine_Beef97
+
+# BeefStroganoff.2006 Recipe
+BeefStroganoff.2006$Ingredient <- NULL
+Recipes = c("BeefStroganoff")
+Year=c(2006)
+Combine_Beef06 <- cbind(Recipes,Year,BeefStroganoff.2006,New_Ingredients_BS_2006)
+row.names(Combine_Beef06) <- c()
+colnames(Combine_Beef06) <- c("Recipes","Year","Amount","Measure","NDB_No","Ingredient")
+# Printing BeefStroganoff.2006 Recipe
+Combine_Beef06
+
+# By using rbind function combine the data 
+Recipes_1936 = rbind(Sweet_and_Sour_Brisket1936,Hot_Slaw1936)
+Recipes_2006 = rbind(Sweet_and_Sour_Brisket2006,Hot_Slaw2006)
+Merging_with_BeefStroganoff_1936_1997 = rbind(Recipes_1936,Combine_Beef97)
+Merging_with_BeefStroganoff_2006 = rbind(Recipes_2006,Combine_Beef06) 
+
+# Merge all recipes using rbind function
+Merge_All <- rbind(Recipes_1936,Recipes_2006,Combine_Beef97,Combine_Beef06)
+print(Merge_All)
+```
+
+### Comment:
+In this chunk i read the each BeefStroganoff Recipe. After reading the BeefStroganoff Recipe i am attaching NDB No when the Ingredient pattern is matched.Then print the BeefStroganoff Recipe.After that by using rbind function combine the different recipe by years.
+
+
+```{r}
+#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@#
+#@@@@   4. Proof the data to check errors     @@@@#
+#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@#
+
+# Sweet and Sour Brisket and Hot Slaw Recipes merged by ingredient
+# And printed the Sweet and Sour Brisket and Hot Slaw Recipes
+
+Sweet_and_Sour_Brisket_Ingredient <- merge(Sweet_and_Sour_Brisket1936,
+                                           Sweet_and_Sour_Brisket2006, by = "Ingredient")
+Hot_Slaw_Ingredient <- merge(Hot_Slaw1936,Hot_Slaw2006,by = "Ingredient")
+
+
+
+# Plot Measure.x vs Measure.y and see quickly where the measures are not consistent
+
+# Plot for Sweet_and_Sour_Brisket_Ingredient of Measure.x vs Measure.y
+plot(Sweet_and_Sour_Brisket_Ingredient$Measure.x,
+     Sweet_and_Sour_Brisket_Ingredient$Measure.y,
+     las = 3,xlab = "Measure 1936", ylab = "Measure 2006",
+     main = "Sweet and Sour Brisket",col = "green")
+
+# Plot for Hot_Slaw_Ingredient of Measure.x vs Measure.y
+plot(Hot_Slaw_Ingredient$Measure.x,
+     Hot_Slaw_Ingredient$Measure.y,
+     las = 3,xlab = "Measure 1936", 
+     ylab = "Measure 2006",main = "Hot Slaw",col = "blue")
+
+
+# Created a contingency table comparing Measure.x and Measure.y to look for mismatches in measures between ingredients
+
+# Contingency table for Sweet_and_Sour_Brisket_Ingredient of Measure.x and Measure.y
+table(Sweet_and_Sour_Brisket_Ingredient$Measure.x,Sweet_and_Sour_Brisket_Ingredient$Measure.y)
+
+# Contingency table for Hot_Slaw_Ingredient of Measure.x and Measure.y
+table(Hot_Slaw_Ingredient$Measure.x,Hot_Slaw_Ingredient$Measure.y)
+
+
+
+# Plot Amount.x and Amount.y to look for unexpected changes in values
+
+# Plot for Sweet_and_Sour_Brisket_Ingredient of Amount.x and Amount.y
+plot(Sweet_and_Sour_Brisket_Ingredient$Amount.x,
+     Sweet_and_Sour_Brisket_Ingredient$Amount.y,
+     las = 3,xlab = "Amount 1936", ylab = "Amount 2006",
+     main = "Sweet and Sour Brisket",col = "green")
+
+# Plot for Hot_Slaw_Ingredient of Amount.x and Amount.y
+plot(Hot_Slaw_Ingredient$Amount.x,
+     Hot_Slaw_Ingredient$Amount.y,
+     las = 3,xlab = "Amount 1936", 
+     ylab = "Amount 2006",main = "Hot Slaw",col = "blue")
+```
+
+### Comment:
+The main concept of this chunk is proof of data to check errors. Here by using merge function i merged the recipe by ingredient with different years and printed it.Then plotted Measure.x vs Measure.y and see quickly where the measures are consistent or not. And created a contingency table comparing Measure.x and Measure.y to look for mismatches in measures between ingredients. Then finally i taken another plotting between Amount.x and Amount.y to look for unexpected changes in values.
+
+
+```{r}
+#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@#
+#@@@@   5. Reading & appending rows for your recipes     @@@@#
+#@@@@   and then write the table back to Recipes.csv     @@@@#
+#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@#
+
+# My Recipes with their year's,MinServings & MaxServings 
+Recipe <- data.frame(
+  Recipe=c("Sweet and Sour Brisket","Sweet and Sour Brisket","Hot Slaw","Hot Slaw"),
+  Year=c(1936,2006,1936,2006),
+  MinServings=c(4,8,6,6),
+  MaxServings=c(4,8,6,6))
+print(Recipe)    # Print Recipe
+
+# Reading BeefStroganoff_Recipe csv file
+BeefStroganoff_Recipe <- read.csv(
+  "Recipes.csv",
+  header=TRUE)
+print(BeefStroganoff_Recipe)  # Printing BeefStroganoff_Recipe 
+
+# Combine BeefStroganoff_Recipe & Recipe using rbind function
+Combine <- rbind(BeefStroganoff_Recipe,Recipe)
+
+# Write the combine to Recipes.csv file
+write.csv(Combine, file="Recipes.csv",row.names = FALSE)
+
+# Read the Recipes.csv file
+Recipe.Table <- read.csv("Recipes.csv",header=TRUE)
+print(Recipe.Table)  # Printing Recipe.Table
+```
+
+### Comment:
+The concept of creating this chunk is for reading & appending rows for your recipes and then write the table back to Recipes.csv. Here first i created a data frame with my recipes and combine with BeefStroganoff_Recipe and write the table back to Recipes.csv and finally printed the table 
+
+
+# Part 2 - Check Nutrient Data.
+
+We will be using the USDA food nutrient database, found at https://www.ars.usda.gov/northeast-area/beltsville-md-bhnrc/beltsville-human-nutrition-research-center/nutrient-data-laboratory/docs/usda-national-nutrient-database-for-standard-reference/
+
+Run this to make sure your system can read the required nutrient database tables.
+```{r}
+# Reading WEIGHT.txt file
+weight.dat <- read.table("WEIGHT.txt",header=FALSE,sep="^",quote="~")
+names(weight.dat) <- c("NDB_No","Seq","Amount","Msre_Desc","Gm_Wgt","Num_Data_Pts","Std_Dev")
+head(weight.dat)
+summary(weight.dat)   # Summary of weight.dat
+```
+
+### Comment:
+Here in the above chunk i read the WEIGHT.txt file and printed the head and summary.
+
+
+```{r}
+# Reading FOOD_DES.txt File
+food_des.dat <- read.table("FOOD_DES.txt",header=FALSE,sep="^",quote="~")
+names(food_des.dat) <- c("NDB_No","FdGrp_Cd","Long_Desc","Shrt_Desc",
+"ComName","ManufacName","Survey","Ref_desc","Refuse","SciName",
+"N_Factor","Pro_Factor","Fat_Factor","CHO_Factor")
+dim(food_des.dat)
+head(food_des.dat)
+summary(food_des.dat)   # Summary of food_des.dat
+```
+
+### Comment:
+Here in the above chunk i read the FOOD_DES.txt file and printed the head and summary.
+
+
+```{r}
+# Reading NUT_DATA.txt File
+nut_data.dat <- read.table("NUT_DATA.txt",header=FALSE,sep="^",quote="~")
+names(nut_data.dat) <- c("NDB_No","Nutr_No","Nutr_Val","Num_Data_Pts","Std_Error",
+"Src_Cd","Deriv_Cd","Ref_NDB_No","Add_Nutr_Mark","Num_Studies",
+"Min","Max","DF","Low_EB","Up_EB","Stat_cmt","AddMod_Date")
+head(nut_data.dat)
+summary(nut_data.dat)   # Summary of nut_data.dat
+```
+
+### Comment:
+Here in the above chunk i read the NUT_DATA.txt file and printed the head and summary.
+

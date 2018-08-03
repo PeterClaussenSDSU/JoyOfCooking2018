@@ -1,0 +1,369 @@
+---
+title: "Alex.Soupir.MidTermProj"
+author: "Set 3"
+date: "July 15, 2018"
+output: pdf_document
+---
+
+##Recipes: Lima Beans and Mushrooms, Charlotte Russe
+*I was not able to get the same list as the instructor when making the assignment list, so I named this based off his assignment list. Set #3*
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+rm(list=ls())
+```
+
+#Create data tables for your assigned recipes, with columns Amount, Unit and Ingredient.
+
+To create tables with the assigned recipes, I created a data frame with 3 variables, and concatenated the values for each together into a vector. Following the original creation of the data frame, I went through each ingredient and searched the food description table for the best match than went back and changed the ingredient. I did this for all 4 tables (2x 1936 and 2x 2006). The row that was returned that matched the best to the recipes ingredient is at the end of the line following the "#" symbol.
+
+Update: To add NDB_No to the tables, I went back through the same way I did for the ingredients, but I added the ingredient number to another column for each of the recipes. Since the Beef Stroganoff recipes didn't have this number either, I manually added the NDB_No column using fix() while also entering in the "best matched" ingredient form the FOOD_DES table.
+
+```{r}
+LimaBeansandMushrooms1936 <- data.frame(Amount=c(2.00, 
+                                              0.50, 
+                                              2.00, 
+                                              2.00, 
+                                              0.25, 
+                                              0.25, 
+                                              0.50, 
+                                              0.50),
+                                     Measure=c("cup", 
+                                            "lb", 
+                                            "Tbs", 
+                                            "Tbs", 
+                                            "cup", 
+                                            "cup", 
+                                            "cup", 
+                                            "cup"),
+                                     Ingredient=c("Lima beans, large, mature seeds, cooked, boiled, without salt", 
+                                                  "Mushrooms, morel, raw",
+                                                  "Butter, salted",
+                                                  "Wheat flour, white, all-purpose, self-rising, enriched",
+                                                  "Milk, whole, 3.25% milkfat, with added vitamin D ",
+                                                  "Cream, fluid, heavy whipping",
+                                                  "Soup, stock, chicken, home-prepared",
+                                                  "Bread, white, commercially prepared (includes soft bread crumbs)"),
+                                     NDB_No=c("16072",
+                                              "11240",
+                                              "1001",
+                                              "20082",
+                                              "1077",
+                                              "1053",
+                                              "6172",
+                                              "18069"))
+
+print(LimaBeansandMushrooms1936)
+
+#food_des.dat[grepl("(L|l)ima beans", food_des.dat$Long_Desc),]#13
+#food_des.dat[grepl("(M|m)ushrooms", food_des.dat$Long_Desc),]#3
+#food_des.dat[grepl("(B|b)utter,", food_des.dat$Long_Desc),]#1
+#food_des.dat[grepl("(O|o)il, c", food_des.dat$Long_Desc),]#6
+#food_des.dat[grepl("(F|f)lour, ", food_des.dat$Long_Desc),]#32
+#food_des.dat[grepl("(M|m)ilk, ", food_des.dat$Long_Desc),]#4
+#food_des.dat[grepl("(C|c)ream, ", food_des.dat$Long_Desc),]#4
+#food_des.dat[grepl("(S|s)tock", food_des.dat$Long_Desc),]#3
+#food_des.dat[grepl("(B|b)read crumbs", food_des.dat$Long_Desc),]#1
+
+LimaBeansandMushrooms2006 <- data.frame(Amount=c(2.00, 
+                                              0.50, 
+                                              2.00,
+                                              0.50,
+                                              1.00, 
+                                              0.50, 
+                                              0.25, 
+                                              0.25, 
+                                              0.50),
+                                     Measure=c("cup", 
+                                            "lb", 
+                                            "Tbs", 
+                                            "Tbs",
+                                            "Tbs",
+                                            "cup", 
+                                            "cup", 
+                                            "cup", 
+                                            "cup"),
+                                     Ingredient=c("Lima beans, large, mature seeds, cooked, boiled, without salt", 
+                                                  "Mushrooms, morel, raw",
+                                                  "Butter, salted",
+                                                  "Oil, canola",
+                                                  "Wheat flour, white, all-purpose, self-rising, enriched",
+                                                  "Soup, stock, chicken, home-prepared",
+                                                  "Milk, whole, 3.25% milkfat, with added vitamin D ",
+                                                  "Cream, fluid, heavy whipping",
+                                                  "Bread, white, commercially prepared (includes soft bread crumbs)"),
+                                     NDB_No=c("16072",
+                                              "11240",
+                                              "1001",
+                                              "4582",
+                                              "20082",
+                                              "6172",
+                                              "1077",
+                                              "1053",
+                                              "18069"))
+
+print(LimaBeansandMushrooms2006)
+
+CharlotteRusse1936 <- data.frame(Amount=c(2.00,
+                                          0.25,
+                                          2.00,
+                                          0.50,
+                                          4.00,
+                                          1.00,
+                                          2.00,
+                                          18.00),
+                                 Measure=c("Tbs",
+                                        "cup",
+                                        "cup",
+                                        "cup",
+                                        "lrg",
+                                        "tsp",
+                                        "cup",
+                                        "ea"),
+                                 Ingredient=c("Gelatins, dry powder, unsweetened",
+                                              "Beverages, water, tap, drinking",
+                                              "Milk, whole, 3.25% milkfat, with added vitamin D ",
+                                              "Sugars, granulated",
+                                              "Egg, yolk, raw, fresh",
+                                              "Vanilla extract",
+                                              "Cream, fluid, heavy whipping",
+                                              "Cookies, ladyfingers, without lemon juice and rind"),
+                                 NDB_No=c("19177",
+                                          "14429",
+                                          "1077",
+                                          "19335",
+                                          "1125",
+                                          "2050",
+                                          "1053",
+                                          "18423"))
+print(CharlotteRusse1936)
+
+#food_des.dat[grepl("(G|g)elatin", food_des.dat$Long_Desc),]#5
+#food_des.dat[grepl("(W|w)ater", food_des.dat$Long_Desc),]#189
+#food_des.dat[grepl("(S|s)ugar", food_des.dat$Long_Desc),]#59
+#food_des.dat[grepl("(E|e)gg", food_des.dat$Long_Desc),]#4
+#food_des.dat[grepl("(E|e)xtract", food_des.dat$Long_Desc),]#1
+#food_des.dat[grepl("(C|c)ookie", food_des.dat$Long_Desc),]#63
+#food_des.dat[grepl("(J|j)am", food_des.dat$Long_Desc),]#5
+
+CharlotteRusse2006 <- data.frame(Amount=c(18.00,
+                                          0.50,
+                                          1.50,
+                                          6.00,
+                                          6.00,
+                                          0.75,
+                                          2.00,
+                                          4.00,
+                                          1.50),
+                                 Measure=c("ea",
+                                        "cup",
+                                        "tsp",
+                                        "Tbs",
+                                        "ea",
+                                        "cup",
+                                        "tsp",
+                                        "Tbs",
+                                        "cup"),
+                                 Ingredient=c("Cookies, ladyfingers, without lemon juice and rind",
+                                              "Jams and preserves, no sugar (with sodium saccharin), any flavor",
+                                              "Gelatins, dry powder, unsweetened",
+                                              "Beverages, water, tap, drinking",
+                                              "Egg, yolk, raw, fresh",
+                                              "Sugars, granulated",
+                                              "Vanilla extract",
+                                              "Butter, salted",
+                                              "Cream, fluid, heavy whipping"),
+                                 NDB_No=c("18423",
+                                          "43028",
+                                          "19177",
+                                          "14429",
+                                          "1125",
+                                          "19335",
+                                          "2050",
+                                          "1001",
+                                          "1053"))
+print(CharlotteRusse2006)
+
+food_des.dat <- read.table("FOOD_DES.txt",header=FALSE,sep="^",quote="~")
+names(food_des.dat) <- c("NDB_No","FdGrp_Cd","Long_Desc","Shrt_Desc",
+"ComName","ManufacName","Survey","Ref_desc","Refuse","SciName",
+"N_Factor","Pro_Factor","Fat_Factor","CHO_Factor")
+
+BeefStroganoff1997 <- read.csv("BeefStroganoff.1997.tab", sep="")
+BeefStroganoff2006 <- read.csv("BeefStroganoff.2006.tab", sep="")
+#fix(BeefStroganoff1997)
+#fix(BeefStroganoff2006)
+
+#lapply(strsplit(Incredient,split=","),trimws) could  have used this to search the food descriptions for a match, but I just scrolled though to find the best match
+```
+
+#Write each individual recipe to a tab delimited file. The name of the tab file should be comprised of the recipe file name and the year of the recipe (1936 or 2006, in most cases).
+
+Each of the above tables were written in a similar format as the given Beef Stroganoff recipes.
+
+```{r}
+#write.table(BeefStroganoff1997, "BeefStroganoff.1997.tab", sep = "\t")
+#write.table(BeefStroganoff2006, "BeefStroganoff.2006.tab", sep = "\t")
+
+write.table(LimaBeansandMushrooms1936, "LimaBeansandMushrooms.1936.tab", sep = "\t")
+write.table(LimaBeansandMushrooms2006, "LimaBeansandMushrooms.2006.tab", sep = "\t")
+write.table(CharlotteRusse1936, "CharlotteRusse.1936.tab", sep = "\t")
+write.table(CharlotteRusse2006, "CharlotteRusse.2006.tab", sep = "\t")
+```
+
+#Read in each tab file, and merge the tables with the example Beef Stroganoff tables. 
+
+To read each of the tables in, I did it 2 different ways. The first way was the typical read.csv to bring all of the tables into R. After writing these lines, I realized that for scaling purposes not hard coding names of files and variables would be the best approach. To do this I created a list of all of the file names in my folder that were tab files, and then I removed the ".tab" of the file name and created another list with these.
+
+Following the creation of these 2 lists, I cycled through the first list of file names, created a temperary variable of one at a time and changing the column names to include the original column name with the name of the recipe and year, that way when the tables were merged they would have columns that are identifying of the recipe and year that they came from. I wrote the temperary table to another list for use later in merging all of the files, that can be done by cycling through this list. 
+
+Since I tested the for loop several times, I wrote in rm(merged.recipes) so each time it wouldn't just add more columns but it would start fresh. Firstly, I made the merged recipes variable hold the first recipe that is present in the recipes list, then cycled through every other recipe in the list and merge to the recipe before it by Ingredient and then wrote back to the merged recipes data frame. I had to make sure that it included "all=TRUE" so that if the table didn't contain the Ingredient before, it would add it as a row and then the whole new recipe would be added to the data frame.
+
+*Of note, the beef stroganoff recipe ingredients were not from the food description list perfectly so merging the different recipes put the differently formatted ingredients into a new row, but since both of the recipes of beef stroganoff used the same formatting, they were able to be merged together.
+
+
+
+```{r}
+#read each of the tab files
+BeefStroganoff1997 <- read.csv("BeefStroganoff.1997.tab", sep="")
+BeefStroganoff2006 <- read.csv("BeefStroganoff.2006.tab", sep="")
+
+LimaBeansandMushrooms1936 <- read.csv("LimaBeansandMushrooms.1936.tab", sep="")
+LimaBeansandMushrooms2006 <- read.csv("LimaBeansandMushrooms.2006.tab", sep="")
+CharlotteRusse1936 <- read.csv("CharlotteRusse.1936.tab", sep="")
+CharlotteRusse2006 <- read.csv("CharlotteRusse.2006.tab", sep="")
+
+recipe.list <- list.files( pattern = '*.tab')
+
+recipe.list.l = substring(recipe.list,1,nchar(recipe.list)-4)
+
+recipe.l = list()
+for(i in 1:length(recipe.list)){
+  temp.reci = read.csv(file = recipe.list[i], sep = "")
+  #PMC - Original Beef Stroganoff files don't have NDB_No,
+  #this fix allows the document to typeset
+  if(!("NDB_No" %in% names(temp.reci))) {
+    temp.reci$NDB_No <- 0
+  }
+  colnames(temp.reci)[1] = paste(colnames(temp.reci[1]),recipe.list.l[i],sep=".")
+  colnames(temp.reci)[2] = paste(colnames(temp.reci[2]),recipe.list.l[i],sep=".")
+  
+  recipe.l[[i]] = temp.reci
+  
+  names(recipe.l)[i] = substring(recipe.list[i], 1, nchar(recipe.list[i])-4)
+}
+
+rm(merged.recipes)
+merged.recipes = recipe.l[[1]]
+merged.recipes$NDB_No = as.factor(merged.recipes$NDB_No)
+for(i in 2:length(recipe.list)){
+  temp.recipes = recipe.l[[i]]
+  temp.recipes$NDB_No = as.factor(temp.recipes$NDB_No)
+  merged.recipes = merge(merged.recipes, temp.recipes, by=c("NDB_No", "Ingredient"), all=TRUE)
+}
+
+print(merged.recipes)
+```
+
+Update: I am not sure what the best merging method is now that I have read more of the discussion posts from other people. Some seem to make it sound like we are supposed to be adding to the table vertically instead of by Ingredients. The first table that I made was merging the tables by Ingredient, but the second table I made just has them "rbind" together based off of the titles found in the first table in the new recipes list.
+
+This new list took the tab file name with .tab removed (as done in the Ingredients merged table), and split the remaining name by "." so there was a list of 2 containing the recipe name and the year. I then created vectors for Recipe and Year as long as the number of rows that recipe, so the Recipe and Year could be added to the front of this table. This new table to appended to the bottom of another list, which was cycled through with rbind to make a table with all of the recipes and ingredients in the long format rather than wide.
+
+```{r}
+#Row bind the tables after adding the recipe name and year to the tables?
+#Above is merging based on NDB_No and Ingredient
+#Below is added after reading some discussions and not knowing what to do
+
+rec.year = strsplit(recipe.list.l, split = ".", fixed = TRUE)
+recipe.l2 = list()
+for(i in 1:length(recipe.list)){
+  build = c(rec.year[[i]][1], rec.year[[i]][2])
+  temp.reci = read.csv(file = recipe.list[i], sep = "")
+  recipe = rep(build[1], nrow(temp.reci))
+  year = rep(build[2], nrow(temp.reci))
+  new.recipeTable = data.frame(Recipe = c(recipe),
+                      Year = c(year),
+                      temp.reci)
+  recipe.l2[[i]] <- new.recipeTable
+}
+
+rm(merged.recipes2)
+merged.recipes2 = recipe.l2[[1]]
+for(i in 2:length(recipe.l2)){
+  temp.recipes = recipe.l2[[i]]
+  merged.recipes2 <- rbind(merged.recipes2, temp.recipes[, names(merged.recipes2)])
+}
+
+print(merged.recipes2)
+```
+
+#Proof the data to check for errors. Consider, for example, the error in the example Beef Stroganoff recipes, where the measures for sour cream are inconsistent. If we merge the two recipes by Ingredient, we can plot Measure.1997 vs Measure.2006 and see quickly where the measures are not consistent. We could also create a contingency table comparing Measure.1997 and Measure.2006 to look for mismatches in measures between ingredients. We can plot Amount.1997 and Amount.2006 to look for unexpected changes in values.
+
+To make working with the recipe data frame easier, I attached it. Then, I used the table function to look at the same recipe from 2 different years, comparing the different measurements of the same ingredients.
+
+```{r}
+attach(merged.recipes)
+
+#contingency tables to see where there are differences in the measurements of ingredients
+beef.conti = table(Measure.BeefStroganoff.1997, Measure.BeefStroganoff.2006)
+lima.conti = table(Measure.LimaBeansandMushrooms.1936, Measure.LimaBeansandMushrooms.2006)
+char.conti = table(Measure.CharlotteRusse.1936, Measure.CharlotteRusse.2006)
+
+print(beef.conti)
+print(lima.conti)
+print(char.conti)
+
+```
+
+##Beef Stroganoff
+
+*There was an ingredient in the 2006 recipe that was measured in cups when in the 1997 recipe they used tablespoons. 2006 also used a measure of each (looking at the .tab file it was the onion) when there was no onion ingredient called for in the 1997 recipe. Finally, in 2006 a measure of tablespoon was used and in 1997 the measurement was in teaspoons.*
+
+##Lima Beans and Mushrooms
+
+*It looks like all of the measurements are the same from 1936 to 2006, but I have noticed that if a measurement is for an ingredient that is seen in 1 of the recipes but not the other, AND that measurement was used for another ingredient, it doesn't show up again in the contingency table. So although the measurements for Lima Beans and Mushrooms appears to be fine, it isn't showing that 1936 is missing an ingredient.*
+
+##Charlotte Russe
+
+*In  one of the recipes, they describe the give a measure of egg as "Large" and the other recipe just uses "Each". In 1936 they had used tablespoon and in 2006 the same ingredient used teaspoon. There was also a difference in one of the measurements where they used cup in 1936 but went with tablespoon in 2006.*
+
+After making the tables comparing ingredient measurements from the 2 different years, I created plots for the amounts of the ingredients between the 2 years. X=Y trend should show that the recipes have the same amount of the ingredient between the 2 years, given the measurement of that ingredient is the same between the 2 years.
+
+```{r}
+plot(Amount.BeefStroganoff.1997, Amount.BeefStroganoff.2006)
+plot(Amount.LimaBeansandMushrooms.1936, Amount.LimaBeansandMushrooms.2006)
+plot(Amount.CharlotteRusse.1936,Amount.CharlotteRusse.2006)
+```
+
+##Amounts
+
+*All recipes seem to have different amounts between the 2 years. I would think if all of the ingredients had the same amount (given the same measure unit), they would create a straight line x=y, but none of the above recipes have this x=y line.*
+
+#Read the Recipes.csv, append rows for your recipes, then write the table back to Recipes.csv. We would be able to determine the file names for your recipes by concatentating Recipe and Year, removing white space if necessary.
+
+To add my ingredients information to this table, I read in the recipes csv, than created my own data frame using the same column names as the recipes csv, followed by row binding the 2 to make a single file that had now all 6 recipes information in it. This new data frame was written to the same name as the original recipes csv file. 
+
+```{r}
+recipes = read.csv("Recipes.csv", sep = ",")
+soupir.recipes = data.frame(Recipe = c("Lima Beans and Mushrooms",
+                                       "Lima Beans and Mushrooms",
+                                       "Charlotte Russe",
+                                       "Charlotte Russe"),
+                            Year = c("1936",
+                                     "2006",
+                                     "1936",
+                                     "2006"),
+                            MinServings = c("6",
+                                            "6",
+                                            "10",
+                                            "8"),
+                            MaxServings = c("6",
+                                            "6",
+                                            "12",
+                                            "10"))
+
+recipes = rbind(recipes, soupir.recipes)
+recipes
+
+write.csv(recipes, "Recipes.csv", row.names = FALSE)
+```

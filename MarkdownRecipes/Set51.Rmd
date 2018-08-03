@@ -1,0 +1,324 @@
+---
+title: "Midterm"
+author: 'Set 51'
+date: '7/22/18'
+output:
+  word_document: default
+  pdf_document: default
+  html_document: default
+---
+
+# Set working directory and read file
+setwd("./")
+
+```{r}
+#Creates the data from for Tomato Aspic 1936
+TomatoAspic.1936 <- data.frame(
+  Amount=c(3.5,1.5,3,2,4,2,.5,.5,3,2),
+  Measure = c("cup", "tsp", "Tbs", "Tbs", "ea", "Tbs", "cup", "cup", "Tbs", "Tbs"),
+  Ingredient = c("Tomatoes, whole canned, with juice", "sugar, white, granulated", "onion, yellow, fresh, chopped", "juice, lemon, fresh", "celery stalk, fresh, medium, 7.5 to 8 inches", "gelatin, dry, unsweetened", "water, generic", "cream, whipping, heavy", "juice, lemon, fresh", "horseradish, grated, in vinegar")
+)
+
+#Creates a data frame for Tomato Aspic 2006
+TomatoAspic.2006 <- data.frame(
+  Amount=c(4,.5,.5,2,2,2,4.5,.5,1),
+  Measure=c("cup", "cup", "cup", "ea", "Tbs", "tsp", "tsp", "cup", "ea"),
+  Ingredient=c("Juice, canned, tomatoe unsalted", "tomatoe puree, canned", "onion, yellow, fresh, chopped", "celery stalk, fresh, medium, 7.5 to 8 inches", "juice, lemon, fresh", "sugar, white, granulated", "gelatin, dry, unsweetened", "water, generic", "avocado, california, fresh")
+)
+
+#Creates a data from for Charlotte Russe 1936
+CharlotteRusse.1936 <- data.frame(
+  Amount=c(2, .25,2,.5,4,1,2,18),
+  Measure = c("Tbs","cup","cup","cup","lrg","tsp", "cup", "ea"),
+  Ingredient = c("gelatin, dry, unsweetened", "water, generic", "milk, whole, 3.25%", "sugar, white, granulated", "egg, raw", "extract, vanilla", "cream, whipping, heavy", "cookie, ladyfinger, without lemon juice & rind")
+)
+
+#Creates a data frame for Charlotte Russe 2006
+CharlotteRusse.2006 <- data.frame(
+  Amount=c(18,.5,1.5,6,6,.5,2,4,.25,1.5),
+  Measure = c("ea","cup","tsp","Tbs","ea", "cup","tsp","tbs","cup","cup"),
+  Ingredient = c("cookie, ladyfinger, without lemon juice & rind", "jam, red raspberry, seedless", "gelatin, dry, unsweetened", "water, generic", "egg yolk, raw, large", "sugar, white, granulated", "extract, vanilla", "butter, salted", "sugar, white, granulated", "cream, whipping, heavy")
+)
+
+#Creates a data frame for the servings/recipe for tomato aspic and charlotte russe and prints it
+My_Recipes <- data.frame(Recipe=c("Tomato Aspic", "Tomato Aspic",
+                                 "Cahrlotte Russe", "Charlotte Russe"),
+                        Year=c(1936, 2006, 1936, 2006),
+                        MinServings=c(8, 8, 10, 8),
+                        MaxServings=c(8, 10, 12, 10))
+print(My_Recipes)
+
+#Reads in the provided beef sroganoff fles and prints
+BeefStroganoff1997 <- read.table("BeefStroganoff.1997.tab",header=TRUE, sep = "")
+BeefStroganoff2006 <- read.table("BeefStroganoff.2006.tab",header=TRUE, sep = "")
+BeefStroganoff1997
+BeefStroganoff2006
+
+#Adds the title and year of each ingredient to the provided files read in above
+BeefStroganoff1997 <- cbind(BeefStroganoff1997, Recipe = "Beef Stroganoff", Year = 1997)
+BeefStroganoff2006 <- cbind(BeefStroganoff2006, Recipe = "Beef Stroganoff", Year = 2006)
+BeefStroganoff1997
+BeefStroganoff2006
+
+#Reads in the provided recipes table and prints
+recipes <- read.table("Recipes.csv",header = TRUE, sep = ",")
+recipes
+
+#Adds the name and year to the ingredient lists
+Tomato_Aspic_1936_FullList <- cbind(TomatoAspic.1936,Recipe = "Tomato Aspic", Year = 1936)
+Tomato_Aspic_2006_FUllList <- cbind(TomatoAspic.2006,Recipe = "Tomato Aspic", Year = 2006)
+Charlotte_Russe_1936_FullList <- cbind(CharlotteRusse.1936, Recipe = "Charlotte Russe", Year = 1936)
+Charlotte_Russe_2006_FullList <- cbind(CharlotteRusse.2006, Recipe = "Charlotte Russe", Year = 2006)
+
+#Merges the ingredient lists together to form the full "all recipes" list below and prints
+Aspic <- merge.data.frame(Tomato_Aspic_1936_FullList, Tomato_Aspic_2006_FUllList, all = TRUE)
+Russe <- merge.data.frame(Charlotte_Russe_1936_FullList, Charlotte_Russe_2006_FullList, all = TRUE)
+Beef <- merge.data.frame(BeefStroganoff1997, BeefStroganoff2006, all = TRUE)
+Mine <- merge.data.frame(Aspic, Russe, all = TRUE)
+All_recipes <- merge.data.frame(Mine, Beef, all = TRUE)
+All_recipes
+as.numeric(All_recipes$Measure)
+```
+
+
+
+
+```{r}
+#Comines the servings amounts for each recipe and prints
+Recipe_Servings <- merge.data.frame(recipes, My_Recipes, all = TRUE)
+Recipe_Servings
+
+
+#Reads in the weight.dat table that was provided... (Unused??? not sure if i did it right because of this...)
+weight.dat <-read.table("WEIGHT.txt",header=FALSE,sep="^",quote="~")
+names(weight.dat) <-c("NDB_No","Seq","Amount","Msre_Desc","Gm_Wgt","Num_Data_Pts","Std_Dev")
+head(weight.dat)
+
+#Reads in the food_des.dat table that was provided for verification
+food_des.dat <-read.table("FOOD_DES.txt",header=FALSE,sep="^",quote="~")
+names(food_des.dat) <-c("NDB_No","FdGrp_Cd","Long_Desc","Shrt_Desc","ComName","ManufacName","Survey","Ref_desc","Refuse","SciName","N_Factor","Pro_Factor","Fat_Factor","CHO_Factor")
+head(food_des.dat)
+dim(food_des.dat)
+
+#Creates a "short list" of the ingredients to make the verification simpler without duplicates and prints
+Short_List <- aggregate(Amount~Ingredient, All_recipes, FUN = mean, na.rm=TRUE  )
+Short_List
+
+#Searches for Celery and provides the long description linked to the appropriate NDB_No which is then stored in List, and the Long_Desc is stored in Other_List. These lists are used later to create the final data set
+grep('(C|c)elery,', food_des.dat$Long_Desc, value = TRUE)
+a <- subset(food_des.dat,food_des.dat$Long_Desc == 'Celery, raw')[1]
+b <- 'Celery, raw'
+list = c()
+other_list = c()
+list = c(list,a)
+other_list <- c(other_list, b)
+
+#Searches for Cream and provides the long description linked to the appropriate NDB_No
+grep('(C|c)ream,', food_des.dat$Long_Desc, value = TRUE)
+a <- subset(food_des.dat,food_des.dat$Long_Desc == "Cream, fluid, heavy whipping")[1]
+list <- rbind(list,a)
+b <- "Cream, fluid, heavy whipping"
+other_list <- rbind(other_list,b)
+
+#Searches for Geletin  and provides the long description linked to the appropriate NDB_No  
+grep('(U|u)nsweetened,', food_des.dat$Long_Desc, value = TRUE)
+a <- subset(food_des.dat,food_des.dat$Long_Desc == "Pectin, unsweetened, dry mix")[1]
+list <- rbind(list,a)
+b <- "Pectin, unsweetened, dry mix"
+other_list <- rbind(other_list,b)
+  
+#Searches for Horseradish  and provides the long description linked to the appropriate NDB_No
+grep('(H|h)orseradish,', food_des.dat$Long_Desc, value = TRUE)
+a <- subset(food_des.dat,food_des.dat$Long_Desc == "Horseradish, prepared")[1]
+list <- rbind(list,a)
+b <- "Horseradish, prepared"
+other_list <- rbind(other_list,b)
+
+#Searches for Lemon Juice  and provides the long description linked to the appropriate NDB_No
+grep('(J|j)uice,', food_des.dat$Long_Desc, value = TRUE)
+a <- subset(food_des.dat,food_des.dat$Long_Desc == "Lemon juice, raw")[1]
+list <- rbind(list,a)
+b <- "Lemon juice, raw"
+other_list <- rbind(other_list,b)
+  
+#Searches for Onions  and provides the long description linked to the appropriate NDB_No
+grep('(O|o)nions,', food_des.dat$Long_Desc, value = TRUE)
+a <- subset(food_des.dat,food_des.dat$Long_Desc == "Onions, raw")[1]
+list <- rbind(list,a)
+b <- "Onions, raw"
+other_list <- rbind(other_list,b)
+  
+#Searches for  Sugar and provides the long description linked to the appropriate NDB_No
+grep('(S|s)ugar,', food_des.dat$Long_Desc, value = TRUE)
+a <- subset(food_des.dat,food_des.dat$Long_Desc == "Sugar, turbinado")[1]
+list <- rbind(list,a)
+b <- "Sugar, turbinado"
+other_list <- rbind(other_list,b)
+  
+#Searches for Canned Tomatoes  and provides the long description linked to the appropriate NDB_No
+grep('(T|t)omatoes,', food_des.dat$Long_Desc, value = TRUE)
+a <- subset(food_des.dat,food_des.dat$Long_Desc == "Tomatoes, red, ripe, canned, packed in tomato juice")[1]
+list <- rbind(list,a)
+b <- "Tomatoes, red, ripe, canned, packed in tomato juice"
+other_list <- rbind(other_list,b)
+  
+#Searches for Water  and provides the long description linked to the appropriate NDB_No
+grep('(W|w)ater,', food_des.dat$Long_Desc, value = TRUE)
+a <- subset(food_des.dat,food_des.dat$Long_Desc == "Beverages, water, tap, drinking")[1]
+list <- rbind(list,a)
+b <- "Beverages, water, tap, drinking"
+other_list <- rbind(other_list,b)
+  
+#Searches for Avocados  and provides the long description linked to the appropriate NDB_No
+grep('(A|a)vocado,', food_des.dat$Long_Desc, value = TRUE)
+a <- NA
+list <- rbind(list,a)
+b <- "(Unfound)"
+other_list <- rbind(other_list,b)
+  
+#Searches for Tomatoe Juice  and provides the long description linked to the appropriate NDB_No
+grep('(J|j)uice,', food_des.dat$Long_Desc, value = TRUE)
+a <- subset(food_des.dat,food_des.dat$Long_Desc == "Tomato juice, canned, without salt added")[1]
+list <- rbind(list,a)
+b <- "Tomato juice, canned, without salt added"
+other_list <- rbind(other_list,b)
+  
+#Searches for Tomatoe Puree  and provides the long description linked to the appropriate NDB_No
+grep('(P|p)uree,', food_des.dat$Long_Desc, value = TRUE)
+a <- subset(food_des.dat,food_des.dat$Long_Desc == "Tomato products, canned, puree, with salt added")[1]
+list <- rbind(list,a)
+b <- "Tomato products, canned, puree, with salt added"
+other_list <- rbind(other_list,b)
+  
+#Searches for Ladyfinger Cookies  and provides the long description linked to the appropriate NDB_No
+grep('(L|l)adyfinger,', food_des.dat$Long_Desc, value = TRUE)
+a <- NA
+list <- rbind(list,a)
+b <- "(Unfound)"
+other_list <- rbind(other_list,b)
+  
+#Searches for Eggs  and provides the long description linked to the appropriate NDB_No
+grep('(E|e)gg,', food_des.dat$Long_Desc, value = TRUE)
+a <- subset(food_des.dat,food_des.dat$Long_Desc == "Egg, whole, raw, fresh")[1]
+list <- rbind(list,a)
+b <- "Egg, whole, raw, fresh"
+other_list <- rbind(other_list,b)
+  
+#Searches for Vanilla extract  and provides the long description linked to the appropriate NDB_No
+grep('(E|e)xtract,', food_des.dat$Long_Desc, value = TRUE)
+a <- subset(food_des.dat,food_des.dat$Long_Desc == "Vanilla extract, imitation, alcohol")[1]
+list <- rbind(list,a)
+b <- "Vanilla extract, imitation, alcohol"
+other_list <- rbind(other_list,b)
+  
+#Searches for whole milk  and provides the long description linked to the appropriate NDB_No
+grep('(M|m)ilk,', food_des.dat$Long_Desc, value = TRUE)
+a <- subset(food_des.dat,food_des.dat$Long_Desc == "Milk, whole, 3.25% milkfat, without added vitamin A and vitamin D")[1]
+list <- rbind(list,a)
+b <- "Milk, whole, 3.25% milkfat, without added vitamin A and vitamin D"
+other_list <- rbind(other_list,b)
+  
+#Searches for butter  and provides the long description linked to the appropriate NDB_No
+grep('(B|b)utter,', food_des.dat$Long_Desc, value = TRUE)
+a <- subset(food_des.dat,food_des.dat$Long_Desc == "Butter, without salt")[1]
+list <- rbind(list,a)
+b <- "Butter, without salt"
+other_list <- rbind(other_list,b)
+  
+#Searches for egg yolkd  and provides the long description linked to the appropriate NDB_No
+grep('(E|e)gg,', food_des.dat$Long_Desc, value = TRUE)
+a <- subset(food_des.dat,food_des.dat$Long_Desc == "Egg, yolk, raw, fresh")[1]
+list <- rbind(list,a)
+b <- "Egg, yolk, raw, fresh"
+other_list <- rbind(other_list,b)
+  
+#Searches for raspberry jam and provides the long description linked to the appropriate NDB_No
+grep('(J|j)am,', food_des.dat$Long_Desc, value = TRUE)
+a <- NA
+list <- rbind(list,a)
+b <- "(Unfound)"
+other_list <- rbind(other_list,b)
+  
+#Searches for beef tenderloin  and provides the long description linked to the appropriate NDB_No
+grep('(T|t)enderloin,', food_des.dat$Long_Desc, value = TRUE)
+a <- subset(food_des.dat,food_des.dat$Long_Desc == "Beef, tenderloin, roast, separable lean and fat, trimmed to 1/8\" fat, select, cooked, roasted")[1]
+list <- rbind(list,a)
+b <- "Beef, tenderloin, roast, separable lean and fat, trimmed to 1/8\" fat, select, cooked, roasted"
+other_list <- rbind(other_list,b)
+  
+#Searches for flour  and provides the long description linked to the appropriate NDB_No
+grep('(F|f)lour,', food_des.dat$Long_Desc, value = TRUE)
+a <- subset(food_des.dat,food_des.dat$Long_Desc == "Wheat flour, white, all-purpose, self-rising, enriched")[1]
+list <- rbind(list,a)
+b <- "Wheat flour, white, all-purpose, self-rising, enriched"
+other_list <- rbind(other_list,b)
+  
+#Searches for mustard  and provides the long description linked to the appropriate NDB_No
+grep('(M|m)ustard,', food_des.dat$Long_Desc, value = TRUE)
+a <- subset(food_des.dat,food_des.dat$Long_Desc == "Mustard, prepared, yellow")[1]
+list <- rbind(list,a)
+b <- "Mustard, prepared, yellow"
+other_list <- rbind(other_list,b)
+  
+#Searches for sour cream  and provides the long description linked to the appropriate NDB_No
+grep('(S|s)our,', food_des.dat$Long_Desc, value = TRUE)
+a <- subset(food_des.dat,food_des.dat$Long_Desc == "Cream, sour, cultured")[1]
+list <- rbind(list,a)
+b <- "Cream, sour, cultured"
+other_list <- rbind(other_list,b)
+  
+#Searches for beef stock  and provides the long description linked to the appropriate NDB_No
+grep('(S|s)tock,', food_des.dat$Long_Desc, value = TRUE)
+a <- subset(food_des.dat,food_des.dat$Long_Desc == "Soup, stock, beef, home-prepared")[1]
+list <- rbind(list,a)
+b <- "Soup, stock, beef, home-prepared"
+other_list <- rbind(other_list,b)
+  
+#Searches for mushrooms  and provides the long description linked to the appropriate NDB_No
+grep('(M|m)ushroom,', food_des.dat$Long_Desc, value = TRUE)
+a <- subset(food_des.dat,food_des.dat$Long_Desc == "Mushroom, white, exposed to ultraviolet light, raw")[1]
+list <- rbind(list,a)
+b <- "Mushroom, white, exposed to ultraviolet light, raw"
+other_list <- rbind(other_list,b)
+  
+#Searches for canola oil  and provides the long description linked to the appropriate NDB_No
+grep('(C|c)anola,', food_des.dat$Long_Desc, value = TRUE)
+a <- subset(food_des.dat,food_des.dat$Long_Desc == "Oil, vegetable, Natreon canola, high stability, non trans, high oleic (70%)")[1]
+list <- rbind(list,a)
+b <- "Oil, vegetable, Natreon canola, high stability, non trans, high oleic (70%)"
+other_list <- rbind(other_list,b)
+  
+#Searches for onions  and provides the long description linked to the appropriate NDB_No
+grep('(O|o)nions,', food_des.dat$Long_Desc, value = TRUE)
+a <- subset(food_des.dat,food_des.dat$Long_Desc == "Onions, raw")[1]
+list <- rbind(list,a)
+nrow(list)
+b <- "Onions, raw"
+other_list <- rbind(other_list,b)
+  
+#Sets the other_list as created above to a vector for easier use to follow
+Long_descriptions <- as.vector(other_list)
+
+#Binds the short list of ingredients with the NDB_No's and the Long Descriptions as found above and prints the beginning 
+Lookup_values <- cbind(Short_List, NDB_No = list, Long_Desc = Long_descriptions)
+head(Lookup_values)
+
+#Creates a final ingrediant list using the merge function to label the full ingredent list with the appropriate NBD_No's and long descriptions
+Final_Ingredient_List <- merge(Lookup_values, All_recipes, by = 'Ingredient')
+
+#Prints the Final_Ingredient_List
+Final_Ingredient_List
+
+#Prints the Recipe_Servings
+Recipe_Servings
+
+#Writes the final ingredient list and the recipe servings to CSV files for convenience
+write.csv(Recipe_Servings, file ='Recipes_Servings.csv')
+write.csv(Final_Ingredient_List, file ='Final_Ingredient_List.csv')
+
+
+```
+
+
+
+

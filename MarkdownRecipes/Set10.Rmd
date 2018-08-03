@@ -1,0 +1,405 @@
+---
+title: "Midterm Project"
+author: "Set 10"
+date: "7/21/2018"
+output: word_document
+---
+
+#Read in in USDA data
+Read in the Weight data from the USDA database for future correlation.
+```{r}
+weight.dat <- read.table("WEIGHT.txt",header=FALSE,sep="^",quote="~")
+names(weight.dat) <- c("NDB_No","Seq","Amount","Msre_Desc","Gm_Wgt","Num_Data_Pts","Std_Dev") #Assigned names for the data set
+head(weight.dat)
+summary(weight.dat)
+```
+
+Read in the Food description data from the USDA database for future correlation.
+```{r}
+food_des.dat <- read.table("FOOD_DES.txt",header=FALSE,sep="^",quote="~")
+names(food_des.dat) <- c("NDB_No","FdGrp_Cd","Long_Desc","Shrt_Desc",
+"ComName","ManufacName","Survey","Ref_desc","Refuse","SciName",
+"N_Factor","Pro_Factor","Fat_Factor","CHO_Factor") #Assigned names for the data set
+dim(food_des.dat)
+head(food_des.dat)
+summary(food_des.dat)
+```
+
+#Creating Tables
+4 seperate tables will need to be created. 2 for each year of the 2 assigned recipes. The required columns will be Amount, Measure, Ingredient, and NDB_No. The measurements and Ingredients will need to be standardized to the USDA database for future analysis.
+
+##Pineapple Gelatin 1936
+Create a table from the pdf of the assigned recipe for Pineapple Gelatin in 1936
+```{r}
+#Creation of the Pineapple Gelatin data frame recipe
+PineappleGelatin.1936 <- data.frame(
+  Amount=c(2.00, 2.00, 1.50,0.75,20.00,3.00),
+  Measure = c("Tbs", "cup", "cup", "cup", "oz", "Tbs"),
+  Ingredient = c("gelatin, dry, unsweetened","water, generic","juice, pineapple, canned, without vitamin C, unsweetened","sugar, white, granulated, granulated","pineapple, canned, crushed, in juice, drained","juice, lemon, fresh")
+)
+PineappleGelatin.1936
+```
+Update the recipe to be standardized with the USDA database. Using the grepl() function. look through the two databases to find the appropriate description and unit. The food description may just be a partial match for the above recipe.
+```{r}
+#Partial pattern matching for appropriate food description
+food_des.dat[grepl("(G|g)elatin",food_des.dat$Long_Desc),]
+food_des.dat[5662,]
+food_des.dat[grepl("(W|w)ater",food_des.dat$Long_Desc),]
+food_des.dat[4038,]
+food_des.dat[grepl("(J|j)uice",food_des.dat$Long_Desc),]
+food_des.dat[1968,]
+food_des.dat[grepl("(S|s)ugar",food_des.dat$Long_Desc),]
+food_des.dat[5776,]
+food_des.dat[grepl("(P|p)ineapple",food_des.dat$Long_Desc),]
+food_des.dat[2020,]
+food_des.dat[grepl("(L|l)emon.*(J|j)uice.",food_des.dat$Long_Desc),]
+food_des.dat[1879,]
+
+#Partial pattern matching for appropriate measurement unit
+weight.dat[grepl("19177",weight.dat$NDB_No),]
+weight.dat[grepl("14555",weight.dat$NDB_No),]
+weight.dat[grepl("9273",weight.dat$NDB_No),]
+weight.dat[grepl("19335",weight.dat$NDB_No),]
+weight.dat[grepl("9354",weight.dat$NDB_No),]
+weight.dat[grepl("9152",weight.dat$NDB_No),]
+
+#Update of the Recipe
+PineappleGelatin.1936 <- data.frame(
+  Amount=c(2.00, 2.00, 1.50,0.75,2.5,0.1875),
+  Measure = c("envelope (1 tbsp)", "cup", "cup", "cup", "cup, crushed", "cup"),
+  Ingredient = c("Gelatins, dry powder, unsweetened","Water, bottled, generic","Pineapple juice, canned or bottled, unsweetened, without added ascorbic acid","Sugars, granulated","Pineapple, canned, juice pack, drained","Lemon juice, raw"),
+  NDB_No=c(19177, 14555,9273,19335,9354,9152 )
+)
+PineappleGelatin.1936
+```
+The resulting ingredient descriptions are the best appropriate matches to the assigned recipes. The Ingredients and Measure match based on the NDB_No value. Very few of the recipes actually match and therefore the grepl searches are vague and the appropriate ingredient was manually selected from the list.
+
+##Pineapple Gelatin 2006
+Repeat the same steps as the first recipe.
+```{r}
+#Creation of the Pineapple Gelatin data frame recipe
+PineappleGelatin.2006 <- data.frame(
+  Amount=c(4.50, 2.00, 1.50,0.75,2.50,3.00),
+  Measure = c("tsp", "cup", "cup", "cup", "cup", "Tbs"),
+  Ingredient = c("gelatin, dry, unsweetened","water, generic","juice, pineapple, canned, without vitamin C, unsweetened","sugar, white, granulated, granulated","pineapple, canned, crushed, in juice, drained","juice, lemon, fresh")
+)
+```
+Update the recipe to be standardized with the USDA database. Using the grepl() function. look through the two databases to find the appropriate description and unit. The food description may just be a partial match for the above recipe.
+```{r}
+#Partial pattern matching for appropriate measurement unit
+weight.dat[grepl("19177",weight.dat$NDB_No),]
+weight.dat[grepl("14555",weight.dat$NDB_No),]
+weight.dat[grepl("9273",weight.dat$NDB_No),]
+weight.dat[grepl("19335",weight.dat$NDB_No),]
+weight.dat[grepl("9354",weight.dat$NDB_No),]
+weight.dat[grepl("9152",weight.dat$NDB_No),]
+
+#Update of the Recipe
+PineappleGelatin.2006 <- data.frame(
+  Amount=c(1.50, 2.00, 1.50,0.75,2.50,0.1875),
+  Measure = c("envelope (1 tbsp)", "cup", "cup", "cup", "cup, crushed", "cup"),
+  Ingredient = c("Gelatins, dry powder, unsweetened","Water, bottled, generic","Pineapple juice, canned or bottled, unsweetened, without added ascorbic acid","Sugars, granulated","Pineapple, canned, juice pack, drained","Lemon juice, raw"),
+  NDB_No=c(19177, 14555,9273,19335,9354,9152 )
+)
+PineappleGelatin.2006
+```
+The resulting ingredient descriptions are the best appropriate matches to the assigned recipes. The Ingredients and Measure match based on the NDB_No value. Very few of the recipes actually match and therefore the grepl searches are vague and the appropriate ingredient was manually selected from the list.
+
+##Rolled Biscuits 1936
+Repeat the same steps as the above recipes.
+```{r}
+#Creation of the Rolled Biscuits data frame recipe
+RolledBiscuits.1936 <- data.frame(
+  Amount=c(2.00, 0.75, 1.00, 0.75),
+  Measure = c("cup", "Tbs", "Tbs", "cup"),
+  Ingredient = c("flour, cake, white, unsifted, enriched","lard","butter, salted","milk, whole, 3.25%")
+)
+```
+Update the recipe to be standardized with the USDA database. Using the grepl() function. look through the two databases to find the appropriate description and unit. The food description may just be a partial match for the above recipe.
+```{r}
+#Partial pattern matching for appropriate food description
+food_des.dat[grepl("(F|f)lour.*(C|c)ake.",food_des.dat$Long_Desc),]
+food_des.dat[6002,]
+food_des.dat[grepl("(L|l)ard",food_des.dat$Long_Desc),]
+food_des.dat[625,]
+food_des.dat[grepl("(B|b)utter",food_des.dat$Long_Desc),]
+food_des.dat[1,]
+food_des.dat[grepl("(M|m)ilk.*(W|w)hole.",food_des.dat$Long_Desc),]
+food_des.dat[182,]
+
+#Partial pattern matching for appropriate measurement unit
+weight.dat[grepl("20084",weight.dat$NDB_No),]
+weight.dat[grepl("4002",weight.dat$NDB_No),]
+weight.dat[grepl("1001",weight.dat$NDB_No),]
+weight.dat[grepl("1211",weight.dat$NDB_No),]
+
+#Update of the Recipe
+RolledBiscuits.1936 <- data.frame(
+  Amount=c(2.00, 0.75, 1.00, 0.75),
+  Measure = c("cup unsifted, dipped", "tbsp", "tbsp", "cup"),
+  Ingredient = c("Wheat flour, white, cake, enriched","Lard","Butter, salted","Milk, whole, 3.25% milkfat, without added vitamin A and vitamin D"),
+  NDB_No=c(20084,4002,1001,1211)
+)
+RolledBiscuits.1936
+```
+The resulting ingredient descriptions are the best appropriate matches to the assigned recipes. The Ingredients and Measure match based on the NDB_No value. Very few of the recipes actually match and therefore the grepl searches are vague and the appropriate ingredient was manually selected from the list.
+
+##Rolled Biscuits 2006
+Repeat the same steps as the above recipes.
+```{r}
+#Creation of the Rolled Biscuits data frame recipe
+RolledBiscuits.2006 <- data.frame(
+  Amount=c(1.75, 4.00, 0.75),
+  Measure = c("cup", "Tbs", "cup"),
+  Ingredient = c("flour, all purpose, self rising, enriched","butter, salted","milk, whole, 3.25%")
+)
+RolledBiscuits.2006
+```
+Update the recipe to be standardized with the USDA database. Using the grepl() function. look through the two databases to find the appropriate description and unit. The food description may just be a partial match for the above recipe.
+```{r}
+#Partial pattern matching for appropriate food description
+food_des.dat[grepl("(F|f)lour",food_des.dat$Long_Desc),]
+food_des.dat[6000,]
+
+#Partial pattern matching for appropriate measurement unit
+weight.dat[grepl("20082",weight.dat$NDB_No),]
+weight.dat[grepl("1001",weight.dat$NDB_No),]
+weight.dat[grepl("1211",weight.dat$NDB_No),]
+
+#Update of the Recipe
+RolledBiscuits.2006 <- data.frame(
+  Amount=c(1.75, 4.00, 0.75),
+  Measure = c("cup", "tbsp", "cup"),
+  Ingredient = c("Wheat flour, white, all-purpose, self-rising, enriched","Butter, salted","Milk, whole, 3.25% milkfat, without added vitamin A and vitamin D"),
+  NDB_No=c(20082,1001,1211)
+)
+RolledBiscuits.2006
+```
+The resulting ingredient descriptions are the best appropriate matches to the assigned recipes. The Ingredients and Measure match based on the NDB_No value. Very few of the recipes actually match and therefore the grepl searches are vague and the appropriate ingredient was manually selected from the list.
+
+#Writing tab deliminated files
+Write and export the above recipes as a tab deliminated table.
+
+##Tables for 4 recipes
+The table should be exported as tab deliminated and the name of the table should have a .tab indicator with a period "." seperating the Recipe and Year.
+```{r}
+#The use of the write.table function with seperation indicator of a space " "
+write.table(PineappleGelatin.1936, "PineappleGelatin.1936.tab", row.names=FALSE, sep=" ")
+write.table(PineappleGelatin.2006, "PineappleGelatin.2006.tab", row.names=FALSE, sep=" ")
+write.table(RolledBiscuits.1936, "RolledBiscuits.1936.tab", row.names=FALSE, sep=" ")
+write.table(RolledBiscuits.2006, "RolledBiscuits.2006.tab", row.names=FALSE, sep=" ")
+```
+The use of the seperation indicator is a space " " due to making the recipes the same as the Beef Stroganoff recipes.
+
+#Read tab files and Merge
+The assigned recipes and the example recipes are to be imported and merged. The tables must be imported, and standardized for cross-reference and finally merged together into a single table.
+
+##Read recipe files include Beef Stroganoff
+The 6 recipe tables should be uniform and easy for future analysis.
+```{r}
+#Read in the recipe table for Beef Stroganoff 
+BS.1997=read.table("BeefStroganoff.1997.tab",header=TRUE,sep="")
+BS.1997$Measure=as.character(BS.1997$Measure)
+BS.1997$Ingredient=as.character(BS.1997$Ingredient)
+str(BS.1997)
+
+#Read in the recipe table for Beef Stroganoff 
+BS.2006=read.table("BeefStroganoff.2006.tab",header=TRUE,sep="")
+BS.2006$Measure=as.character(BS.2006$Measure)
+BS.2006$Ingredient=as.character(BS.2006$Ingredient)
+str(BS.2006)
+
+#Read in the recipe table for Pineapple Gelatin
+PG.1936=read.table("PineappleGelatin.1936.tab",header=TRUE,sep="")
+PG.1936$Measure=as.character(PG.1936$Measure)
+PG.1936$Ingredient=as.character(PG.1936$Ingredient)
+str(PG.1936)
+
+#Read in the recipe table for Pineapple Gelatin
+PG.2006=read.table("PineappleGelatin.2006.tab",header=TRUE,sep="")
+PG.2006$Measure=as.character(PG.2006$Measure)
+PG.2006$Ingredient=as.character(PG.2006$Ingredient)
+str(PG.2006)
+
+#Read in the recipe table for Rolled Biscuits
+RB.1936=read.table("RolledBiscuits.1936.tab",header=TRUE,sep="")
+RB.1936$Measure=as.character(RB.1936$Measure)
+RB.1936$Ingredient=as.character(RB.1936$Ingredient)
+str(RB.1936)
+
+#Read in the recipe table for Rolled Biscuits
+RB.2006=read.table("RolledBiscuits.2006.tab",header=TRUE,sep="")
+RB.2006$Measure=as.character(RB.2006$Measure)
+RB.2006$Ingredient=as.character(RB.2006$Ingredient)
+str(RB.2006)
+```
+The above tables were read in and coerced as characters in order to make the merging of the tables uniform and easier for future analysis.
+
+##Adding NDB_No column and standarding measure and ingredient to Beef Stroganoff 
+The Beef Stroganoff Recipe table needs to have the NDB_No column added and therefore will need to be standardized in order to obtain the appropriate NDB_No value. Using grep pattern matching, find the closest measurments and food description values.
+
+##Updating the Beef Stroganoff Recipe for 1997
+Using the same techniques and steps from the orignal recipes. Match the appropriate measurements and food descriptions and update the recipe.
+```{r}
+#Partial pattern matching for appropriate food description
+'beef roast, tenderloin, raw, 0" trim'	
+food_des.dat[grep("(B|b)eef.*(R|r)oast.",food_des.dat$Long_Desc),]
+food_des.dat[6773,]
+'butter, salted'	
+food_des.dat[1,]
+'flour, all purpose, self rising, enriched'	
+food_des.dat[6000,]
+'stock, beef, prepared from recipe'	
+food_des.dat[grep("(S|s)tock.*(B|b)eef.",food_des.dat$Long_Desc),]
+food_des.dat[1266,]
+'sour cream, cultured	'
+food_des.dat[grep("(C|c)ream.*(S|s)our",food_des.dat$Long_Desc),]
+food_des.dat[55,]
+'mustard, dijon'
+food_des.dat[grep("(M|m)ustard",food_des.dat$Long_Desc),]
+food_des.dat[308,]
+
+#Partial pattern matching for appropriate measurement unit
+weight.dat[grepl("23336",weight.dat$NDB_No),]
+weight.dat[grepl("1001",weight.dat$NDB_No),]
+weight.dat[grepl("20082",weight.dat$NDB_No),]
+weight.dat[grepl("6170",weight.dat$NDB_No),]
+weight.dat[grepl("1056",weight.dat$NDB_No),]
+weight.dat[grepl("2046",weight.dat$NDB_No),]
+
+#Update of the Recipe
+BS.1997$Amount=c(16,3.5,0.0625,1.0,3.0,1.0)
+BS.1997$Measure=c("oz","tbsp","cup","cup","tbsp","tsp or 1 packet")
+BS.1997$Ingredient=c('Beef, loin, tenderloin roast, boneless, separable lean and fat, trimmed to 0" fat, all grades, raw',"Butter, salted","Wheat flour, white, all-purpose, self-rising, enriched","Soup, stock, beef, home-prepared","Cream, sour, cultured","Mustard, prepared, yellow")
+NDB_No=c(23336,1001,20082,6170,1056,2046)
+BS.1997=cbind(BS.1997,NDB_No)
+print(BS.1997)
+```
+The above recipe for Beef Stroganoff 1997 was updated quite extensively. In regards to the Ingredient name. The names are the closest to the original recipe and he measurements had to be changed and converted in order to abide by the USDA databse values.
+
+##Updating the Beef Stroganoff Recipe for 2006
+Follow the same steps as the previous recipe.
+```{r}
+#Partial pattern matching for appropriate food description
+'beef roast, tenderloin, raw, 0" trim'	
+food_des.dat[grep("(B|b)eef.*(R|r)oast.",food_des.dat$Long_Desc),]
+food_des.dat[6773,]
+'oil, canola'
+food_des.dat[grep("(O|o)il.*(C|c)anola.",food_des.dat$Long_Desc),]
+food_des.dat[797,]
+'butter, salted'	
+food_des.dat[1,]
+'onion, yellow, fresh, medium, 2 1/2"'
+food_des.dat[grep("(O|o)nion",food_des.dat$Long_Desc),]
+food_des.dat[2646,]
+'mushrooms, fresh'
+food_des.dat[grep("(M|m)ushroom*(S|s)liced",food_des.dat$Long_Desc),]
+food_des.dat[2606,]
+'stock, beef, prepared from recipe'	
+food_des.dat[grep("(S|s)tock.*(B|b)eef.",food_des.dat$Long_Desc),]
+food_des.dat[1266,]
+'sour cream, cultured	'
+food_des.dat[grep("(C|c)ream.*(S|s)our",food_des.dat$Long_Desc),]
+food_des.dat[55,]
+'mustard, dijon'
+food_des.dat[grep("(M|m)ustard",food_des.dat$Long_Desc),]
+food_des.dat[308,]
+
+#Partial pattern matching for appropriate measurement unit
+weight.dat[grepl("23336",weight.dat$NDB_No),]
+weight.dat[grepl("4698",weight.dat$NDB_No),]
+weight.dat[grepl("1001",weight.dat$NDB_No),]
+weight.dat[grepl("11282",weight.dat$NDB_No),]
+weight.dat[grepl("11240",weight.dat$NDB_No),]
+weight.dat[grepl("6170",weight.dat$NDB_No),]
+weight.dat[grepl("1056",weight.dat$NDB_No),]
+weight.dat[grepl("2046",weight.dat$NDB_No),]
+
+#Update of the Recipe
+BS.2006$Amount=c(32,2.0,3.0,1.0,5.0,1.0,3.0,1.0)
+BS.2006$Measure=c("oz","tablespoon","tbsp",'medium (2-1/2" dia)',"cup","cup","cup","tsp or 1 packet")
+BS.2006$Ingredient=c('Beef, loin, tenderloin roast, boneless, separable lean and fat, trimmed to 0" fat, all grades, raw',"Oil, industrial, canola, high oleic","Butter, salted","Onions, raw","Mushrooms, morel, raw","Soup, stock, beef, home-prepared","Cream, sour, cultured","Mustard, prepared, yellow")
+NDB_No=c(23336,4698,1001,11282,11240,6170,1056,2046)
+BS.2006=cbind(BS.2006,NDB_No)
+print(BS.2006)
+```
+This recipe changed quite a bit from the 1936 version. Mushrooms, oil, and onions were all added. The most appropriated food description was chosen. In the case of mushrooms, the recipe calls for pounds but the only measurement is in cups. The value was converted from 1 pound to 5 cups. Various other conversions happened in this recipe and the above recipes. All in order to make the recipes be able to be cross referenced with the USDA database.
+
+##Created indexes for Recipe and Year values in the Merged Table
+In order to assigned values implicitly to the Recipe and Year values, string split the file name and index the appropriate values.
+```{r}
+#Creat tokenized strings of the table name.
+bs97=basename("BeefStroganoff.1997.tab")
+bs=unlist(strsplit(bs97,split='\\.'))
+bsn=substring(bs[1],1,4)
+bsn1=substring(bs[1],5,14)
+bsn=paste(bsn,bsn1)
+
+bs06=basename("BeefStroganoff.2006.tab")
+bs6=unlist(strsplit(bs06,split='\\.'))
+
+pg36=basename("PineappleGelatin.1936.tab")
+pg=unlist(strsplit(pg36,split='\\.'))
+pgn=substring(pg[1],1,9)
+pgn1=substring(pg[1],10,16)
+pgn=paste(pgn,pgn1)
+
+rb=basename("RolledBiscuits.1936.tab")
+rb=unlist(strsplit(rb,split='\\.'))
+rbn=substring(rb[1],1,6)
+rbn1=substring(rb[1],7,14)
+rbn=paste(rbn,rbn1)
+```
+Tokenizing the file name strings were split and unlisted in order to index the appropriate value from the string and then assign them in the Recipe and Year values for the merged table.
+
+##Merging Tables
+Finally merge the recipe tables and assigned values to Recipe and Year along with the previous columns from the tables.
+```{r}
+#Use the rep function to repeat the indexed values and coerce as a vector
+Recipe=as.vector(unlist(c(rep(bsn,14),rep(pgn[1],12),rep(rbn[1],7))))
+Year=as.vector(unlist(c(rep(bs[2],6),rep(bs6[2],8),rep(pg[2],6),rep(bs6[2],6),rep(pg[2],4),rep(bs6[2],3))))
+#Use rbind to bind rows into a single dataframe.
+Set=rbind(BS.1997,BS.2006,PG.1936,PG.2006,RB.1936,RB.2006)
+#Use cbind to add the Recipe, Year and above dataframe into one table.
+Recipes=cbind(Recipe,Year,Set)
+Recipes
+str(Recipes)
+```
+The final merged table was merged with the above recipe tables, vectors of Recipe and Year filled with the repeated indexed values from the previous step.
+
+#Check for errors
+Next, check for errors in the merged table. Look at contingency tables for measurements and ingredients and the plot should be a linear relationship between the two.
+```{r}
+#Contingency Table for Beef Stroganoff
+BScheck=merge(BS.1997,BS.2006,by='Ingredient')
+table(BScheck$Amount.x,BScheck$Amount.y)
+table(BScheck$Measure.x,BScheck$Measure.y)
+plot(BScheck$Amount.x,BScheck$Amount.y)
+#Contingency Table for Pineapple Gelatin
+PGcheck=merge(PG.1936,PG.2006,by='Ingredient')
+table(PGcheck$Measure.x,PGcheck$Measure.y)
+table(PGcheck$Amount.x,PGcheck$Amount.y)
+plot(PGcheck$Amount.x,PGcheck$Amount.y)
+#Contingency Table for Rolled Biscuits
+RBcheck=merge(RB.1936,RB.2006,by='Ingredient')
+table(RBcheck$Measure.x,RBcheck$Measure.y)
+table(RBcheck$Amount.x,RBcheck$Amount.y)
+plot(RBcheck$Amount.x,RBcheck$Amount.y)
+```
+From the tables you can see that a few recipes have changed in measurements and amounts. This is also seen from the plots. The plots mostly a linear relationship between the years but there are a few outliers showing a slight change in recipes over the years. This may not necessarily be a mistake but a change in products and diets over 70 years.
+
+#Appending Recipe Table
+Finally, read in the Recipes.csv table and append rows for the two assigned recipes for each year.
+```{r}
+#Addition of the 4 recipes into the recipes csv table using bind functions
+Recipes.dat=read.csv("Recipes.csv",header=TRUE)
+Recipes.dat$Recipe=as.character(Recipes.dat$Recipe)
+pg.36=c(pgn[1],pg[2],8,8)
+pg.06=c(pgn[1],bs6[2],8,8)
+rb.36=c(rbn[1],pg[2],24,24)
+rb.06=c(rbn[1],bs6[2],24,24)
+Recipes.dat=rbind(Recipes.dat,pg.36,pg.06,rb.36,rb.06)
+Recipes.dat
+```
+Rows were created from concatenating indexed values from the table for Recipe and Year and explicit values from the recipe pdfs. Then the vectors were merged by rbinding them to the original recipes table.
+

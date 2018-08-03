@@ -1,0 +1,746 @@
+---
+title: "Creating Correct Ingredient Tables for Mashed Potatoes and Tuna Salad"
+author: "Set 25"
+date: "July 11, 2018"
+output:
+  pdf_document: default
+---
+\fontsize{8}{12}
+\fontseries{b}
+\selectfont
+
+#General Instructions for file
+
+The file is set up to systematically derive the correct ingredient lists for cross referencing with the USDA Database. The file starts with the raw data from the PDF document for Mashed Potatoes and Tuna Salad for 1936 and 2006. Then breaks each component of each recipe up and converting the contents of each recipe into the correct description to be compatable with the USDA Database.
+
+### Imported Text Files from the USDA Database to use as References
+
+```{r}
+food_des.dat <-read.table("FOOD_DES.txt",header=FALSE,sep="^",quote="~")
+names(food_des.dat) <-c("NDB_No","FdGrp_Cd","Long_Desc","Shrt_Desc","ComName","ManufacName","Survey","Ref_desc","Refuse","SciName","N_Factor","Pro_Factor","Fat_Factor","CHO_Factor")
+
+```
+
+```{r}
+weight.dat <-read.table("WEIGHT.txt",header=FALSE,sep="^",quote="~")
+names(weight.dat) <-c("NDB_No","Seq","Amount","Msre_Desc","Gm_Wgt","Num_Data_Pts","Std_Dev")
+```
+
+```{r}
+#nut_def.dat <-read.table("NUTR_DEF.txt",header=FALSE,sep="^",quote="~")
+#names(nut_def.dat) <-c("Nutr_No","Units","Tagname","NutrDesc","Num_Dec","SR_Order")
+```
+
+
+```{r}
+nut_data.dat <-read.table("NUT_DATA.txt",header=FALSE,sep="^",quote="~")
+names(nut_data.dat) <-c("NDB_No","Nutr_No","Nutr_Val","Num_Data_Pts","Std_Error","Src_Cd","Deriv_Cd","Ref_NDB_No","Add_Nutr_Mark","Num_Studies","Min","Max","DF","Low_EB","Up_EB","Stat_cmt","AddMod_Date")
+```
+
+
+## Part 1 Creating Data Tables 
+
+While creating the data frames of the manually created recipes I named them with a ".draft" at the end to see if when I wrote and read the files that I actually sucessfully read a file name with the correct name.
+
+The only modification that was done to the manually imported data was done to Mashed Potatoes for 2006 where I combined the two identical ingredients for salted butter where one was 1 Tbs and the other was 3 Tbs. Otherwise the data is entered exactly how it was in the ESHA Research document.
+
+```{r}
+MashedPotatoes.1936.draft <- data.frame(
+  Amount = c(6.00,3.00,0.33),
+  Measure = c("ea","Tbs","cup"),
+  Ingredient = c("potato, cooked, peeled, medium, 2 1/4\" to 3 1/4\"","butter, salted","milk, whole, 3.25%")
+)
+MashedPotatoes.1936.draft
+```
+
+
+```{r}
+MashedPotatoes.2006.draft <- data.frame(
+  Amount = c(6.00,0.33,4.00),
+  Measure = c("ea","cup","Tbs"),
+  Ingredient = c("potato, cooked, peeled, medium, 2 1/4\" to 3 1/4\"","cream, whipping, heavy","butter, salted")
+)
+MashedPotatoes.2006.draft
+```
+
+```{r}
+TunaSalad.1936.draft <- data.frame(
+  Amount = c(1.00,1.00,1.00),
+  Measure = c("cup","cup","cup"),
+  Ingredient = c("tuna, light, canned, in water, drained, 12.5 oz can","celery, fresh, diced","mayonnaise")
+)
+TunaSalad.1936.draft
+```
+
+
+```{r}
+TunaSalad.2006.draft <- data.frame(
+   Amount = c(1.00,1.00,0.25),
+  Measure = c("cup","cup","cup"),
+  Ingredient = c("tuna, light, canned, in water, drained, 12.5 oz can","celery, fresh, diced","mayonnaise")
+)
+TunaSalad.2006.draft
+```
+
+## Part 2 Writing Each Individual Recipe to a "tab" Deliminated File
+
+Each file was written to the current directory using the same conventions that were used to create the two different Beef Stroganoff tab files.
+
+```{r}
+write.table(MashedPotatoes.1936.draft,file="MashedPotatoes.1936.tab",sep=' ', row.names=FALSE)
+write.table(MashedPotatoes.2006.draft,file="MashedPotatoes.2006.tab",sep=' ', row.names=FALSE)
+write.table(TunaSalad.1936.draft,file="TunaSalad.1936.tab",sep=' ', row.names=FALSE)
+write.table(TunaSalad.2006.draft,file="TunaSalad.2006.tab",sep=' ', row.names=FALSE)
+```
+
+## Part 3 Reading Each tab file and Merging with Beef Stroganoff
+
+Instead of importing each individual files I chose to programatically select files from my directory that ended in ".tab" and then import all of them naming them by their file name excluding the .tab. I then added two rows for Recipe and Year to be used as an identifier later.
+
+```{r}
+files <- list.files(pattern="\\.(tab|TAB)$")
+data_names <- gsub("[.]tab","",files,ignore.case = T)
+
+for (i in 1:length(files)){
+  temp <- read.table(files[i], sep = '', header=TRUE)
+  splitfile <- unlist(strsplit(data_names[i],split="[.]"))
+  Recipe <- gsub("(.)([[:upper:]])", "\\1 \\2", splitfile)
+  temp$Year <- as.numeric(rep(splitfile[2],dim(temp)[1])) 
+  temp$Recipe <- rep(Recipe[1],dim(temp)[1])
+  assign(data_names[i],temp)
+}
+BeefStroganoff.1997
+BeefStroganoff.2006
+MashedPotatoes.1936
+MashedPotatoes.2006
+TunaSalad.1936
+TunaSalad.2006
+```
+
+I then took the data frames that were imported from the directory and joined them to see if reading and writing the files worked. They combined no problem and I then called this particular large data frame combined for simplicity.
+
+```{r}
+combined <- rbind(BeefStroganoff.1997,BeefStroganoff.2006,MashedPotatoes.1936,
+                  MashedPotatoes.2006,TunaSalad.1936,TunaSalad.2006)
+```
+
+## Part 4 Converting and Proof Reading Data
+
+This is the longest part of the file and contains many parts that I will subdivide into smaller parts for organization.
+
+### Part a Splitting and Finding the Correct Ingredient Name
+
+*It should be noted that not a complete match could be completed programatically so the best fit was chosen manually by me and chosen using the NDB_No and an explination on why it was chosen is given below.*
+
+The methodology for selecting the best match was to split the ingredient description into parts based on commas and then in some cases by spaces. Then each word from the split up description was used to search the Food Description databased from the USDA. I set up the search to subset the data frame and then take subsets of the previously done subset until either I ran out of words or the remaining words did not refine the search anymore or there was only one choice.
+
+First I started off by converting the columns of Measure and Ingredient from the combined data frame and the Long_Desc from the food description data into character types so grep functions could be used on the columns.
+
+```{r}
+Ingred <- as.character(combined$Ingredient)
+combined$Ingredient <- as.character(combined$Ingredient)
+combined$Measure <- as.character(combined$Measure)
+food_des.dat$Long_Desc <- as.character(food_des.dat$Long_Desc)
+```
+
+The first ingredient chosen to find the match was the "beef roast, tenderloin, raw, 0" trim". After refining the search by the above methodology I ended with 6 results. The choice I made was based on a personal choice because every option was acceptable but I chose seperable lean and fat over lean only because it is generally cheaper and some extra fat adds flavor.
+
+```{r}
+beefsplit <- unlist(strsplit(Ingred[1],split=", "))
+beefsplitspace <- unlist(strsplit(beefsplit,split=" "))
+
+findbeef1 <- food_des.dat$Long_Desc[grepl(beefsplitspace[1],food_des.dat$Long_Desc,ignore.case = T)]
+beef1 <- subset(food_des.dat,subset= Long_Desc %in% findbeef1)
+
+findbeef2 <- food_des.dat$Long_Desc[grepl(beefsplitspace[2],food_des.dat$Long_Desc,ignore.case = T)]
+beef2 <- subset(food_des.dat,subset= Long_Desc %in% findbeef2)
+
+findbeef3 <- food_des.dat$Long_Desc[grepl(beefsplitspace[3],food_des.dat$Long_Desc,ignore.case = T)]
+beef3 <- subset(food_des.dat,subset= Long_Desc %in% findbeef3)
+
+findbeef4 <- food_des.dat$Long_Desc[grepl(beefsplitspace[4],food_des.dat$Long_Desc,ignore.case = T)]
+beef4 <- subset(food_des.dat,subset= Long_Desc %in% findbeef4)
+
+findbeef5 <- food_des.dat$Long_Desc[grepl(beefsplitspace[5],food_des.dat$Long_Desc,ignore.case = T)]
+beef5 <- subset(food_des.dat,subset= Long_Desc %in% findbeef5)
+
+
+
+findbeef <- subset(beef1,subset = Long_Desc %in% beef2$Long_Desc)
+findbeef1s <- subset(findbeef, subset = Long_Desc %in% beef3$Long_Desc)
+findbeef2s <- subset(findbeef1s, subset = Long_Desc %in% beef4$Long_Desc)
+findbeef3s <- subset(findbeef2s, subset = Long_Desc %in% beef5$Long_Desc)
+foundbeef <- subset(findbeef3s, subset = NDB_No == 23336)
+foundbeef
+
+
+```
+
+The next ingredient was "butter, salted". This was an easy find because the only difference between the ingredient and the food description data was capitalizaiton. I decided to convert the name anyways because it was simple and will just be simpiler for processing later.
+
+```{r}
+butterkey <- food_des.dat$Long_Desc[grepl(Ingred[2],food_des.dat$Long_Desc,ignore.case = T)]
+foundbutter <- subset(food_des.dat,subset = Long_Desc %in% butterkey) 
+foundbutter
+```
+
+The next ingredient was "flour, all purpose, self rising, enriched". This process ended in only one row from the data table so manual selection was not necessary.
+
+```{r}
+floursplit <- unlist(strsplit(Ingred[3],split=", "))
+
+findflour1 <- food_des.dat$Long_Desc[grepl(floursplit[1],food_des.dat$Long_Desc,ignore.case = T)]
+flour1 <- subset(food_des.dat,subset= Long_Desc %in% findflour1)
+
+findflour2 <- food_des.dat$Long_Desc[agrepl(floursplit[2],food_des.dat$Long_Desc,ignore.case = T)]
+flour2 <- subset(food_des.dat,subset= Long_Desc %in% findflour2)
+
+findflour3 <- food_des.dat$Long_Desc[agrepl(floursplit[3],food_des.dat$Long_Desc,ignore.case = T)]
+flour3 <- subset(food_des.dat,subset= Long_Desc %in% findflour3)
+
+findflour <- subset(flour1,subset = Long_Desc %in% flour2$Long_Desc)
+foundflour <- subset(findflour, subset=Long_Desc %in% flour3$Long_Desc)
+
+
+foundflour
+```
+
+The next ingredient was "stock, beef, prepared from recipe". This was one where only the first two elements of the description were useable in the search and thus a manual selection had to be done. There were 3 options and the one that was chosen was the only home prepared one which matches the description best when it comes to prepared from recipe.
+
+```{r}
+stocksplit <- unlist(strsplit(Ingred[4],split=", "))
+findstock1 <- food_des.dat$Long_Desc[grepl(stocksplit[1],food_des.dat$Long_Desc,ignore.case = T)]
+stock1 <- subset(food_des.dat,subset= Long_Desc %in% findstock1)
+findstock2 <- food_des.dat$Long_Desc[grepl(stocksplit[2],food_des.dat$Long_Desc,ignore.case = T)]
+stock2 <- subset(food_des.dat,subset= Long_Desc %in% findstock2)
+
+findstock <- subset(stock1,subset = Long_Desc %in% stock2$Long_Desc)
+foundstock <- subset(findstock, subset = NDB_No == 6170)
+foundstock
+
+```
+
+The next ingredient was "sour cream, cultured". This was also done completely programatically and the best fit was found quickly.
+
+```{r}
+sourcreamsplit <- unlist(strsplit(Ingred[5],split=", "))
+findsourcream1 <- food_des.dat$Long_Desc[grepl(sourcreamsplit[1],food_des.dat$Long_Desc,ignore.case = T)]
+sourcream1 <- subset(food_des.dat,subset= Long_Desc %in% findsourcream1)
+findsourcream2 <- food_des.dat$Long_Desc[grepl(sourcreamsplit[2],food_des.dat$Long_Desc,ignore.case = T)]
+sourcream2 <- subset(food_des.dat,subset= Long_Desc %in% findsourcream2)
+
+foundsourcream <- subset(sourcream1,subset = Long_Desc %in% sourcream2$Long_Desc)
+foundsourcream
+```
+
+The next ingredient was "mustard, dijon". This was one where dijon type mustard is not found in the database thus the closest fit was chosen and in a pinch one can choose the chosen choice of yellow mustard over dijon mustard. Yellow mustard is a better choice over the only other close option of honey mustard.
+
+```{r}
+mustardsplit <- unlist(strsplit(Ingred[6],split=", "))
+findmustard1 <- food_des.dat$Long_Desc[grepl(mustardsplit[1],food_des.dat$Long_Desc,ignore.case = T)]
+mustard1 <- subset(food_des.dat, subset=Long_Desc %in% findmustard1)
+
+foundmustard <- subset(mustard1, subset = NDB_No == 2046)
+foundmustard
+```
+
+The next ingredient was "oil, canola". This was much like butter where the only difference was in capitalization and thus was easy to find and was replaces with the exact match in the database for better matching.
+
+```{r}
+oilkey <- food_des.dat$Long_Desc[grepl(Ingred[8],food_des.dat$Long_Desc,ignore.case = T)]
+foundoil <- subset(food_des.dat,subset = Long_Desc %in% oilkey) 
+foundoil
+```
+
+The next ingredient was "onion, yellow, fresh, medium, 2 1/2" ". This one was a tricky choice but I based my decision of onions, raw from the database on the closest match from the weight database from the USDA where the onions, raw had a measurement for medioum, 2 1/2" onions. Thus would be an easier match and in my opinion onions are universal and in cooking it does not matter to me which one I am using.
+
+```{r}
+onionsplit <- unlist(strsplit(Ingred[10],split=", "))
+findonion1 <- food_des.dat$Long_Desc[grepl(onionsplit[1],food_des.dat$Long_Desc,ignore.case = T)]
+onion1 <- subset(food_des.dat, subset=Long_Desc %in% findonion1)
+
+foundonion <- subset(onion1, subset = NDB_No == 11282)
+foundonion
+```
+
+The next ingredient was "mushrooms, fresh". This could only be subsetted into the broad category of mushrooms and thus I had a wide selection to choose from when it comes down to the type of mushroom. The reason I chose portabella mushrooms is because it is my favorite mushroom to cook with.
+
+```{r}
+mushroomsplit <- unlist(strsplit(Ingred[11],split=", "))
+findmushroom1 <- food_des.dat$Long_Desc[grepl(mushroomsplit[1],food_des.dat$Long_Desc,ignore.case = T)]
+mushroom1 <- subset(food_des.dat, subset=Long_Desc %in% findmushroom1)
+
+foundmushroom <- subset(mushroom1, subset = NDB_No == 11265)
+foundmushroom
+
+```
+
+The next ingredient was "potato, cooked, peeled, medium, 2 1/4" to 3 1/4" ". The reason that the selection was chosen was down to the best fit for the description. The one chosen was without skin and boiled which matches the description. The reason I chose the ones without salt is because I generally do not add salt while boiling unless I am making pasta.
+
+```{r}
+potatosplit <- unlist(strsplit(Ingred[15],split=", "))
+findpotato1 <- food_des.dat$Long_Desc[grepl(potatosplit[1],food_des.dat$Long_Desc,ignore.case = T)]
+potato1 <- subset(food_des.dat, subset=Long_Desc %in% findpotato1)
+
+foundpotato <- subset(potato1, subset = NDB_No == 11367)
+foundpotato
+
+```
+
+The next ingredient was "milk, whole, 3.25%". This choice came down to whether I wanted to chose the milk with the added vitimin D or not. The reason I chose the one with the added vitimin D is becaue I prefer that kind for the added vitimins.
+
+```{r}
+findmilk1 <- food_des.dat$Long_Desc[grepl(Ingred[17],food_des.dat$Long_Desc,ignore.case = T)]
+milk1 <- subset(food_des.dat, subset=Long_Desc %in% findmilk1)
+
+foundmilk <- subset(milk1, subset = NDB_No == 1077)
+foundmilk
+
+```
+
+The next ingredient was "cream, whipping, heavy". This was chosen programatically based on the description.
+
+```{r}
+creamsplit <- unlist(strsplit(Ingred[19],split=", "))
+findcream1 <- food_des.dat$Long_Desc[grepl(creamsplit[1],food_des.dat$Long_Desc,ignore.case = T)]
+cream1 <- subset(food_des.dat, subset=Long_Desc %in% findcream1)
+findcream2 <- food_des.dat$Long_Desc[grepl(creamsplit[2],food_des.dat$Long_Desc,ignore.case = T)]
+cream2 <- subset(food_des.dat, subset=Long_Desc %in% findcream2)
+findcream3 <- food_des.dat$Long_Desc[grepl(creamsplit[3],food_des.dat$Long_Desc,ignore.case = T)]
+cream3 <- subset(food_des.dat, subset=Long_Desc %in% findcream3)
+
+
+findcream <- subset(cream1,subset = Long_Desc %in% cream2$Long_Desc)
+foundcream <- subset(findcream,subset = Long_Desc %in% cream3$Long_Desc)
+
+foundcream
+```
+
+The next ingredient was "tuna, light, canned, in water, drained, 12.5 oz can". The one chose was based on the fact that it was the only one that fitted the description the best. The closest one to the one chosen was the light tuna. But, on further investigation on the wight table the regular one was a more convinient match and thus chosen.
+
+```{r}
+tunasplit <- unlist(strsplit(Ingred[21],split=", "))
+findtuna1 <- food_des.dat$Long_Desc[grepl(tunasplit[1],food_des.dat$Long_Desc,ignore.case = T)]
+tuna1 <- subset(food_des.dat, subset=Long_Desc %in% findtuna1)
+findtuna2 <- food_des.dat$Long_Desc[grepl(tunasplit[2],food_des.dat$Long_Desc,ignore.case = T)]
+tuna2 <- subset(food_des.dat, subset=Long_Desc %in% findtuna2)
+findtuna3 <- food_des.dat$Long_Desc[grepl(tunasplit[4],food_des.dat$Long_Desc,ignore.case = T)]
+tuna3 <- subset(food_des.dat, subset=Long_Desc %in% findtuna3)
+
+findtuna <- subset(tuna1, subset=Long_Desc %in% tuna2$Long_Desc)
+findtuna1s <- subset(findtuna, subset=Long_Desc %in% tuna3$Long_Desc)
+foundtuna <- subset(findtuna1s, subset = NDB_No == 15121)
+
+foundtuna
+```
+
+The next ingredient was "celery, fresh, diced". The subsetting was only done on the first part because the other search terms did not break down the search further. Then the best choice came down to celery, raw because it best fit the fresh description out of the chices presented.
+
+```{r}
+celerysplit <- unlist(strsplit(Ingred[22],split=", "))
+findcelery1 <- food_des.dat$Long_Desc[grepl(celerysplit[1],food_des.dat$Long_Desc,ignore.case = T)]
+celery1 <- subset(food_des.dat, subset=Long_Desc %in% findcelery1)
+foundcelery <- subset(celery1, subset = NDB_No == 11143)
+
+foundcelery
+```
+
+Finally the last ingredient was "mayonnaise". There was many different choices for mayonnaise but the choice was based on the fact that regular mayonnaise is the best in my opinion and thus was chosen.
+
+```{r}
+findmayo1 <- food_des.dat$Long_Desc[grepl(Ingred[23],food_des.dat$Long_Desc,ignore.case = T)]
+mayo1 <- subset(food_des.dat, subset=Long_Desc %in% findmayo1)
+
+foundmayo <- subset(mayo1, subset = NDB_No == 4025)
+foundmayo
+```
+
+After all single rows were found for the ingredients I created a dataframe that combined all of the results. I then used the description and NDB_No of those as a key to be incorporated into the combined data table.
+
+```{r}
+listnames <- unique(combined$Ingredient)
+
+keydf <- rbind.data.frame(foundbeef,foundbutter,foundflour,foundstock,foundsourcream,foundmustard,foundoil,foundonion,foundmushroom,foundpotato,foundmilk,foundcream,foundtuna,foundcelery,foundmayo)
+keylistnames <- keydf$Long_Desc
+keyNDB <- keydf$NDB_No
+
+```
+
+This bit of code is used to change the names of all of the descroptions in the combined data table to match the ones in the food description data table.
+
+```{r}
+for (j in 1:length(listnames)){
+  for(i in 1:length(combined$Ingredient)){
+    if (combined$Ingredient[i]==listnames[j]){
+      combined$Ingredient[i] <- keylistnames[j]
+    }
+  }
+}
+
+```
+
+This bit of code is similar to the last one but instead of replaceing values it adds a whole new column for the NDB_No to be used as a key across database tables.
+
+```{r}
+for (j in 1:length(keyNDB)){
+  for(i in 1:length(combined$Ingredient)){
+    if (combined$Ingredient[i]==keylistnames[j]){
+      combined$NDB_No[i] <- keyNDB[j]
+    }
+  }
+}
+
+```
+
+This was just used to order the columns for organization for my personal use. There is an if statement used to make sure if I run this code multiple times it does not change more than once.
+
+```{r,warning=FALSE}
+if (combined[,1] != combined$NDB_No){
+combined <- combined[,c(6,4,5,1,2,3)]
+}
+combined
+```
+
+Finally for the ingredients in the combined list they were read into the food description database to see if they could be cross referenced into the table. They were so they can be used to match the table.
+
+```{r}
+inlist <- c()
+for (i in combined$Ingredient){
+  inlist[i] <- grep(i,food_des.dat$Long_Desc,fixed = T)
+}
+inlist
+```
+
+### Part b Splitting and Finding the Correct Measurement
+
+*Just like in the ingredient description a programmatic method for choosing the correct measure was not always possible and thus reasons for choosing certain measurements is given below.*
+
+The methodology for chosing the correct measurement was done by creating a table from the weight database from the USDA that was a subset based on the NDB_No from the combined data frame that was aquired from the food description database. I then created subsets of both the created subet of the weight data base and the combined database where the NDB_No matched. This made selection simple because I was only dealing with a few rows opposed to 50. I then had to change the name of the measurement and where a complete different measurement was required a conversion of the amount was used to keep the data accurate.
+
+First the subset of the weight database was created based on the values of the NDB_No from the combined data frame and the measurement description was converted to character so grep functions could be used.
+
+```{r}
+weight.dat.sub <- subset(weight.dat, subset = NDB_No %in% combined$NDB_No)
+weight.dat.sub$Msre_Desc <- as.character(weight.dat.sub$Msre_Desc)
+weight.dat.sub
+```
+
+This code was used to create individual data frames that wer subsets based on the NDB_No number for both the subsetted weight data and the combined data.
+
+```{r}
+uniNDB <- unique(combined$NDB_No)
+for (i in 1:length(unique(combined$NDB_No))){
+  t <- subset(combined, subset = NDB_No %in% uniNDB[i])
+  assign(paste0("x",i),t)
+}
+
+uniNDB <- unique(combined$NDB_No)
+for (i in 1:length(unique(combined$NDB_No))){
+  t <- subset(weight.dat.sub, subset = NDB_No %in% uniNDB[i])
+  assign(paste0("y",i),t)
+}
+
+
+```
+
+The first measurement conversion was done for the roast beef. The original was in pounds but for the NDB_No number there was only ounces and thus the conversion of the measurment and the amount had to be done. The if statment was added to make sure that the code could only be ran once so the amounts stay accurate.
+
+```{r,warning=FALSE}
+x1$Measure[c(1,2)] <- y1$Msre_Desc[1]
+if (x1$Amount < 5){
+x1$Amount <- x1$Amount*16
+}
+x1
+```
+
+The next measurement conversion was done for the butter, salted. This was a fairly easy conversion because the meausrement was the same it was just worded differently. Thus the conversion was changed to match that of the database.
+
+```{r}
+x2$Measure[c(1,2,3,4)] <- y2$Msre_Desc[2]
+x2
+```
+
+The next measurement was done for flour. In the database there was no measurement for tablespoon and thus I transformed the measurement to match that of the database which was cup. The conversion was done for the amount as well so it would match. As before the if statment was added to make sure the code can not be ran muliple times.
+
+```{r}
+x3$Measure[1] <- y3$Msre_Desc[1]
+if (x3$Amount > 0.07){
+x3$Amount <- x3$Amount*0.0625
+}
+x3
+```
+
+The next measurement was for beef stock. The measurements matched up and thus I did not have to perform a conversion.
+
+```{r}
+x4
+y4
+```
+
+The next measurement was for sour cream. This one there was only one row that needed to be converted from tablespoon to cup because the database did not have tablespoons available for sour cream. Again a conversion of the amount had to be done and an if statment was added to make sure the code does not run multiple times.
+
+```{r}
+x5$Measure[1] <- y5$Msre_Desc[2]
+if(x5$Amount[1]>0.2){
+x5$Amount[1] <- x5$Amount[1]*0.0625
+}
+x5
+```
+
+The next ingredient was mustard. This time I changed both rows for measure but only had to convert the amount for one row as the other had tsp for the description but I chaged it to the broader description to match the other. Again the if statment was added so it cannot be ran multiple times.
+
+```{r}
+x6$Measure[c(1,2)] <- y6$Msre_Desc[1]
+if (x6$Amount[2]<2){
+x6$Amount[2] <- x6$Amount[2]*3
+}
+x6
+
+```
+
+The next ingredient was canola oil. Just like for butter the description was accurate it was just worded differently and thus I changed it to how it was worded in the database for ease.
+
+```{r}
+x7$Measure[1] <- y7$Msre_Desc[1]
+x7
+```
+
+The next ingredient was onions. This one was different from the others in the sense that there was not an easy choice but then I remembered that the original description had the key to what the measurement was so I greped out the correct measurment from the original ingredient description.
+
+```{r}
+Ingred[10]
+x8$Measure[1] <- y8$Msre_Desc[agrep(onionsplit[5],y8$Msre_Desc)]
+x8
+```
+
+The next ingredient was for mushrooms. This one was a tricky one. The measurment was in pounds but the only measurement descriptions in the data base was for whole piece and for cups. Thus I used the grams column in the data base and converted pounds to grams and then divided by what a standard whole piece of a mushroom weighs. Like the others I implimented an if statment so it couldn't be ran multiple times.
+
+```{r}
+x9$Measure[1] <- y9$Msre_Desc[2]
+if (x9$Amount[1] < 4){
+x9$Amount[1] <- x9$Amount[1]*454/84
+}
+x9
+```
+
+The next ingredient was for potatoes. This one was similar to the onions where I parsed out the measurement from the original description.
+
+```{r}
+Ingred[15]
+x10$Measure <- y10$Msre_Desc[agrep(potatosplit[5],y10$Msre_Desc)]
+x10
+```
+
+The next ingredient was for milk. This measurement can be read into the database without issue and thus nothing had to be done.
+
+```{r}
+x11
+y11
+```
+
+The next ingredient was for cream. The reason this one had to be transformed was because there was two different measurments for cups, where one was whipped and the other was in liquid form. In mashed potatoes it does not make sense to add whipped cream. That is why fluid was chosen.
+
+```{r}
+x12$Measure <- y12$Msre_Desc[2]
+x12
+
+```
+
+The next ingredient was tuna. The measurment could be readily read into the table and was left alone.
+
+```{r}
+x13
+y13
+```
+
+The next ingredient was for celery. The measurment could be read easily into the table and was left alone.
+
+```{r}
+x14
+y14
+```
+
+The final ingredient was for mayonnaise. The measurment could be read easily into the table and was left alone.
+
+```{r}
+x15
+y15
+```
+
+The dataframes for the different ingredients for the combined table was combined back into a large table with the accurate NDB_No, Amount, Measure, and Ingredient.
+
+```{r}
+combined <- rbind.data.frame(x1,x2,x3,x4,x5,x6,x7,x8,x9,x10,x11,x12,x13,x14,x15)
+combined
+```
+
+Finally the measurements were validated in the weight databse from the USDA to make sure they can be read into the table.
+
+```{r,warning=FALSE}
+measlist <- c()
+for (i in combined$Measure){
+  measlist[i] <- grep(i,weight.dat$Msre_Desc,fixed = T)
+}
+measlist
+```
+
+### Converting the Combined Data Frame into Individual Recipes
+
+I then programatically split the combined data frame back into individual recipes dropoing the recipe and year column because the data frame name is used as the descriptor. This created recipes that could be read into the databse correctly with no issue.
+
+
+```{r}
+for (i in 1:(2*length(unique(combined$Recipe)))){
+  assign(paste0("NDB_No",i),c())
+  assign(paste0("Amount",i),c())
+  assign(paste0("Measure",i),c())
+  assign(paste0("Ingredient",i),c())
+  assign(paste0("k",i),0)
+}
+
+for (i in 1:length(combined$NDB_No)){
+  if(combined$Recipe[i] == "Beef Stroganoff" & combined$Year[i] == 1997){
+      k1 <- k1 + 1
+      NDB_No1[k1] <- combined$NDB_No[i]
+      Amount1[k1] <- combined$Amount[i]
+      Measure1[k1] <- combined$Measure[i]
+      Ingredient1[k1] <- combined$Ingredient[i]
+      BeefStroganoff.1997 <- data.frame(NDB_No1,Amount1,Measure1,Ingredient1)
+      colnames(BeefStroganoff.1997) <- c("NDB_No","Amount","Measure","Ingredient")
+  }
+  else if (combined$Recipe[i] == "Beef Stroganoff" & combined$Year[i] == 2006){
+      k2 <- k2 +1
+      NDB_No2[k2] <- combined$NDB_No[i]
+      Amount2[k2] <- combined$Amount[i]
+      Measure2[k2] <- combined$Measure[i]
+      Ingredient2[k2] <- combined$Ingredient[i]
+      BeefStroganoff.2006 <- data.frame(NDB_No2,Amount2,Measure2,Ingredient2)
+      colnames(BeefStroganoff.2006) <- c("NDB_No","Amount","Measure","Ingredient")
+  }
+  else if (combined$Recipe[i] == "Mashed Potatoes" & combined$Year[i] == 1936){
+      k3 <- k3 + 1
+      NDB_No3[k3] <- combined$NDB_No[i]
+      Amount3[k3] <- combined$Amount[i]
+      Measure3[k3] <- combined$Measure[i]
+      Ingredient3[k3] <- combined$Ingredient[i]
+      MashedPotatoes.1936 <- data.frame(NDB_No3,Amount3,Measure3,Ingredient3)
+      colnames(MashedPotatoes.1936) <- c("NDB_No","Amount","Measure","Ingredient")
+  }
+  else if (combined$Recipe[i] == "Mashed Potatoes" & combined$Year[i] == 2006){
+      k4<- k4 + 1
+      NDB_No4[k4] <- combined$NDB_No[i]
+      Amount4[k4] <- combined$Amount[i]
+      Measure4[k4] <- combined$Measure[i]
+      Ingredient4[k4] <- combined$Ingredient[i]
+      MashedPotatoes.2006 <- data.frame(NDB_No4,Amount4,Measure4,Ingredient4)
+      colnames(MashedPotatoes.2006) <- c("NDB_No","Amount","Measure","Ingredient")
+  }
+  else if (combined$Recipe[i] == "Tuna Salad" & combined$Year[i] == 1936){
+      k5 <- k5 + 1
+      NDB_No5[k5] <- combined$NDB_No[i]
+      Amount5[k5] <- combined$Amount[i]
+      Measure5[k5] <- combined$Measure[i]
+      Ingredient5[k5] <- combined$Ingredient[i]
+      TunaSalad.1936 <- data.frame(NDB_No5,Amount5,Measure5,Ingredient5)
+      colnames(TunaSalad.1936) <- c("NDB_No","Amount","Measure","Ingredient")
+  }
+    else if (combined$Recipe[i] == "Tuna Salad" & combined$Year[i] == 2006){
+      k6 <- k6 + 1
+      NDB_No6[k6] <- combined$NDB_No[i]
+      Amount6[k6] <- combined$Amount[i]
+      Measure6[k6] <- combined$Measure[i]
+      Ingredient6[k6] <- combined$Ingredient[i]
+      TunaSalad.2006 <- data.frame(NDB_No6,Amount6,Measure6,Ingredient6)
+      colnames(TunaSalad.2006) <- c("NDB_No","Amount","Measure","Ingredient")
+  }
+}
+
+BeefStroganoff.1997
+BeefStroganoff.2006
+MashedPotatoes.1936
+MashedPotatoes.2006
+TunaSalad.1936
+TunaSalad.2006
+
+```
+
+### Validating the ingredients for Accuracy
+
+The use of merging by ingredient for each year was used to compare the ingredient amounts for the same recipe but for different years. If the plot was non-linear a further look into the amounts was done and they were cross referenced back to the original recipe for accuracy.
+
+I looked at the scatter plot for beef stroganoff 1997 vs 2006 and saw there were some discrepincies and thus investigated further.
+
+```{r}
+merbeef <- merge(BeefStroganoff.1997,BeefStroganoff.2006,by="Ingredient",all=T)
+merbeef
+plot(merbeef$Amount.x~merbeef$Amount.y)
+```
+
+I then looked at the scatter plot for mashed potatoes 1936 vs 2006 and found a linear nature and thus did not nead to further investigate the accuracy.
+
+```{r}
+mermash <- merge(MashedPotatoes.1936,MashedPotatoes.2006,by="Ingredient",all=T)
+mermash
+plot(mermash$Amount.x~mermash$Amount.y)
+```
+
+Finally I looked at tuna salad 1936 vs 2006 and found there was a mator discrepency and thus further investigated.
+
+```{r}
+mertuna <- merge(TunaSalad.1936,TunaSalad.2006,by="Ingredient",all=T)
+mertuna
+plot(mertuna$Amount.x~mertuna$Amount.y)
+```
+
+After further investigation I found that the ESHA research table was not accurate against the book recipe and thus I changed the 1936 amount for mayonnaise from 1 cup to 0.5 cups.
+
+```{r}
+TunaSalad.1936$Amount[3] <- 0.5
+TunaSalad.1936
+```
+
+After further investigation of the beef stroganoff data I found that the 2006 recipie was imported incorrectly for beef stock and sour cream. Thus the numbers were fixed to reflect the recipe.
+
+```{r}
+BeefStroganoff.2006$Amount[c(3,4)] <- c(2.0,1.0)
+BeefStroganoff.2006
+```
+
+### Writing the Corrected Recipies to a .tab file
+
+Now that the recipies are completely accurate and able to be read into the USDA databases the files were exported to the current working directory of the computer under .tab files.
+
+```{r}
+write.table(MashedPotatoes.1936,file="MashedPotatoes.1936.tab",sep=' ', row.names=FALSE)
+write.table(MashedPotatoes.2006,file="MashedPotatoes.2006.tab",sep=' ', row.names=FALSE)
+write.table(TunaSalad.1936,file="TunaSalad.1936.tab",sep=' ', row.names=FALSE)
+write.table(TunaSalad.2006,file="TunaSalad.2006.tab",sep=' ', row.names=FALSE)
+```
+
+## Part 5 Reading, Appending and Writing the Recipe.csv File
+
+I created a function that is just the opposite of %in% to be used in the addition of my recipies to the recipe.csv file.
+
+```{r}
+'%!in%' <- function(x,y)!('%in%'(x,y))
+c(1,2,3,15) %!in% 1:10
+```
+
+Finally I read the recipe.csv file from my directory and appended it to read my recipies, year,and min/max serving sizes. I also implimented an if statment so the recipies were not read more than once. I then wrote the csv file to the directory with the updated recipes in them.
+
+```{r}
+path.recipie <- "Recipes.csv"
+recipe.dat <- read.csv(path.recipie,header = TRUE)
+recipe.dat$Recipe <- as.character(recipe.dat$Recipe)
+  if ("Mashed Potatoes" %!in% recipe.dat$Recipe & (1936|2006) %!in% recipe.dat$Year){
+    recipe.dat[nrow(recipe.dat) + 1,] = list("Mashed Potatoes",1936,6,6)
+    recipe.dat[nrow(recipe.dat) + 1,] = list("Mashed Potatoes",2006,6,6)
+  }
+  if ("Tuna Salad" %!in% recipe.dat$Recipe & (1936|2006) %!in% recipe.dat$Year){
+    recipe.dat[nrow(recipe.dat) + 1,] = list("Tuna Salad",1936,4,4)
+    recipe.dat[nrow(recipe.dat) + 1,] = list("Tuna Salad",2006,4,4)
+  }
+
+write.csv(recipe.dat,file="Recipes.csv",row.names = F)                                         
+recipe.dat
+```
