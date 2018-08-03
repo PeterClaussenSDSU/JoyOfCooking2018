@@ -1,0 +1,277 @@
+---
+title: "Midterm Project"
+author: "Set 36"
+date: "07/15/2018"
+output:
+  pdf_document: default
+  html_document: default
+  word_document: default
+---
+#General Introduction
+
+This project aims to validate the Calories per Recipe data provided by John Becker in his article *Joy of Cooking*. As each student is provided two recipes, their individual analysis will finally be accumulated and analysed together to obtain the final result. So, this project is basically a team work of all the fellow students. As a part of the midterm project, the analysis for the two recipes assigned should be sufficient.
+
+#Objectives
+
+The major objectives for the midterm project can be listed as:
+
+* To create data tables for the assigned recipes, with columns Amount, Unit and Ingredient.
+* To write each individual recipe to a tab delimited file with the filename of assigned format.
+* To read in each tab file, and merge the tables with the given recipe table
+* To proof the data for checking the errors
+* To read the recipes.csv given, append rows for the assigned recipes, and then write table back to Recipes.csv.
+* To match the ingredients with the ones listed in Food_DES.txt, replace if necessary, and write the file back again.
+
+
+#Process Followed
+
+As instructed in the *Midterm Project Overview*, data tables for all the assigned recipes are created with the columns Amount, Unit and Ingredient.The values for the columns are extracted from the assigned recipes. The names of the dataframes are named as `EggsInANest1936`, `EggsInANest2006`, `SouffledOmelet1936`, `SouffledOmelet2006`. 
+
+
+```{r}
+#Creating Dataframes from the information extracted from the Recipe file
+EggsInANest1936 <- data.frame(
+  Amount = c(2,5,2.67,4,0.25,2),
+  Measure = c("cup","Tbs","oz","lrg","cup","Tbs"),
+  Ingredient = c("mashed potatoes, prepared from recipe with whole milk & butter",
+                 "milk, whole,3.25%","ham,cured,lean,8% fat","egg,raw",
+                 "bread crumbs, plain, dry,grated", "butter, salted"))
+
+EggsInANest2006 <- data.frame(
+  Amount = c(2,5,2.67,4,0.25,2),
+  Measure = c("cup","Tbs","oz","lrg","cup","Tbs"),
+  Ingredient = c("mashed potatoes, prepared from recipe with whole milk & butter",
+                 "milk, whole,3.25%","ham,cured,lean,8% fat","egg,raw",
+                 "bread crumbs, plain, dry,grated", "butter, salted"))
+
+SouffledOmelet1936 <- data.frame(
+  Amount = c(2,2,0.25,0.5,0.5),
+  Measure = c("lrg","ea","cup","tsp","tsp"),
+  Ingredient = c("egg, raw", "egg white, raw, large", "sugar, powdered, unsifted", 
+                 "extract, vanilla", "butted, salted"))
+
+SouffledOmelet2006 <- data.frame(
+  Amount = c(4, 3, 1),
+  Measure = c("lrg","Tbs","Tbs"),
+  Ingredient = c("egg,raw", "sugar, white, granulated", "butter, salted"))
+
+#print the dataframes to see the results
+EggsInANest1936
+EggsInANest2006
+SouffledOmelet1936
+SouffledOmelet2006
+```
+
+
+Each individual recipe is then written to a tab delimited file. The filename of the tab file follows the format `RecipeName.RecipeYear.tab`. The function write.table() does the job.
+
+
+```{r}
+#Write the dataframes created into the tab delimited file
+write.table(EggsInANest1936,"EggsInANest.1936.tab", 
+            sep = "\t")
+write.table(EggsInANest2006,"EggsInANest.2006.tab", 
+            sep = "\t")
+write.table(SouffledOmelet1936, "SouffledOmelet.1936.tab",
+            sep = "\t")
+write.table(SouffledOmelet2006, "SouffledOmelet.2006.tab",
+            sep = "\t")
+```
+
+
+The tab files created earlier are then read in R and are printed to see if the values are read properly.
+```{r}
+#Define the paths for the file
+path1 <- "EggsInANest.1936.tab"
+path2 <- "EggsInANest.2006.tab"
+path3 <- "SouffledOmelet.1936.tab"
+path4 <- "SouffledOmelet.2006.tab"
+path5 <- "BeefStroganoff.1997.tab"
+path6 <- "BeefStroganoff.2006.tab"
+
+#Read the files written previously to make sure they are written correctly
+EggsInANest1936 <- read.table(path1, sep = "\t", header = TRUE)
+EggsInANest2006 <- read.table(path2, sep = "\t", header = TRUE)
+SouffledOmelet1936 <- read.table(path3, sep = "\t", header = TRUE)
+SouffledOmelet2006 <- read.table(path4, sep = "\t", header = TRUE)
+BeefStroganoff1997 <- read.table(path5, sep = "", header = TRUE)
+BeefStroganoff2006 <- read.table(path6, sep = "", header = TRUE)
+
+#print the files to see the results
+EggsInANest1936
+EggsInANest2006
+SouffledOmelet1936
+SouffledOmelet2006
+BeefStroganoff1997
+BeefStroganoff2006
+```
+
+After the files are read, the data frames are merged by ingredient. First the `EggsInANest` data are merged together, then `SouffledOmelet` data followed by `BeefStroganoff`data. Once the data pairs are merged, the merged Egg data and Omelet data are merged  to get a new data frame `Egg_Omelet_Merge`. `Egg_Omelet_Merge` data is merged with the merged Beef data to get the final merged `all_merged` data frame. This is done to show that the assigend recipes,`EggsInANest.pdf` and `SouffledOmelet.pdf`, can be correctly merged with the given recipe `BeefStroganoff.pdf`.
+
+```{r}
+#Merge the Eggs in a Nest recipes by ingredient
+Egg_merge <- merge(EggsInANest1936, EggsInANest2006, by = 'Ingredient')
+#Merge the Souffled Omelet recipes by ingredients
+Omelet_merge <- merge(SouffledOmelet1936, SouffledOmelet2006, by = 'Ingredient')
+#Merge the Beef Stroganoff recipes by ingredients
+Beef_merge <- merge(BeefStroganoff1997, BeefStroganoff2006, by = 'Ingredient')
+
+#Merge the merged Egg in a Nest recipe and merged Souffled Omelet data
+Egg_Omelet_merge <- merge(Egg_merge, Omelet_merge, all = TRUE)
+
+#Merge the above merged data with merged Beef Stroganoff Data
+all_merge <- merge(Egg_Omelet_merge,Beef_merge, all = TRUE)
+
+#print the merged data to see the results
+Egg_merge
+Omelet_merge
+all_merge
+```
+###Comment
+
+*The merged dataframe for EggsInANest obtained by merging with ingredients is of dimension 6x5. For the Omelet dataset,the  merged dataframe  does not have any ingredients in common, and hence has a dimension of 0x5. For all the  merged datasets, the dimension of the data frame is 11x5. This shows that the process of merging the  assigned recipes with the given recipe is correctly performed.*
+
+
+The dataframe obtained is put under check to check for errors. For this, a contingency table is created for the Measure column for the final merged data. Also, for the visual representation, a plot is created for the Measure column and also for the Amount Column. 
+```{r}
+#generate the contingency table to track the unexpected changes
+table(all_merge$Measure.x, all_merge$Measure.y)
+#plot the measures and amount to see and rack the unexpected changes
+plot(all_merge$Measure.x, all_merge$Measure.y)
+plot(all_merge$Amount.x, all_merge$Amount.y)
+```
+
+###Comment
+
+*Looking at the contingency table, we can see a matrix with unusual values at the section*[Tbs][tsp] *and* [cup][Tbs]*. This can also be visualised from the Mosaic plot where the *Tbs* in the x-axis has a discrepency. This can be taken as the unexpected change in values for the Measures Column. The plot *
+
+
+After the data is checked for errors, the given `Recipes.csv` file is read. The filename is parsed to extract the information on Recipe name and Recipe year. After the extraction is performed, the information is appended in the rows of the `Recipes.csv` file and the file is written back in the name of `Recipes.csv`.
+
+```{r,warning=FALSE}
+path7 = "./"
+#List all the tab delimited files
+AssignedRecipes = list.files(path7, pattern = ".tab")
+#Read the Recipes.csv file
+path8 <- "Recipes.csv"
+Recipes <- read.csv(path8, header = TRUE, sep = ",")
+#create a data frame for minimum and maximum number of servings
+min_max <- data.frame(rbind(cbind(4,4),cbind(4,4),cbind(4,4),
+                            cbind(4,4),cbind(2,2),cbind(4,4)))
+colnames(min_max)<- cbind("Minimum","Maximum")
+#create empty vectors for Year and Recipe
+Year<-c()
+Recipe <- c()
+#Run the loop for the number of tab files times
+for(file in AssignedRecipes){
+  #Remove the character .tab
+remove.tab <- sub('(\\.tab$)','',file)
+#Remove the dot between the name and year
+remove.dot <- sub('(\\.)','',remove.tab)
+#Extract the year information and convert it to numeric vector
+Year1 <- as.numeric(gsub('\\D','',remove.dot))
+Year <- rbind(Year, Year1)
+#Extract the Recipe information and create a data frame
+Recipe1 <- gsub('\\d', '', remove.dot)
+Recipe <- rbind(Recipe, Recipe1)
+}
+#Append the Recipe name, year, minimum servings and maximum servings to Recipes.csv
+#Update the table Recipes.csv
+write.table(cbind.data.frame(Recipe,Year,min_max),
+            "Recipes.csv", 
+            sep = ",", col.names = TRUE, row.names = FALSE)
+#Read the previously written file 
+Recipes.csv <- read.table("Recipes.csv",
+                          sep = ",", header = TRUE)
+#Print the read file
+Recipes.csv
+```
+
+###Comment
+*All the tab files in the local directory are listed using the *list.files() *function. Also, the* `Recipes.csv` *file is read and a data frame for the minimum and maximum  servings is created. Then, the filename is parsed to extract the information on Recipe name and Recipe year. First, the characters *'.tab' *is removed from the filename. Then, the dot between the Recipe name and the year is also removed. After that, the remaining characters are removed to get the year values. Similarly, the numbers are removed to get the recipe name. Those values are then appended in the rows of *`Recipe.csv`*.*
+
+
+The file `FOOD_DES.txt` which contains the ingredients information is read and the column names are assigned for easier analysis.
+```{r}
+#Read FOOD_DES.txt file
+food_des.dat <- read.table("FOOD_DES.txt",
+                           header=FALSE,sep="^",quote="~")
+#Name the columns properly
+names(food_des.dat) <- c("NDB_No","FdGrp_Cd","Long_Desc","Shrt_Desc",
+"ComName","ManufacName","Survey","Ref_desc","Refuse","SciName",
+"N_Factor","Pro_Factor","Fat_Factor","CHO_Factor")
+```
+
+
+The recipe dataframes are then read, the NDB numbers are extracted from the `FOOD_DES.txt` file and the ingredients are then replaced with the corresponding NDB number. Finally, the .csv file is updated with the newer ingredient information along with the NDB information included in the new file.
+```{r}
+#Read Eggs In a Nest file
+EggsInANest1936 <- read.csv(path1 ,sep="", header=TRUE) 
+#convert String as a factor to character
+EggsInANest1936$Ingredient <- as.character(EggsInANest1936$Ingredient)  
+#Update the NDB number from FOOD_DES.txt
+NDB_Num <- c(21139, 01211,43326,1123,18079,1001)  
+#Extract the NDM number and Long description information and create a new dataframe
+NDB_LongDesc <- subset(food_des.dat,select=c("NDB_No","Long_Desc"))
+#Run the loop for the length of number of NDB values times
+for(i in 1:length(NDB_Num)){  
+  #Extract the element from NDB_LongDesc with respective NDB number
+  #Also, Convert the string as a factor to character
+  EggsInANest1936$Ingredient[i] <-as.character(
+    NDB_LongDesc[NDB_LongDesc$NDB_No == NDB_Num[i],][[2]]) 
+  #Append the NDB number column 
+  EggsInANest1936$NDB_No[i] <- NDB_Num[i] 
+}
+#Update the table
+write.table(EggsInANest1936,'EggsInANest.1936.tab', 
+            sep=" ", row.names = FALSE)
+EggsInANest1936
+```
+
+```{r}
+EggsInANest2006 <- read.csv(path2 ,sep="", header=TRUE) 
+EggsInANest2006$Ingredient <- as.character(EggsInANest2006$Ingredient)  
+NDB_Num <- c(21139, 01211,43326,1123,18079,1001)  
+for(i in 1:length(NDB_Num)){  
+  EggsInANest2006$Ingredient[i] <-as.character(
+    NDB_LongDesc[NDB_LongDesc$NDB_No == NDB_Num[i],][[2]]) 
+  EggsInANest2006$NDB_No[i] <- NDB_Num[i]
+}
+write.table(EggsInANest2006,'EggsInANest.2006.tab', 
+            sep=" ", row.names = FALSE) 
+EggsInANest2006
+```
+
+```{r}
+SouffledOmelet1936 <- read.csv(path3 ,sep="", header=TRUE) 
+SouffledOmelet1936$Ingredient <- as.character(SouffledOmelet1936$Ingredient)  
+NDB_Num <- c(1123,1123,19336,2050,1001)  
+for(i in 1:length(NDB_Num)){  
+  SouffledOmelet1936$Ingredient[i] <-as.character(
+    NDB_LongDesc[NDB_LongDesc$NDB_No == NDB_Num[i],][[2]]) 
+  SouffledOmelet1936$NDB_No[i] <- NDB_Num[i] 
+}
+write.table(SouffledOmelet1936,'SouffledOmelet.1936.tab', 
+            sep=" ", row.names = FALSE) 
+SouffledOmelet1936
+```
+
+```{r}
+SouffledOmelet2006 <- read.csv(path4,sep="", header=TRUE) 
+SouffledOmelet2006$Ingredient <- as.character(SouffledOmelet2006$Ingredient)  
+NDB_Num <- c(1123,19335,1001)  
+for(i in 1:length(NDB_Num)){  
+  SouffledOmelet2006$Ingredient[i] <-as.character(
+    NDB_LongDesc[NDB_LongDesc$NDB_No == NDB_Num[i],][[2]]) 
+  SouffledOmelet2006$NDB_No[i] <- NDB_Num[i] 
+}
+write.table(SouffledOmelet2006,'SouffledOmelet.2006.tab', 
+            sep=" ", row.names = FALSE) 
+SouffledOmelet2006
+```
+
+###Comment
+*The given text file `FOOD_DES.txt` is used to extract the NDB information along with the ingredient information and replace the ingredients in the Recipe tables with the new ones extracted from `FOOD_DES.txt` file. To preserve and use the NDB information, it is appended in a column of the new file. *
+
+
+

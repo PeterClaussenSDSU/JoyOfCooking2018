@@ -1,0 +1,520 @@
+---
+title: "Mid-term Project"
+author: "Set 15"
+date: "July 15, 2018"
+output:
+  word_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Introduction
+Each student is assigned two random recipes from the pooled recipes.Each Recipe pdf contains information about how the recipe changed from 1936 to 2006. The pdf provides information about the ingredients.It provides infromation about presence of calories in each gram of the recipe, quantity serverd and information on how many samples were taken to collect the data.  Each student has to extract the information of ingredient of each recipe either in R or SAS.We will use these datas to validate John Beckers 'JoyOfCooking.csv' data and do analysis on it. 
+
+#Objective
+Each student have to perfrom the following stated steps on the provided recipe on either R or Sas. 
+
+1. Create data tables for assigned recipes, with columns Amount,Unit and Ingredient.
+2. Write each individual recipe to a tab delimited file. The name of the tab file should be comprised of the recipe file name and the year of the recipe.
+3. Read in each tab file, and merge the tables with the example Beef Stronganoff tables.
+4. Validate the consistency of measures  between the ingredients
+5. Append rows of recipes  and write it to the Recipes.csv
+6. Match the ingredients to the text listed in FOOD_DES.txt
+
+#Methodology
+
+## Part 1
+### Creating Data tables for the assigned Recipe
+The two recipe that were assigned to me are "Broccoli Timbales" and "Boiling Custard".The Part 1 of the mid-term project is to collect the data from the provided Recipes. The task is to create Table of ingredient for each recipe . The table of the ingredient contains Amount,measure and Ingredient columns. Each table of recipe is named after the recipe name and year.Total 4 table are created including a dat table for each recipe which contains information about calories, servings and name of ingredients table. For example: "BoiledCustard.dat" contains information about the number of servings for each year, calories per serving in different year, grams per servings etc. In addition, the table contains the ingredients table name. Similar available information is stored in the table "BroccoliTimibales.dat". In addition, initialization of the provided variables are performed in this part.
+
+# Enter Data
+```{r}
+# clearing the memory
+#rm(list=ls());
+
+# This function provides the index 1 or 2 depending upon the passed year as argument
+# if value is 1936 it will return 1 and for 2006 it will return 2
+get.index <- function(value){
+  if (value == 1936){
+    return(1);
+  }else if (value == 2006){
+    return(2)
+  }else{
+    stop('Number don\'t Match');
+  }
+}
+
+#defining the index to acess the years data
+idx.1936 <- 1;
+idx.2006 <- 2;
+
+# the number of recipes being evaluated
+numberOfRecipes <- 2;
+
+# the number of years the recipe evaluated
+numberOfYearEvaluation <- 2;
+
+# defining the name of the tab file provided on the project
+strongoffBeff1936.name <- 'BeefStroganoff.1997.tab';
+strongoffBeff2006.name <- 'BeefStroganoff.2006.tab';
+
+# setting the path for the R to work on
+directory.name <-'./';
+
+# setting the directory to save file
+setwd(directory.name);
+
+# ingredients table of Boiled custard for year 1936
+BoiledCustard.1936<- data.frame(
+  Amount = c(2.00, 0.25, 3.00, 0.50),
+  Measure = c('cup', 'cup', 'ea', 'tsp'),
+  Ingredient = c('milk, whole, 3.25%', 'sugar, white, granulated, granulated', 'egg yolk, raw, large', 'extract, vanilla')
+)
+
+
+# ingredients table of Boiled custard for year 2006
+BoiledCustard.2006<- data.frame(
+  Amount = c(4.00, 0.25, 2.00, 1.00),
+  Measure = c('ea', 'cup', 'cup', 'tsp'),
+  Ingredient = c('egg yolk, raw, large', 'sugar, white, granulated, granulated', 'milk, whole, 3.25%', 'extract, vanilla')
+)
+
+
+# Boiled Custard calories info for year 1936 and 2006
+BoiledCustard.dat = data.frame(
+  year = c (1936, 2006),
+  caloriesPerServings = c(132.6, 181),
+  caloriesPerGram = c(1.12, 1.19),
+  numberOfServings = c(5, 4),
+  gramsPerServing = c(118.3, 152.65),
+  ingredients = c('BoiledCustard.1936','BoiledCustard.2006')
+)
+
+# ingredients table of Broccoli Timbales for 1936
+BroccoliTimbales.1936<- data.frame(
+  Amount = c(1.50, 4.00, 1.50),
+  Measure = c('cup', 'lrg', 'cup'),
+  Ingredient = c("milk, whole, 3.25%", 'egg, raw', 'broccoli, cooked, drained, chopped')
+)
+
+# ingredients table of Broccoli Timbales for 2006
+BroccoliTimbales.2006<- data.frame(
+  Amount = c(0.50, 1.00, 4.00, 1.50),
+  Measure = c('cup', 'cup', 'lrg', 'cup'),
+  Ingredient = c('cream, whipping, heavy', 'stock, chicken, prepared from recipe', 'egg, raw' , 'broccoli, cooked, drained, chopped')
+  )
+
+# Broccoli Timbales Information for 1936 and 2006
+BroccoliTimbales.dat <- data.frame(
+  year = c(1936,2006),
+  caloriesPerServings = c(98.5,144.7),
+  numberOfServings = c(6, 6),
+  gramsPerServing = c(133.33, 132.33),
+  ingredients = c('BroccoliTimbales.1936', 'BroccoliTimbales.2006')
+)
+```
+
+###Comment
+*Total 6 tables are created. 'BroccoliTimbales.dat' and 'BoiledCustard.dat' contains the calories information of two year. The ingredients column in dat file represents the ingredients table name. 4 ingredients table are created. Each ingredient table name starts with the recipe name and ends with the year information.*
+
+
+##Part 2
+###Saving the Each recipe to a tab delimited file
+The second part of the mid-term project is to save the above created recipe ingredient to a tab file. Function "write.table() with argument 'sep = \t' is used to save the recipe ingredient tables to the R path directory. The name of the file is kept same as the ingredient table name. 
+The name of the file is accessed from the .dat table so that variable name can be changed by editing the part 1 code only. Get() and paste () functions are used in this part to access the variable from the string and to generate the filename respectively.idx.1936 and idx.2006 were used to access the recipe dataframe's ingredients table string name"
+
+```{r}
+# saving the lab delimited file for indgredients of Boiled custard(1936)
+# get() the variable defined by the variable string store in dat file
+# paste() function concatenates the two string objects
+
+# filename from the string saved in Ingredients of BoiledCustard.dat data frame 
+filename <- paste(BoiledCustard.dat$ingredients[idx.1936],'.tab',sep = '')
+
+# accessing the variable from the string saved in Ingredients of BoiledCustard.dat dataframe
+data <- get(as.character(BoiledCustard.dat$ingredients[idx.1936]));
+
+#writing the tab limited file to the R file path
+write.table(data, file =filename, sep = '\t', dec='.', row.names = FALSE)
+
+
+
+
+
+#filename from the string saved in Ingredients of BoiledCustard.dat data  frame
+filename <- paste(BoiledCustard.dat$ingredients[idx.2006],'.tab',sep = '')
+
+# accessing the variable from the string saved in Ingredients of BoiledCustard.dat dataframe
+data <- get(as.character(BoiledCustard.dat$ingredients[idx.2006]));
+
+#writing the tab limited file to the R file path
+write.table(data, file = filename, sep = '\t', dec = '.', row.names = FALSE)
+
+
+
+
+# #filename from the string saved in Ingredients of BroccoliTimbales.dat data frame
+filename <- paste(BroccoliTimbales.dat$ingredients[idx.1936],'.tab',sep = '')
+
+# accessing the variable from the string saved in Ingredients of BroccoliTimbales.dat dataframe
+data <- get(as.character(BroccoliTimbales.dat$ingredients[idx.1936]));
+
+#writing the tab limited file to the R file path
+write.table(data, file = filename, sep = '\t', dec = '.', row.names = FALSE)
+
+
+
+
+#filename from the string saved in Ingredients of BroccoliTimbales.dat data frame
+filename <- paste(BroccoliTimbales.dat$ingredients[idx.2006],'.tab',sep = '')
+
+# accessing the variable from the string saved in Ingredients of BroccoliTimbales.dat dataframe
+data <- get(as.character(BroccoliTimbales.dat$ingredients[idx.2006]));
+
+#writing the tab limited file to the R file path
+write.table(data, file = filename, sep = '\t', dec = '.', row.names = FALSE)
+```
+###Comments
+*BroccoliTimbales.dat and BoiledCustard.dat are accessed to get the names for the files. Get() method is used to get access the dataframe.Total 4 files are saved in the directory.*
+
+
+##Part 3
+###Reading the written Tables to a variables and merging the tables to Beef Strongoff File
+First of all,all the tab file are stored in the same directory .i.e exported ingredient table and sample beff strongoff tab file. Function "list.files" is used to get the list of files present in the directory. All the tab files are under same folder.That's why each year was handled separately. First, year 1936 recipes files are read from the directory. The strongoffBeff1936 present in the list is removed  using the function 'setdiff()'.Secondly, file names ending with  2006 are read. The name, strongoffBeef2006, present in the list is removed.The provided sample recipe ingredients are read separately to remove any confusion in the code implementation.
+
+For loop is used to read each recipe ingredient tab file. Read file  is merged with the given  strongoffBeef ingredient of the same year. The merged dataframe is assigned to a variable which is generated dynamically.  The variables are generated using the paste() and the assign() function. The merged table tables varible name consist of the word 'merge' at the begining of the variables. The merge in the tables were performed by setting all = TRUE.
+
+**
+```{r}
+# setting the directory to read file
+fileLocation <- setwd(directory.name);
+
+# reading all  the tab file  in the diectory
+ingredientFiles1936 <- list.files(path =fileLocation, pattern = "*1936.tab");
+# removing the strongoffBeef1936 name from the list 
+ingredientFiles1936 <- setdiff( ingredientFiles1936, strongoffBeff1936.name);
+
+
+# reading all  the tab file  in the diectory
+ingredientFiles2006 <- list.files(path =fileLocation, pattern = "*2006.tab");
+# removing the strongoffBeef2006 name from the list
+ingredientFiles2006 <- setdiff( ingredientFiles2006, strongoffBeff2006.name);
+
+# reading  the file strongoff beef 1936 ingredients tab file from the same directory
+strongoffBeff1936.data<- read.table(file.path(fileLocation,strongoffBeff1936.name), header = TRUE, sep='', dec='.')
+
+
+# reading  the file strongoff beef  2006 ingredients tab file from the same directory
+strongoffBeff2006.data <- read.table(file.path(fileLocation,strongoffBeff2006.name),header = TRUE, sep='', dec='.')
+
+
+# merging the ingredients information to the strongoffBeff 1936
+for (i in 1:length(ingredientFiles1936)){
+  # file path to the selected file name
+  fileDir = file.path(fileLocation,ingredientFiles1936[i]);
+  # creating the variable name of the to assign the merge
+  tempName <- paste('merge.',ingredientFiles1936[i], sep='');
+  # reading the file to a temporary variable
+  tempRead <- read.table(fileDir, header = TRUE, sep='\t', dec ='.');
+  # merging the tempRead with strongoffBeff and assigning to the dynamically created varibale
+  assign(tempName,merge(strongoffBeff1936.data,tempRead,all.x = TRUE,all.y = TRUE));
+}
+
+# printing the merged data frame
+# these are the dynamically generated variables
+merge.BoiledCustard.1936.tab
+merge.BroccoliTimbales.1936.tab
+
+
+# merging the ingredients information to the strongoffBeff 1936
+for (i in 1:length(ingredientFiles2006)){
+  # file path to the selected file name
+  fileDir = file.path(fileLocation,ingredientFiles2006[i]);
+  # creating the variable name of the to assign the merge
+  tempRead <- read.table(fileDir, header = TRUE, sep='\t', dec ='.');
+   # reading the file to a temporary variable
+  tempName <- paste('merge.',ingredientFiles2006[i], sep = '');
+  # merging the tempRead with strongoffBeff and assigning to the dynamically created varibale
+  assign(tempName,merge(strongoffBeff2006.data,tempRead, all.x = TRUE, all.y = TRUE));
+}
+
+# printing the merged data frame
+merge.BoiledCustard.2006.tab
+merge.BoiledCustard.2006.tab
+
+
+```
+### Comments
+*The columns of the strongoffBeef merged with every assigned reciepe ingredient. This shows that the dataframe column names and cloumn numbers are consistent in each provided recipe ingredient table.*
+
+##Part 4
+# Check for errors
+This part is performed to determine if there exist any discripency on measurement of different ingredients on different year. To determine the discripency, ingredients of recipe on different year are merged with respect to the ingredient name. The categorical value, measure, of year 1936 is plotted against the categorical value, measure, of the year 2006. This procedure is performed with the assigned recipe as well as the sample recipe ingredients.
+
+
+```{r}
+# mering the two recipes by the ingredients to find the consistency in the data
+mergeBoiledCustard <- merge(BoiledCustard.1936,BoiledCustard.2006,by.x = 'Ingredient',by.y = 'Ingredient',all = TRUE)
+mergeBoiledCustard
+plot(mergeBoiledCustard$Measure.x,mergeBoiledCustard$Measure.y)
+
+#merging the two recipes BroccoliTimbales by the ingredients to find the consistency in the data
+mergeBroccliTimbales <- merge(BroccoliTimbales.1936,BroccoliTimbales.2006, by.x = 'Ingredient', by.y = 'Ingredient',all = TRUE)
+mergeBroccliTimbales
+plot(mergeBroccliTimbales$Measure.x,mergeBroccliTimbales$Measure.y)
+
+#merging the two recipes of Beef stranganoff by the ingredients to find the consistency in the data
+mergeBeefStroganoff <-merge(strongoffBeff1936.data,strongoffBeff2006.data,by.x='Ingredient', by.y = 'Ingredient', all = TRUE)
+mergeBeefStroganoff
+plot(mergeBeefStroganoff$Measure.x,mergeBeefStroganoff$Measure.y)
+```
+
+### Comments
+*Boiled Custard and Broccli Timbales shows consistency in measurements. However,BeefStanganoff shows some inconsistency in the measurement.The graph shows line break which is a clear indication of different measurement is used in ingredients measurement.It shows that there is switch between Tbs and ea.*
+
+
+##Part 5
+### Read the recipe.csv and append the Recipe Name and other information parsing the fileName from directory
+The Recipe.csv file consist of column Recipe, Year, Min Serving and Max Servings. The main task of this step is to read the directory, list the saved tab file,extract the recipe name and year from the file name and append it to the recipe.csv file. 
+Firstly, list of tab files in the directory is listed. The sample recipes names are removed from the list. The filtered list is processed to gather name of the recipe and year information. This information along with the min and max serving information is appended to the recipes.csv and saved in the directory.
+
+```{r}
+# reading the recipe.csv 
+fileDir <- file.path(fileLocation,'Recipes.csv');
+recipes.csv <- read.csv(file =fileDir, header = TRUE, sep = ',', dec = '.', stringsAsFactors = FALSE);
+
+
+# data that must be removed from the directory read
+removeRecipes <- c(strongoffBeff1936.name,strongoffBeff2006.name)
+
+recipes <- list.files(path =fileLocation, pattern = "*.tab");
+
+#removing the strongoff data as they are alreay present in the  Recipes.csv
+recipes <- setdiff(recipes,removeRecipes)
+
+
+for(recipe in recipes){
+  # splitting the variable at . point
+  temp <- strsplit(recipe,split = '.',fixed = TRUE);
+  # camelcase Name of recipe
+  recipeCamelCase <- temp[[1]][1];
+  # splitting the string at capital letters
+  temp2 <- strsplit(recipeCamelCase, "(?<=[a-z])(?=[A-Z])", perl = TRUE)
+  # assigning the  recipe name
+  recipe.name <- paste(temp2[[1]][1],temp2[[1]][2]);
+  # assigning the second array element as year; performing string to interger conversion
+  year.name <- strtoi(temp[[1]][2]);
+  # calling get.index function to get the index of the year
+  year.index <- get.index(year.name);
+  # concatenating the two variables to get the name of the object
+  tempCon = paste(recipeCamelCase,'.dat', sep = '');
+  # accessing the object with recipe name and year
+  tempObject <-get(tempCon);
+  # accessing the data frame  to get the value of minimum servings
+  MinServings <- tempObject$numberOfServings[year.index];
+  # creating the temporary array to add information in recipe dataframe
+  temp.array <- c(recipe.name, year.name,MinServings,MinServings);
+  recipes.csv <- rbind(recipes.csv, temp.array)
+}
+# saving the details in the file
+#PMC - This changes Recipes.csv column names, writes row names
+#write.csv(recipes.csv,file=fileDir)
+recipes.csv
+```
+###Comments
+*The file list are splitted. Year and name of the recipes are extracted using the strsplit. The minimun servings and maximum servings are accessed from the dat file. These values are row binded to the recipes.csv and saved as Recipe.csv *
+
+## Part 6
+### Find the best ingredient match in FOOD_DES.txt
+The FOOD_DES consist of list of ingresdients an NBD number. The objective of this part is to find the best possible match of ingredients in FOOD_DES with the assigned recipes and replace the matched ingredients in the assigned ingredient table. There might not be exact match of the ingredients in the FOOD_DES. Best partial match ingredients will replace the recipe ingredients.
+
+Firstly, the FOOD_DES.txt file is read from the directory. Only ingredients column was select to find the best match. The string in the column are all converted to the lower case. Similarly, the string of the ingredients in the assigned recipe were splitted to form a vector array of the string.
+A procedure is implemented to find the best match. Stings matches are collected by matching the first vector element to the  string list from the FOOD_DES.txt. This filtered out array  of string is again filtered out by second element of the array. This process is continued till the last vector element. The first string of ingredients was selected as the best match for the assigned recipe ingredient name. This process was performed for all the ingredidents column present in the assigned recipe.  The collected match ingredients was used to find the NBD Number. These numbers are added to the each recipe file.
+
+```{r}
+# reading the FOOD_DES.txt file
+FOOD_DES <-read.table("FOOD_DES.txt",header=FALSE,sep="^",quote="~")
+# selecting the ingredients Name and performing lowering 
+food_desIngredient <- tolower(FOOD_DES$V3);
+# Concatenating the all the recipes
+ingredient.array <- c(as.character(BoiledCustard.dat$ingredients),as.character(BroccoliTimbales.dat$ingredients));
+
+#looping through to list
+for(i in 1:(numberOfRecipes*numberOfYearEvaluation)){
+#for(i in 1:(1)){
+  # accessing the object by the string name
+  object.access <- get(as.character(ingredient.array[i]))
+  # iterating through each year recipe
+ for (j in 1:length(object.access$Ingredient)){
+  #for (j in 1:1){
+    # converting all the ingredients string to the lowercase
+    ingredient.details <- tolower(as.character(object.access$Ingredient[j]));
+    
+    
+    # splitting the ingredient details
+    ingredient.details <- unlist(lapply(strsplit(ingredient.details,split = ','),trimws));
+    
+    # checking for space in the vectors and removing it 
+    ingredient.details <- unlist(lapply(strsplit(ingredient.details,split = ' '),trimws));
+    
+    # taking the no of information in ingredients
+    lengthOfDetails <- length(ingredient.details);
+    
+    # initializing the empty string for the concatenation
+    ingredient.regex ="";
+    
+    # iterating through each ingredients 
+    for(k in 1:lengthOfDetails){
+      # generating the name according to the index k "match_1""
+      varname = paste('match',k,sep='_')
+      # if k == 1, finding the string in main ingredient file
+      if(k == 1){
+        assign(varname,(food_desIngredient[grep(ingredient.details[k],food_desIngredient)]))
+        # else to the ealier selected ingredients
+      }else{
+        assign(varname,get(temp_varname)[grep(ingredient.details[k],get(temp_varname))])
+      }
+      # if the match is zero and there are elements in the ingredient.details continue the process with the previous match.
+      if (length(get(varname)) == 0 && k != lengthOfDetails){
+        next;
+      }
+      
+      # if it is last of the iteration
+      if( k == lengthOfDetails){
+        # dynamically creating the best_match varibale
+        bestmatch <- paste(ingredient.array[i],'best_match_',j,sep="");
+        if (length(get(varname))==0){
+          # if the match is zero assigning the previous match
+          assign(bestmatch,get(temp_varname))
+          break();
+        }
+        # if the match isnot zero, get the best match
+        assign(bestmatch,get(varname));
+        break();
+      }
+      # saving the variable name for next loop.
+      temp_varname <- varname;
+    }
+  }
+}
+
+
+
+# function to find the index of list1 element in list2
+findIndexFood <- function(list1, list2){
+  # initializing the index
+  index <- c();
+  # looping to find the index
+  for (i in list1){
+    # finding the exact match of the string: creating the regexp
+    z <- paste('^',i,'$',sep = '');
+    # finding the index of each element in list2
+    temp <- grep(z,tolower(list2));
+    # adding the index
+    index <- c(index,temp);
+  }
+  return(index)
+}
+
+
+# selecting the first element of the Match as the best match of the ingredients
+BoiledCustard.1936Match <- c(BoiledCustard.1936best_match_1[1],BoiledCustard.1936best_match_2[1],BoiledCustard.1936best_match_3[1],BoiledCustard.1936best_match_4[1]);
+
+#Finding the index in FOOD_DES
+BoiledCustardFoodIndex1936 <- findIndexFood(BoiledCustard.1936Match,FOOD_DES$V3);
+# using the index to find the ingredient 
+BoiledCustard.1936.matchIngredient <- FOOD_DES$V3[BoiledCustardFoodIndex1936];
+# using the index to find the NDB number
+BoiledCustard.1936.matchNBD <- FOOD_DES$V1[BoiledCustardFoodIndex1936];
+# filename from the string saved in Ingredients of BoiledCustard.dat data frame 
+filename <- paste(BoiledCustard.1936$ingredients[idx.1936],'.tab',sep = '')
+#writing the tab limited file to the R file path
+write.table(BoiledCustard.1936, file = filename, sep = '\t', dec = '.', row.names = FALSE)
+
+
+
+# selecting the first element of the Match as the best match of the ingredients
+BoiledCustard.2006Match <- c(BoiledCustard.2006best_match_1[1],BoiledCustard.2006best_match_2[1],BoiledCustard.2006best_match_3[1],BoiledCustard.2006best_match_4[1]);
+
+#Finding the index in FOOD_DES
+BoiledCustardFoodIndex2006 <- findIndexFood(BoiledCustard.2006Match,FOOD_DES$V3);
+# using the index to find the ingredient 
+BoiledCustard.2006.matchIngredient <- FOOD_DES$V3[BoiledCustardFoodIndex2006];
+# using the index to find the NDB number
+BoiledCustard.2006.matchNBD <- FOOD_DES$V1[BoiledCustardFoodIndex2006];
+
+
+
+
+
+# selecting the first element of the Match as the best match of the ingredients
+BroccoliTimbales.1936Match <-c(BroccoliTimbales.1936best_match_1[1],BroccoliTimbales.1936best_match_2[1],BroccoliTimbales.1936best_match_3[1]);
+
+#Finding the index in FOOD_DES
+BroccoliTimbalesFoodIndex1936 <- findIndexFood(BroccoliTimbales.1936Match,FOOD_DES$V3);
+# using the index to find the ingredient 
+BroccoliTimbales.1936.matchIngredient <- FOOD_DES$V3[BroccoliTimbalesFoodIndex1936];
+# using the index to find the NDB number
+BroccoliTimbales.1936.matchNBD <- FOOD_DES$V1[BroccoliTimbalesFoodIndex1936];
+
+
+
+
+# selecting the first element of the Match as the best match of the ingredients
+BroccoliTimbales.2006Match <-c(BroccoliTimbales.2006best_match_1[1],BroccoliTimbales.2006best_match_2[1],BroccoliTimbales.2006best_match_3[1],BroccoliTimbales.2006best_match_4[1]);
+
+#Finding the index in FOOD_DES
+BroccoliTimbalesFoodIndex2006 <- findIndexFood(BroccoliTimbales.2006Match,FOOD_DES$V3);
+# using the index to find the ingredient 
+BroccoliTimbales.2006.matchIngredient <- FOOD_DES$V3[BroccoliTimbalesFoodIndex2006];
+# using the index to find the NDB number
+BroccoliTimbales.2006.matchNBD <- FOOD_DES$V1[BroccoliTimbalesFoodIndex2006];
+
+
+
+# Assiginig this variables to the as the next column in ingredient tables
+BroccoliTimbales.1936$Ingredient <- BroccoliTimbales.1936.matchIngredient
+# adding the NBD_no to the dataframe
+BroccoliTimbales.1936$NBD_No <- BroccoliTimbales.1936.matchNBD
+# filename from the string saved in Ingredients of BoiledCustard.dat data frame 
+filename <- paste(BroccoliTimbales.dat$ingredients[idx.1936],'.tab',sep = '')
+#writing the tab limited file to the R file path
+write.table(BroccoliTimbales.1936, file = filename, sep = '\t', dec = '.', row.names = FALSE)
+
+# Assiginig this variables to the as the next column in ingredient tables
+BroccoliTimbales.2006$Ingredient <- BroccoliTimbales.2006.matchIngredient
+# adding the NBD_no to the dataframe
+BroccoliTimbales.2006$NBD_No <- BroccoliTimbales.2006.matchNBD
+# filename from the string saved in Ingredients of BoiledCustard.dat data frame 
+filename <- paste(BroccoliTimbales.dat$ingredients[idx.2006],'.tab',sep = '')
+#writing the tab limited file to the R file path
+write.table(BroccoliTimbales.2006, file = filename, sep = '\t', dec = '.', row.names = FALSE)
+
+# Assiginig this variables to the as the next column in ingredient tables
+BoiledCustard.1936$Ingredient<- BoiledCustard.1936.matchIngredient
+# adding the NBD_no to the dataframe
+BoiledCustard.1936$NBD_No <- BoiledCustard.1936.matchNBD
+# filename from the string saved in Ingredients of BoiledCustard.dat data frame 
+filename <- paste(BoiledCustard.dat$ingredients[idx.1936],'.tab',sep = '')
+#writing the tab limited file to the R file path
+write.table(BoiledCustard.1936, file = filename, sep = '\t', dec = '.', row.names = FALSE)
+
+# Assiginig this variables to the as the next column in ingredient tables
+BoiledCustard.2006$Ingredient<- BoiledCustard.2006.matchIngredient
+# adding the NBD_no to the dataframe
+BoiledCustard.2006$NBD_N0<- BoiledCustard.2006.matchNBD
+# filename from the string saved in Ingredients of BoiledCustard.dat data frame 
+filename <- paste(BoiledCustard.dat$ingredients[idx.2006],'.tab',sep = '')
+#writing the tab limited file to the R file path
+write.table(BoiledCustard.2006, file = filename, sep = '\t', dec = '.', row.names = FALSE)
+
+```
+
+# Results
+Each assigned recipe ingredients were replace by the best matched ingredients from the FOOD_DES_txt. The final recipe ingredient table consist of the  amount, ingredient, measure and NBD number. 
+
+# Conclusion
+This mid-term project provided practical experience on code writing and data handling. The mid-term project mostly focused on data collect, data storage and data refactoring based upon the need of the future analysis. I am very satisfied by the way this project helped me to how to manage data and make change without making whole lot chage in the code. Moslty, dyanimically generating the variables and assigning the value to it grabbed my attendtion. 

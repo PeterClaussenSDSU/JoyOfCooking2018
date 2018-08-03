@@ -1,0 +1,420 @@
+---
+title: "Midterm"
+author: "Set 42"
+date: "July 21, 2018"
+output:
+  pdf_document: default
+  word_document: default
+  html_document: default
+---
+
+# Part 1 - Assign Recipes
+
+First, generate a list of all files in the Recipes folder.
+```{r,eval=FALSE}
+recipes <- list.files(path = "./", pattern = '*.pdf')
+print(recipes)
+```
+
+Make this reproducible.
+```{r,eval=FALSE}
+set.seed(10010)
+```
+
+*loading stringr and data.table library for later use in file*
+```{r}
+#PMC - we won't create dependencies; replaced str_trim with trimws
+#library(stringr)
+#library(data.table)
+```
+
+
+
+
+*reading in food_des table for later comparison*
+```{r}
+food_des.dat <- read.table("FOOD_DES.txt",header=FALSE,sep="^",quote="~")
+names(food_des.dat) <- c("NDB_No","FdGrp_Cd","Long_Desc","Shrt_Desc",
+"ComName","ManufacName","Survey","Ref_desc","Refuse","SciName",
+"N_Factor","Pro_Factor","Fat_Factor","CHO_Factor")
+dim(food_des.dat)
+head(food_des.dat)
+summary(food_des.dat)
+#PMC - this slows typesetting
+#print(food_des.dat)
+```
+
+*to use the variable long_desc for comparison for code later to receipes ingredient description*
+```{r}
+food_des.dat$Long_Desc <-as.character(food_des.dat$Long_Desc)
+```
+
+*created sauerbrauten 1936 recipe*
+```{r}
+Sauerbrauten.1936 <- data.frame(Amount =c("3","1","1","1/2","2","1/2","1","2","1"), 
+                                Unit=c("lb","cup","cup","cup","Tbs","cup","cup","ea","tsp"), 
+                                Ingredient=c("beef roast, chuck arm, raw, choice, 1/8\" trim","vinegar, distilled","water","onion,yellow,fresh,sliced","sugar,white,granulated","flour,all purpose, self rising, enriched","sour cream, cultured","bay leaves","black peppercorns"))
+print(Sauerbrauten.1936)
+```
+
+
+*created sauerbrauten 2006 recipe*
+```{r}
+Sauerbrauten.2006 <- data.frame(Amount =c("3","1/4","1/2","1","1/2","2","1/4","1","1","2","2"), 
+                                Unit=c("lb","cup","cup","Tbs","cup","Tbs","cup","cup","tsp","tsp","ea"), 
+                                Ingredient=c("beef roast, chuck arm, raw, choice, 1/8\" trim","vinegar, distilled","water","sugar, white,granulated","onion,yellow,fresh,sliced","oil,canola","sugar,brown,packed","sour cream,cultured","black peppercorns","caraway seeds","bay leaves"))
+print(Sauerbrauten.2006)
+```
+*created appledumpling 1937 recipe*
+```{r}
+AppleDumpling.1937 <- data.frame(Amount =c("6","2 1/2","12","2","2"), 
+                                Unit=c("ea","Tbs","tsp","tsp","tsp"), 
+                                Ingredient=c("apple,fresh, medium, 3'\'","brown,sugar,packed","butter, unsalted, softened","salt","ground cinnamon"))
+print(AppleDumpling.1937)
+```
+
+*created apple dumpling 2006 recipe*
+```{r}
+AppleDumpling.2006 <- data.frame(Amount =c("6","1/2","1","1/4","1/4","1"), 
+                                Unit=c("ea","cup","tsp","tsp","cup","ea"), 
+                                Ingredient=c("apple,fresh,small,2 3'/'4","sugar,brown,dark","ground cinnamon","salt","unsalted butter,softened","egg,lightly,beaten"))
+print(AppleDumpling.2006)
+```
+*loop through to determine matches for appledumpling 1937, have created comments in code*
+```{r, eval=TRUE}
+AppleDumpling.1937$Ingredient<-as.character(AppleDumpling.1937$Ingredient)
+for(x in AppleDumpling.1937$Ingredient){ 
+  #loop over ingredients
+    
+    #check ingredient in food_des
+    if(sum(grepl(x,food_des.dat$Long_Desc)) > 0){
+        print('Found a direct match')
+        print(paste0('Our Ingredient: ',x))
+        print('Ingredient found in FOOD DESC file')
+        print(food_des.dat[grepl(x,food_des.dat$Long_Desc),'Long_Desc'])
+        } else if (sum(grepl(tolower(x),tolower(food_des.dat$Long_Desc))) > 0){
+            #convert ingredients to lowercase as well as food_des and then search
+            #to find food_des lower
+            print('Found a lowercase match')
+            print(paste0('Our Ingredient: ',x))
+            print('Ingredient found in FOOD DESC file')
+            
+            print(food_des.dat[grepl(tolower(x),tolower(food_des.dat$Long_Desc)),'Long_Desc'])
+            }
+                else{
+                    # split ingredient string to search each word separately for partial match
+                    
+                    print(paste0('Not direct match found for: ',x, 
+                     ', hence splitting ingredients into words:'))
+                    single_words<-trimws(unlist(strsplit(x,',')))
+                    print(single_words)
+                    #   this will be in the form of a loop
+                    for (sw in single_words){
+                        # check if the word is present as it is
+                        if(sum(grepl(sw,food_des.dat$Long_Desc)) > 0){
+                            print('Found a partial match')
+                            print(paste0('Our Partial word: ',sw))
+                            print('Ingredient found in FOOD DESC file')
+                            print(head(food_des.dat[grepl(sw,food_des.dat$Long_Desc),'Long_Desc']))
+                            }else if(sum(grepl(tolower(sw),tolower(food_des.dat$Long_Desc))) > 0){
+                                #check is word is present as lower case
+                                print('Found a lowercase partial match')
+                                print(paste0('Our lowercase partial word: ',sw))
+                                print('Ingredient found in FOOD DESC file')
+                                print(head(food_des.dat[grepl(tolower(sw),tolower(food_des.dat$Long_Desc)),'Long_Desc']))
+                                } else{
+                                    print('No partial match found')
+                                    } 
+                        
+                        }
+                        
+                        }
+}
+
+```
+
+*loop through to determine matches for appledumpling 2006, have created comments in code*
+```{r, eval=FALSE}
+AppleDumpling.2006$Ingredient<-as.character(AppleDumpling.2006$Ingredient)
+for(x in AppleDumpling.2006$Ingredient){ 
+  #loop over ingredients
+    
+    #check ingredient in food_des
+    if(sum(grepl(x,food_des.dat$Long_Desc)) > 0){
+        print('Found a direct match')
+        print(paste0('Our Ingredient: ',x))
+        print('Ingredient found in FOOD DESC file')
+        print(food_des.dat[grepl(x,food_des.dat$Long_Desc),'Long_Desc'])
+        } else if (sum(grepl(tolower(x),tolower(food_des.dat$Long_Desc))) > 0){
+            #convert ingredients to lowercase as well as food_des and then search
+            #to find food_des lower
+            print('Found a lowercase match')
+            print(paste0('Our Ingredient: ',x))
+            print('Ingredient found in FOOD DESC file')
+            
+            print(food_des.dat[grepl(tolower(x),tolower(food_des.dat$Long_Desc)),'Long_Desc'])
+            }
+                else{
+                    # split ingredient string to search each word separately for partial match
+                    
+                    print(paste0('Not direct match found for: ',x, 
+                     ', hence splitting ingredients into words:'))
+                    single_words<-trimws(unlist(strsplit(x,',')))
+                    print(single_words)
+                    #   this will be in the form of a loop
+                    for (sw in single_words){
+                        # check if the word is present as it is
+                        if(sum(grepl(sw,food_des.dat$Long_Desc)) > 0){
+                            print('Found a partial match')
+                            print(paste0('Our Partial word: ',sw))
+                            print('Ingredient found in FOOD DESC file')
+                            print(head(food_des.dat[grepl(sw,food_des.dat$Long_Desc),'Long_Desc']))
+                            }else if(sum(grepl(tolower(sw),tolower(food_des.dat$Long_Desc))) > 0){
+                                #check is word is present as lower case
+                                print('Found a lowercase partial match')
+                                print(paste0('Our lowercase partial word: ',sw))
+                                print('Ingredient found in FOOD DESC file')
+                                print(head(food_des.dat[grepl(tolower(sw),tolower(food_des.dat$Long_Desc)),'Long_Desc']))
+                                } else{
+                                    print('No partial match found')
+                                    } 
+                        
+                        }
+                        
+                        }
+}
+
+```
+
+
+*loop through to determine matches for sauerbrauten 1936, have created comments in code*
+```{r, eval=TRUE}
+Sauerbrauten.1936$Ingredient<-as.character(Sauerbrauten.1936$Ingredient)
+for(x in Sauerbrauten.1936$Ingredient){ 
+  #loop over ingredients
+    
+    #check ingredient in food_des
+    if(sum(grepl(x,food_des.dat$Long_Desc)) > 0){
+        print('Found a direct match')
+        print(paste0('Our Ingredient: ',x))
+        print('Ingredient found in FOOD DESC file')
+        print(food_des.dat[grepl(x,food_des.dat$Long_Desc),'Long_Desc'])
+        } else if (sum(grepl(tolower(x),tolower(food_des.dat$Long_Desc))) > 0){
+            #convert ingredients to lowercase as well as food_des and then search
+            #to find food_des lower
+            print('Found a lowercase match')
+            print(paste0('Our Ingredient: ',x))
+            print('Ingredient found in FOOD DESC file')
+            
+            print(food_des.dat[grepl(tolower(x),tolower(food_des.dat$Long_Desc)),'Long_Desc'])
+            }
+                else{
+                    # split ingredient string to search each word separately for partial match
+                    
+                    print(paste0('Not direct match found for: ',x, 
+                     ', hence splitting ingredients into words:'))
+                    single_words<-trimws(unlist(strsplit(x,',')))
+                    print(single_words)
+                    #   this will be in the form of a loop
+                    for (sw in single_words){
+                        # check if the word is present as it is
+                        if(sum(grepl(sw,food_des.dat$Long_Desc)) > 0){
+                            print('Found a partial match')
+                            print(paste0('Our Partial word: ',sw))
+                            print('Ingredient found in FOOD DESC file')
+                            print(head(food_des.dat[grepl(sw,food_des.dat$Long_Desc),'Long_Desc']))
+                            }else if(sum(grepl(tolower(sw),tolower(food_des.dat$Long_Desc))) > 0){
+                                #check is word is present as lower case
+                                print('Found a lowercase partial match')
+                                print(paste0('Our lowercase partial word: ',sw))
+                                print('Ingredient found in FOOD DESC file')
+                                print(head(food_des.dat[grepl(tolower(sw),tolower(food_des.dat$Long_Desc)),'Long_Desc']))
+                                } else{
+                                    print('No partial match found')
+                                    } 
+                        
+                        }
+                        
+                        }
+}
+
+```
+
+*loop through to determine matches for sauerbauten 2006, have created comments in code*
+```{r, eval=TRUE}
+Sauerbrauten.2006$Ingredient<-as.character(Sauerbrauten.2006$Ingredient)
+for(x in Sauerbrauten.2006$Ingredient){ 
+  #loop over ingredients
+    
+    #check ingredient in food_des
+    if(sum(grepl(x,food_des.dat$Long_Desc)) > 0){
+        print('Found a direct match')
+        print(paste0('Our Ingredient: ',x))
+        print('Ingredient found in FOOD DESC file')
+        print(food_des.dat[grepl(x,food_des.dat$Long_Desc),'Long_Desc'])
+        } else if (sum(grepl(tolower(x),tolower(food_des.dat$Long_Desc))) > 0){
+            #convert ingredients to lowercase as well as food_des and then search
+            #to find food_des lower
+            print('Found a lowercase match')
+            print(paste0('Our Ingredient: ',x))
+            print('Ingredient found in FOOD DESC file')
+            
+            print(food_des.dat[grepl(tolower(x),tolower(food_des.dat$Long_Desc)),'Long_Desc'])
+            }
+                else{
+                    # split ingredient string to search each word separately for partial match
+                    
+                    print(paste0('Not direct match found for: ',x, 
+                     ', hence splitting ingredients into words:'))
+                    single_words<-trimws(unlist(strsplit(x,',')))
+                    print(single_words)
+                    #   this will be in the form of a loop
+                    for (sw in single_words){
+                        # check if the word is present as it is
+                        if(sum(grepl(sw,food_des.dat$Long_Desc)) > 0){
+                            print('Found a partial match')
+                            print(paste0('Our Partial word: ',sw))
+                            print('Ingredient found in FOOD DESC file')
+                            print(head(food_des.dat[grepl(sw,food_des.dat$Long_Desc),'Long_Desc']))
+                            }else if(sum(grepl(tolower(sw),tolower(food_des.dat$Long_Desc))) > 0){
+                                #check is word is present as lower case
+                                print('Found a lowercase partial match')
+                                print(paste0('Our lowercase partial word: ',sw))
+                                print('Ingredient found in FOOD DESC file')
+                                print(head(food_des.dat[grepl(tolower(sw),tolower(food_des.dat$Long_Desc)),'Long_Desc']))
+                                } else{
+                                    print('No partial match found')
+                                    } 
+                        
+                        }
+                        
+                        }
+}
+
+```
+
+
+```{r}
+Sauerbrauten.1936 <- data.frame(Amount =c("3","1","1","1/2","2","1/2","1","2","1"), 
+                                Unit=c("lb","cup","cup","cup","Tbs","cup","cup","ea","tsp"), 
+                                Ingredient=c("beef roast, chuck arm, raw, choice, 1/8\" trim","vinegar, distilled","water","onion,yellow,fresh,sliced","sugar,white,granulated","flour,all purpose, self rising, enriched","sour cream, cultured","bay leaves","black peppercorns"),
+                                NDB_No=c("13808","02053","14555","11282","19335","20481","01074","02004","02030"
+))
+print(Sauerbrauten.1936)
+```
+
+
+```{r}
+Sauerbrauten.2006 <- data.frame(Amount =c("3","1/4","1/2","1","1/2","2","1/4","1","1","2","2"), 
+                                Unit=c("lb","cup","cup","Tbs","cup","Tbs","cup","cup","tsp","tsp","ea"), 
+                                Ingredient=c("beef roast, chuck arm, raw, choice, 1/8\" trim","vinegar, distilled","water","sugar, white,granulated","onion,yellow,fresh,sliced","oil,canola","sugar,brown,packed","sour cream,cultured","black peppercorns","caraway seeds","bay leaves"),
+                                NDB_No=c("13809","02053","14555","19335","11282","04582","19334","01074","02030","02005","02004"
+))
+print(Sauerbrauten.2006)
+```
+
+
+```{r}
+AppleDumpling.1937 <- data.frame(Amount =c("6","2 1/2","12","2","2"), 
+                                Unit=c("ea","Tbs","tsp","tsp","tsp"), 
+                                Ingredient=c("apple,fresh, medium, 3'\'","brown,sugar,packed","butter, unsalted, softened","salt","ground cinnamon"),
+                                NDB_No=c("09004","19334","01145","02047","02010"))
+print(AppleDumpling.1937)
+```
+
+
+
+```{r}
+AppleDumpling.2006 <- data.frame(Amount =c("6","1/2","1","1/4","1/4","1"), 
+                                Unit=c("ea","cup","tsp","tsp","cup","ea"), 
+                                Ingredient=c("apple,fresh,small,2 3'/'4","sugar,brown,dark","ground cinnamon","salt","unsalted butter,softened","egg,lightly,beaten"),
+                                NDB_No=c("09004","19334","02010","02047","01145","01125"))
+print(AppleDumpling.2006)
+```
+
+
+
+*write tab files for recipes AppleDumpling 1937 and 2006 and Sauerbrauten 1936 and 2006*
+```{r}
+write.table(AppleDumpling.1937, "AppleDumpling.1937.tab", sep="")
+write.table(AppleDumpling.2006, "AppleDumpling.2006.tab", sep="")
+write.table(Sauerbrauten.1936, "Sauerbrauten.1936.tab", sep="")
+write.table(Sauerbrauten.2006, "Sauerbrauten.2006.tab", sep="")
+```
+
+*reading in the recipe files I just exported*
+```{r}
+AppleDumpling.1937 <- read.table("AppleDumpling.1937.tab", header=TRUE)
+AppleDumpling.2006 <- read.table("AppleDumpling.2006.tab", header=TRUE)
+Sauerbrauten.1936 <- read.table("Sauerbrauten.1936.tab", header=TRUE)
+Sauerbrauten.2006 <- read.table("Sauerbrauten.2006.tab", header=TRUE)
+```
+
+
+*merging the appledumpling 1937 and 2006*
+```{r}
+new.AppleDumpling <-merge.data.frame(AppleDumpling.1937, AppleDumpling.2006,by.x="Ingredient",by.y="Ingredient",suffixes=c('.1937','.2006'))
+print(new.AppleDumpling)
+```
+
+*merging the sauerbrauten 1936 and 2006*
+```{r}
+new.Sauerbrauten <-merge.data.frame(Sauerbrauten.1936, Sauerbrauten.2006,by.x="Ingredient",by.y="Ingredient",suffixes=c('.1937','.2006'))
+print(new.Sauerbrauten)
+```
+*read in both tab beef stroganoff files*
+```{r}
+BeefStroganoff.1997 <- read.table("BeefStroganoff.1997.tab", header=TRUE)
+print(BeefStroganoff.1997)
+BeefStroganoff.2006 <- read.table("BeefStroganoff.2006.tab", header=TRUE)
+print(BeefStroganoff.2006)
+```
+
+*merge beef stroganoff files*
+```{r}
+new.BeefStroganoff <-merge.data.frame(BeefStroganoff.1997, BeefStroganoff.2006,by.x="Ingredient",by.y="Ingredient",suffixes=c('.1937','.2006'))
+print(new.BeefStroganoff)
+```
+
+*Differences in measures apple dumpling*
+```{r}
+table(new.AppleDumpling$Unit.1937,new.AppleDumpling$Unit.2006) 
+plot(new.AppleDumpling$Unit.1937,new.AppleDumpling$Unit.2006)
+```
+
+*differences in measures sauerbrauten*
+```{r}
+table(new.Sauerbrauten$Unit.1937,new.Sauerbrauten$Unit.2006) 
+plot(new.Sauerbrauten$Unit.1937,new.Sauerbrauten$Unit.2006)
+```
+
+*differences in amount appledumpling*
+```{r}
+table(new.AppleDumpling$Amount.1937,new.AppleDumpling$Amount.2006) 
+plot(new.AppleDumpling$Amount.1937,new.AppleDumpling$Amount.2006)
+```
+
+*differences in amount sauerbrauten*
+```{r}
+table(new.Sauerbrauten$Amount.1937,new.Sauerbrauten$Amount.2006) 
+plot(new.Sauerbrauten$Amount.1937,new.Sauerbrauten$Amount.2006)
+```
+
+
+
+
+*add my data from my servings for my recipes sauerbrauten and apple dumpling, print and exported new recipe file*
+```{r}
+recipes <- read.table('Recipes.csv', sep=',',header=TRUE)
+print(recipes)
+row1 <-data.frame(Recipe="AppleDumpling", Year=1937, MinServings=1, MaxServings=1  )
+row2 <-data.frame(Recipe="AppleDumpling", Year=2006, MinServings=6, MaxServings=6)
+row3<-data.frame(Recipe="Sauerbrauten", Year=2006, MinServings=6, MaxServings=6)
+row4<-data.frame(Recipe="Sauerbrauten", Year=1936, MinServings=12, MaxServings=12)
+new.recipes <- rbind.data.frame(recipes,row1,row2,row3,row4)
+print(new.recipes)
+write.table(new.recipes, 'New Recipes.csv', sep=",")
+                
+```
+
+

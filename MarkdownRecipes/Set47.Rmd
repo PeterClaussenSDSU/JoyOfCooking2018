@@ -1,0 +1,223 @@
+---
+title: "STAT 700 Midterm Project"
+author: "Set 47"
+date: "7/20/2018"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+The Midtrem Project is used to validate the calories per recipe data provided by John Becker. The Chocolate Bavarian Cream and the sugar Drop Cookies are two recipes that I need to validate.
+
+# Step 1: Create data tables for assigned recipes
+
+```{r}
+# Create two data frame (1936 and 2006) for chocolate Bavarian Cream 
+Chocolate_Bavarian_Cream_36 <- data.frame(Amount = c(1, 0.5, 2, 0.33, 1.5, 1, 2), Measure=c("Tbs", "cup", "cup", "cup", "tsp", "cup", "oz"),
+                             Ingredient=c("gelatin, dry, unsweetened","water, generic","milk, whole, 3.25%","sugar, white, granulated, granulated","extract, vanilla","cream, whipping, heavy","chocolate, dark, 45-59% cacao solids"))
+
+Chocolate_Bavarian_Cream_06 <- data.frame(Amount = c(3, 1.5, 2.25, 4, 0.25, 1, 1), Measure=c("Tbs", "cup", "tsp", "oz", "cup", "tsp", "cup"),
+                             Ingredient=c("milk, whole, 3.25%","milk, whole, 3.25%","gelatin, dry, unsweetened","chocolate, dark, 45-59% cacao solids","sugar, white, granulated, granulated","extract, vanilla","cream, whipping, heavy"))
+
+# Create two data frame (1936 and 2006) for sugar drop cookies 
+Drop_Sugar_Cookies_36 <- data.frame(Amount = c(1, 0.5, 1, 1, 1.67, 0.33, 40.00, 0.25), Measure=c("cup", "cup", "lrg", "tsp", "cup", "cup", "ea", "cup"),
+                             Ingredient=c("sugar, white, granulated, granulated","butter, salted","egg, raw","extract, vanilla","flour, bread, white, enriched","sour cream, cultured", "pecans, halves", "sugar, white, granulated, granulated"))
+
+Drop_Sugar_Cookies_06 <- data.frame(Amount = c(2.5, 1, 0.75, 2, 1, 0.25), Measure=c("cup", "cup", "cup", "lrg", "tsp", "cup"),
+                             Ingredient=c("flour, all purpose, self rising, enriched", "sugar, white, granulated, granulated","oil, canola","egg, raw","extract, vanilla", "sugar, white, granulated, granulated"))
+```
+
+Comments: These four dateframes are created manually.
+
+# Step 2. Wirte each individual recipe to a tab delimited file.
+
+```{r}
+# Write all data frames into tab delimited file
+write.table(Chocolate_Bavarian_Cream_36,"Chocolate_Bavarian_Cream.1936.tab", sep="\t",row.names = FALSE)
+write.table(Chocolate_Bavarian_Cream_06,"Chocolate_Bavarian_Cream.2006.tab", sep="\t",row.names = FALSE)
+write.table(Drop_Sugar_Cookies_36,"Drop_Sugar_Cookies.1936.tab", sep="\t",row.names = FALSE)
+write.table(Drop_Sugar_Cookies_06,"Drop_Sugar_Cookies.2006.tab", sep="\t",row.names = FALSE)
+```
+
+# Step 3. Read in each tab file, and merger the tables with the example Beef Stroganoff tables.
+
+```{r}
+# read tab files
+files <- list.files(pattern="*.tab")
+Beef1 <- read.table(files[1],header=TRUE) 
+Beef2 <- read.table(files[2],header=TRUE) 
+Chocolate1 <- read.table(files[3],header=TRUE)
+Chocolate2 <- read.table(files[4],header=TRUE) 
+Sugar1 <- read.table(files[5],header=TRUE) 
+Sugar2 <- read.table(files[6],header=TRUE) 
+
+# Merge the same recipe of 1936, 2006 by ingredient
+Beef_merge <- merge(Beef1,Beef2,by="Ingredient",all=TRUE)
+Chocolate_merge <- merge(Chocolate1,Chocolate2,by="Ingredient",all=TRUE)
+Sugar_merge <- merge(Sugar1,Sugar2,by="Ingredient",all=TRUE)
+```
+
+Comment: The two recipes are merged by ingredience so that the Measure.1997 and measure.2006 for beef recipes can be ploted to see where the measures are not consistent. 
+
+# Step 4. Proof the data to check for erros. 
+
+```{r}
+# Check the consistancy or inconsistancy for measures between two different years
+table(Beef_merge$Measure.x,Beef_merge$Measure.y)
+table(Chocolate_merge$Measure.x,Chocolate_merge$Measure.y)
+table(Sugar_merge$Measure.x,Sugar_merge$Measure.y)
+```
+
+Comments: In these contingency tables, the mismatches in measures between ingredients are displayed. 
+
+# Step 5. Read FOOD_DES.txt. Perform partial matching in FOOD_DES and pick the best match 
+
+```{r}
+# read FOOD_DES.txt
+food_des.dat <- read.table("FOOD_DES.txt",header=FALSE,sep="^",quote="~")
+names(food_des.dat) <- c("NDB_No","FdGrp_Cd","Long_Desc","Shrt_Desc","ComName","ManufacName","Survey","Ref_desc",
+                         "Refuse","SciName","N_Factor","Pro_Factor","Fat_Factor","CHO_Factor")
+
+# list all unique ingredient in all tables
+unique_ingredient <- unique(c(as.vector(Beef_merge$Ingredient),as.vector(Chocolate_merge$Ingredient),as.vector(Sugar_merge$Ingredient)))
+print(unique_ingredient)
+```
+
+Seache some keywords using a function for these unique ingredient above.
+
+```{r}
+# seach the key word matched in FOOD_DES file
+match <- function(x){
+  food_des.dat[grep(x, food_des.dat$Long_Desc), c(1,3)]
+}
+
+
+# Type-in the key words abvoe
+match("Water, bottled, generic")
+
+```
+
+Modify the name and find the NDB number to rename all of Ingredient and code.
+
+```{r}
+# create a new tab
+newtab <- data.frame()
+for (i in 1:length(files)){
+  file_name <- unlist(strsplit(files[i],".",fixed=TRUE)) # load all files
+  tab <- read.table(files[i],header=TRUE) # read each table
+  tab <- cbind(Recipe=c(rep(file_name[1],nrow(tab))),Year=c(rep(file_name[2],nrow(tab))),tab) # use cbind to combine all tabs together
+  newtab <- as.data.frame(rbind(newtab,tab)) #create a data frame
+}
+
+# Follow the Intredient order in the new tab and give them names and NDBs based on the serach reustls
+
+Ingredient <- c('Beef, loin, tenderloin roast, boneless, separable lean and fat, trimmed to 0" fat, all grades, raw',
+                'Butter, salted',
+                'Wheat flour, white, all-purpose, self-rising, bleached',
+                'Soup, stock, beef, home-prepared',
+                'Cream, sour, cultured',
+                'Mustard, prepared, yellow',
+                'Beef, loin, tenderloin roast, boneless, separable lean and fat, trimmed to 0" fat, all grades, raw',
+                'Oil, canola',
+                'Butter, salted',
+                'Onions, raw',
+                'Mushrooms, white, raw',
+                'Soup, stock, beef, home-prepared',
+                'Cream, sour, cultured',
+                'Mustard, prepared, yellow',
+                'Gelatins, dry powder, unsweetened',
+                'Water, bottled, generic',
+                'Milk, whole, 3.25% milkfat, without added vitamin A and vitamin D',
+                'Sugars, granulated',
+                'Vanilla extract',
+                'Cream, fluid, heavy whipping',
+                'Candies, chocolate, dark, NFS (45-59% cacao solids 90%; 60-69% cacao solids 5%; 70-85% cacao solids 5%)',
+                'Milk, whole, 3.25% milkfat, without added vitamin A and vitamin D',
+                'Milk, whole, 3.25% milkfat, without added vitamin A and vitamin D',
+                'Gelatins, dry powder, unsweetened',
+                'Candies, chocolate, dark, NFS (45-59% cacao solids 90%; 60-69% cacao solids 5%; 70-85% cacao solids 5%)',
+                'Sugars, granulated',
+                'Vanilla extract',
+                'Cream, fluid, heavy whipping',
+                'Sugars, granulated',
+                'Butter, salted',
+                'Egg, whole, raw, fresh',
+                'Vanilla extract',
+                'Wheat flour, white, bread, enriched',
+                'Cream, sour, cultured',
+                'Nuts, pecans',
+                'Sugars, granulated',
+                'Wheat flour, white, all-purpose, self-rising, bleached',
+                'Sugars, granulated',
+                'Oil, canola',
+                'Egg, whole, raw, fresh',
+                'Vanilla extract',
+                'Sugars, granulated')
+NDB <- c('23336',
+         '1001',
+         '20082',
+         '6170',
+         '1056',
+         '2046',
+         '23336',
+         '4582',
+         '1001',
+         '11282',
+         '11260',
+         '6170',
+         '1056',
+         '2046',
+         '19177',
+         '14555',
+         '1211',
+         '19335',
+         '2050',
+         '1053',
+         '19905',
+         '1211',
+         '1211',
+         '19177',
+         '19905',
+         '19335',
+         '2050',
+         '1053',
+         '19335',
+         '1001',
+         '1123',
+         '2050',
+         '20083',
+         '1056',
+         '12142',
+         '19335',
+         '20082',
+         '19335',
+         '4582',
+         '1123',
+         '2050',
+         '19335')
+mat <- data.frame(Ingredient=Ingredient,NDB_No=NDB)
+finalRecipe <- cbind(newtab[,1:4],mat)
+
+# modified table is wrote into a tab file
+write.table(finalRecipe,"final.tab", sep="\t",row.names = FALSE)
+```
+
+Comments: The total rows in teh final recipe have 42 rows. Each intredient and NDB was modified row by row manually.
+
+# Step 6. Create a Recipe table with servings information
+
+```{r}
+# read the Recipes table
+Beef.recipe <- read.csv("Recipes.csv",header=TRUE)
+
+# create a data frame for my designed two recipes with min and max servings infromation
+recipe <- data.frame(Recipe=c("Chocolate_Bavarian_Cream","Chocolate_Bavarian_Cream","Drop_Sugar_Cookies","Drop_Sugar_Cookies"),Year=c("1936","2006","1936","2006"),
+                     MinServings=c("8","8","40","60"),MaxServings=c("8","8","40","60"))   # min and max servinhs based on pdf file
+
+# combine above two dataframes together
+all.recipe <- rbind(Beef.recipe,recipe)
+
+#write a csv
+write.csv(all.recipe,"Recipe.csv",row.names = FALSE)
+```
+

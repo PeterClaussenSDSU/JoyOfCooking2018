@@ -1,0 +1,549 @@
+---
+title: "Joy Of Cooking Midterm Project Prep"
+author: "Set 41"
+date: "7/11/2018"
+output:
+  pdf_document: default
+  word_document: default
+  html_document: default
+---
+
+** Assigned Recipes : **                  
+1) Meat Loaf [The PDF contains 2 recipes of MeatLoaf, MeatLoafI (1936 & 2006) and MeatLoafII (1936 & 2006)]  
+2) Caramel Custard 
+
+Each recipes has been entered as data tables or data frames and created a ` .tab ` file to a common file format. The file name is composed of the recipe name and year (for example: RecipeName.Year.tab). 
+
+** Data Frame for the Ingredients and NDB_NO reference**
+```{r}
+NDB_NO<-c(23572,01125,01001,20082, 23562, 11282, 18079, 11935, 01123,11670, 18621, 06559, 10972, 10123,11886, 02055, 06172,  19335, 01077, 02050, 14555)
+Ingredient<-c("Beef, ground, 80% lean meat / 20% fat, raw", "Egg, yolk, raw, fresh", "Butter, salted",
+              "Wheat flour, white, all-purpose, self-rising, enriched" , "Beef, ground, 90% lean meat
+              / 10% fat, raw", "Onions, raw", "Bread, crumbs, dry, grated, plain", "Catsup", "Egg, whole,
+              raw, fresh", "Peppers, hot chili, green, raw",  "Nabisco, Nabisco Ritz Crackers", "Soup,
+              tomato, canned, prepared with equal volume water, commercial", "Pork, ground, 84% lean 
+              / 16% fat, raw", "Pork, cured, bacon, unprepared", "Tomato juice, canned, without salt 
+              added",   "Horseradish, prepared", "Soup, stock, chicken, home-prepared", "Sugars, 
+              granulated",  "Milk, whole, 3.25% milkfat, with added vitamin D", "Vanilla extract", "Water, bottled, generic")
+
+FOOD_ref<-data.frame(NDB_NO=NDB_NO, Ingredient=Ingredient)
+FOOD_ref
+```
+**Explanation**
+Using `grep` function, I choosed the same or the closest matching ingredient from the FOOD_DES data table. The Data frame consists the Ingredients and NDB_NO of that ingredient. The code for grep functions are written below after importing the data from FOOD_DES files in part 2(bottom section of the document)
+
+**Data Frame of Recipe : BeefStroganOff.1997**
+```{r}
+  NDB_Num = c(13922, 01001, 20082, 06170, 01056, 02046)
+  Amount = c(1.5,3.5,1,1,3,1)
+  Measure <-c("lb","Tbs","Tbs","cup","Tbs","tsp")
+  Ingredient <-c('Beef, tenderloin, roast, separable lean and fat, trimmed to 1/8" fat, choice, cooked, roasted',"Butter, salted","Wheat flour, white, all-purpose, self-rising, enriched","Soup, stock, beef, home-prepared", "Cream, sour, cultured","Mustard, prepared, yellow")
+
+BeefStroganOff_1997<- data.frame(NDB_NO = NDB_Num, Amount =Amount, Unit = Measure, Ingredient = Ingredient)
+BeefStroganOff_1997
+```
+**Data Frame of Recipe : BeefStroganOff.2006**
+```{r}
+  NDB_Num = c(13922,04582, 01001,11282,11260, 06170, 01056, 02046)
+  Amount = c(2,2,3,1,1,1,3,1)
+  Measure <-c("lb","Tbs","Tbs","ea","lb","cup","cup","Tbs")
+  Ingredient <-c('Beef, tenderloin, roast, separable lean and fat, trimmed to 1/8" fat, choice, cooked, roasted',"Oil, canola","Butter, salted","Onions, raw","Mushrooms, white, raw","Soup, stock, beef, home-prepared", "Cream, sour, cultured","Mustard, prepared, yellow")
+
+BeefStroganOff_2006<- data.frame(NDB_NO = NDB_Num, Amount =Amount, Unit = Measure, Ingredient = Ingredient)
+BeefStroganOff_2006
+```
+**Data Frame of Recipe : MeatLoaf1_1936 **
+```{r}
+  NDB_Num = c(23572, 01125, 01001, 01001, 20082)
+  Amount = c(1.00,1.00,1.00,0.25,2.00)
+  Measure <-c("lb","ea","Tbs","cup","Tbs")
+  Ingredient <-c("Beef, ground, 80% lean meat / 20% fat, raw","Egg, yolk, raw, fresh","Butter, salted","Butter, salted","Wheat flour, white, all-purpose, self-rising, enriched")
+
+MeatLoaf1_1936<- data.frame(NDB_NO = NDB_Num, Amount =Amount, Unit = Measure, Ingredient = Ingredient)
+MeatLoaf1_1936
+```
+**Data Frame of Recipe : MeatLoaf1_2006**
+```{r}
+  NDB_Num = c(23572, 23562, 11282, 18079, 11935, 01123)
+  Amount = c(12, 12, 1.50, 1, 0.67, 3)
+  Measure <-c("oz","oz","cup","cup","cup","lrg")
+  Ingredient <-c("Beef, ground, 80% lean meat / 20% fat, raw","Beef, ground, 90% lean meat / 10% fat, raw", "Onions, raw","Bread, crumbs, dry, grated, plain","Catsup", "Egg, whole, raw, fresh")
+  
+MeatLoaf1_2006<-data.frame( NDB_NO = NDB_Num, Amount =Amount, Unit = Measure, Ingredient = Ingredient)
+MeatLoaf1_2006
+
+```
+
+**Data Frame of Recipe : MeatLoaf2_1936**
+```{r}
+  NDB_Num = c(11670, 11282, 18621, 06559, 23572, 10972, 20082, 10123, 11886, 20082)
+  Amount = c(3, 1,24,3.50,1,1,0.25,6,1,2)
+  Measure <-c("ea","ea","ea","cup","lb","lb","cup","pce","cup","Tbs")
+  Ingredient <-c('Peppers, hot chili, green, raw" ',"Onions, raw","Nabisco, Nabisco Ritz Crackers","tomatoes, whole, canned, with juice","Beef, ground, 80% lean meat / 20% fat, raw","Pork, ground, 84% lean / 16% fat, raw", "Wheat flour, white, all-purpose, self-rising, enriched","Pork, cured, bacon, unprepared","Tomato juice, canned, without salt added","Wheat flour, white, all-purpose, self-rising, enriched")
+  
+MeatLoaf2_1936<-data.frame(NDB_NO =NDB_Num, Amount =Amount, Unit = Measure, Ingredient = Ingredient)
+MeatLoaf2_1936
+```
+
+**Data Frame of Recipe : MeatLoaf2_2006**
+```{r}
+  NDB_Num = c(23562, 02055, 11935, 10123, 18621, 06172, 01123)
+  Amount = c(1,1,2,6,24,0.50,1)
+  Measure <-c("lb","Tbs","Tbs","pce","ea","cup","lrg")
+  Ingredient <-c("Beef, ground, 90% lean meat / 10% fat, raw","Horseradish, prepared", "Catsup", "Pork, cured, bacon, unprepared","Nabisco, Nabisco Ritz Crackers","Soup, stock, chicken, home-prepared","Egg, whole, raw, fresh")
+  
+MeatLoaf2_2006<-data.frame(NDB_NO =NDB_Num, Amount =Amount, Unit = Measure, Ingredient = Ingredient)
+MeatLoaf2_2006
+```
+**Data Frame of Recipe : CaramelCustard_1936**
+```{r}
+NDB_Num =c(19335, 01077, 01125, 02050, 14555)
+Amount = c(0.50,2,3,0.50,1)
+Measure <-c("cup","cup","ea","tsp","Tbs")
+Ingredient <-c("Sugars, granulated", "Milk, whole, 3.25% milkfat, with added vitamin D", "Egg, yolk, raw, fresh", "Vanilla extract", "Water, bottled, generic")
+  
+CaramelCustard_1936<-data.frame(NDB_NO =NDB_Num, Amount =Amount, Unit = Measure, Ingredient = Ingredient)
+CaramelCustard_1936
+```
+
+**Data Frame of Recipe : CaramelCustard_2006**
+```{r}
+  NDB_Num <- c(01123, 01077, 19335, 02050, 14555)
+  Amount = c(3,2,0.75,0.75,2)
+  Measure <-c("lrg","cup","cup","tsp","Tbs")
+  Ingredient <-c("Egg, whole, raw, fresh", "Milk, whole, 3.25% milkfat, with added vitamin D", "Sugars, granulated", "extract, vanilla", "Water, bottled, generic")
+  
+CaramelCustard_2006<-data.frame(NDB_NO =NDB_Num, Amount =Amount, Unit = Measure, Ingredient = Ingredient)
+CaramelCustard_2006
+```
+
+**Creating ".tab" file for each recipe**
+```{r}
+write.table(MeatLoaf1_1936, file ="MeatLoaf1.1936.tab",row.names = FALSE)
+write.table(MeatLoaf1_2006, file ="MeatLoaf1.2006.tab",row.names = FALSE)
+write.table(MeatLoaf2_1936, file ="MeatLoaf2.1936.tab",row.names = FALSE)
+write.table(MeatLoaf2_2006, file ="MeatLoaf2.2006.tab",row.names = FALSE)
+write.table(CaramelCustard_1936, file = "CaramelCustard.1936.tab",row.names = FALSE)
+write.table(CaramelCustard_2006, file = "CaramelCustard.2006.tab",row.names = FALSE)
+```
+
+**Getting path**
+```{r}
+getwd()
+```
+
+**Reading data from tab files**
+```{r}
+MeatLoaf1936_a<- read.table(file = "MeatLoaf1.1936.tab",  sep="\t", header=TRUE)
+MeatLoaf1936_a
+
+MeatLoaf2006_a<- read.table(file = "MeatLoaf1.2006.tab",  sep="\t", header=TRUE)
+MeatLoaf2006_a
+
+MeatLoaf1936_b<- read.table(file = "MeatLoaf2.1936.tab",  sep="\t", header=TRUE)
+MeatLoaf1936_b
+
+MeatLoaf2006_b<- read.table(file = "MeatLoaf2.2006.tab",  sep="\t", header=TRUE)
+MeatLoaf2006_b
+
+CaramelCustard1<- read.table(file = "CaramelCustard.1936.tab",  sep="\t", header=TRUE)
+CaramelCustard1
+
+CaramelCustard2<- read.table(file = "CaramelCustard.2006.tab",  sep="\t", header=TRUE)
+CaramelCustard2
+
+```
+
+**Merging recipes for both years with ingredient to plot graphs for checking if there are any errors**
+## Merging MeatLoaf1 (Year 1936 and 2006)
+```{r}
+Merged_MeatLoaf1 <-merge(MeatLoaf1_1936, MeatLoaf1_2006, by="Ingredient", all=TRUE)
+Merged_MeatLoaf1
+```
+##Merging MeatLoaf2 (Year 1936 and 2006)
+```{r}
+Merged_MeatLoaf2 <-merge(MeatLoaf2_1936, MeatLoaf2_2006, by="Ingredient", all=TRUE)
+Merged_MeatLoaf2
+```
+## Merging CaramelCustard (Year 1936 and 2006)
+```{r}
+Merged_CaramelCustard <-merge(CaramelCustard_1936, CaramelCustard_2006, by="Ingredient", all=TRUE)
+Merged_CaramelCustard
+```
+
+**Plotting graph for Merged_MeatLoaf1 `amount` of 1936 and 2006**
+```{r}
+plot(Merged_MeatLoaf1$Ingredient,Merged_MeatLoaf1$Amount.x,
+main="MeatLoaf1: Amount of ingredients in Year 1936", xlab="Ingredient", ylab="Amount", col="green")
+```
+```{r}
+plot(Merged_MeatLoaf1$Ingredient,Merged_MeatLoaf1$Amount.y,
+main="MeatLoaf1: Amount of ingredients in Year 2006", xlab="Ingredient", ylab="Amount", col="blue")
+```
+
+**Comparing both above**
+```{r}
+plot(Merged_MeatLoaf1$Ingredient,Merged_MeatLoaf1$Amount.y,pch=19,
+main="MeatLoaf1 : Amount 1936 vs 2006 based on ingredient", xlab="Ingredient", ylab="Amount", col="blue")
+points(Merged_MeatLoaf1$Ingredient,Merged_MeatLoaf1$Amount.x,main="MeatLoaf1 : Amount 1936 vs 
+       2006 based on ingredient",pch=19, xlab="Ingredient", ylab="Amount", col="blue")
+legend("topright", legend=c("Amount 2006"), col=c("black"), lty=1, cex=0.8)
+legend("topleft", legend=c("Amount 1936"), col=c( "blue"),pch = 15, cex=0.8)
+
+```
+The above plot where symbol for 1936 is blue points and symbol for 2006 is a bar.
+The graph verifies that the data taken  is right and there are no errors in the input of data.
+
+
+**Plotting graph between Merged_MeatLoaf2 amount of 1936 and 2006**
+```{r}
+plot(Merged_MeatLoaf2$Ingredient,Merged_MeatLoaf2$Amount.x,
+main="MeatLoaf2: Amount of ingredients in Year 1936", xlab="Ingredient", ylab="Amount", col="green")
+```
+```{r}
+plot(Merged_MeatLoaf2$Ingredient,Merged_MeatLoaf2$Amount.y,
+main="MeatLoaf2: Amount of ingredients in Year 2006", xlab="Ingredient", ylab="Amount", col="blue")
+```
+
+**Comparing both above**
+```{r}
+plot(Merged_MeatLoaf2$Ingredient,Merged_MeatLoaf2$Amount.y,pch=19,
+main="MeatLoaf2 : Amount 1936 vs 2006 based on ingredient", xlab="Ingredient", ylab="Amount", col="blue")
+points(Merged_MeatLoaf2$Ingredient,Merged_MeatLoaf2$Amount.x,main="MeatLoaf2 : Amount 1936 vs 2006 based on ingredient",pch=19, xlab="Ingredient", ylab="Amount", col="blue")
+legend("topright", legend=c("Amount 2006"), col=c("black"), lty=1, cex=0.8)
+legend("right", legend=c("Amount 1936"), col=c( "blue"),pch = 15, cex=0.8)
+
+```
+The above plot where symbol for 1936 is blue points and symbol for 2006 is a bar verifies that I have taken right data and there are no errors in the data intake.
+
+
+**Plotting graph between CaramelCustard amount of 1936 and 2006**
+```{r}
+plot(Merged_CaramelCustard$Ingredient,Merged_CaramelCustard$Amount.x,
+main="CaramelCustard: Amount of ingredients in Year 1936", xlab="Ingredient", ylab="Amount", col="red")
+```
+```{r}
+plot(Merged_CaramelCustard$Ingredient,Merged_CaramelCustard$Amount.y,
+main="CaramelCustard: Amount of ingredients in Year 2006", xlab="Ingredient", ylab="Amount", col="blue")
+```
+
+**Comparing both above**
+```{r}
+plot(Merged_CaramelCustard$Ingredient,Merged_CaramelCustard$Amount.y,
+main="CaramelCustard : Amount 1936 vs 2006 based on ingredient",pch=19, xlab="Ingredient", ylab="Amount", col="blue")
+points(Merged_CaramelCustard$Amount.x,Merged_CaramelCustard$Ingredient,
+main="CaramelCustard : Amount 1936 vs 2006 based on ingredient",pch=19, xlab="Ingredient", ylab="Amount", col="blue")
+legend("right", legend=c("Amount 1936"), col=c("black"), lty=1, cex=0.8)
+legend("topright", legend=c("Amount 2006"), col=c( "blue"),pch = 15, cex=0.8)
+
+```
+The above plot where symbol for 1936 is blue points and symbol for 2006 is a bar verifies that I have taken right data and there are no errors in the data intake.
+
+The above graphs show verifies that I have taken right values and there is no error in data intake. **
+
+**Contingency Table**
+Follwing is the contingency table comparing Measure 1936 and 2006 to look for mismatches in measures between Ingredients:
+```{r}
+table(MeatLoaf1_1936$Ingredient,MeatLoaf1_1936$Unit)
+plot(MeatLoaf1_1936$Ingredient,MeatLoaf1_1936$Amount, las=2,main="MeatLoaf1: Amount of ingredients in Year 1936", xlab="Ingredient", ylab="Amount", col="green")
+
+table(MeatLoaf1_2006$Ingredient,MeatLoaf1_2006$Unit)
+plot(MeatLoaf1_2006$Ingredient,MeatLoaf1_2006$Amount, las=2, main="MeatLoaf1: Amount of ingredients in Year 2006", xlab="Ingredient", ylab="Amount", col="red")
+
+table(MeatLoaf2_1936$Ingredient,MeatLoaf2_1936$Unit)
+plot(MeatLoaf2_1936$Ingredient,MeatLoaf2_1936$Amount, las=2, main="MeatLoaf2: Amount of ingredients in Year 1936", xlab="Ingredient", ylab="Amount", col="blue")
+
+table(MeatLoaf2_2006$Ingredient,MeatLoaf2_2006$Unit)
+plot(MeatLoaf2_2006$Ingredient,MeatLoaf2_2006$Amount, las=2, main="MeatLoaf2: Amount of ingredients in Year 2006", xlab="Ingredient", ylab="Amount", col="blue")
+
+table(CaramelCustard_1936$Ingredient,CaramelCustard_1936$Unit)
+plot(CaramelCustard_1936$Ingredient,CaramelCustard_1936$Amount, las=2, main="CaramelCustard: Amount of ingredients in Year 2006", xlab="Ingredient", ylab="Amount", col="blue")
+
+table(CaramelCustard_2006$Ingredient,CaramelCustard_2006$Unit)
+plot(CaramelCustard_2006$Ingredient,CaramelCustard_2006$Amount, las=2, main="CaramelCusturd: Amount of ingredients in Year 2006", xlab="Ingredient", ylab="Amount", col="blue")
+```
+** It is clear from the contingency table that there is no mismatch in measure and Amount with Ingredients.**
+
+**Minimum and Maximum Servings of each recipe**
+```{r}
+MinServings = c(6,8,10,4,4,5)
+MaxServings = c(6,8,10,4,4,5)
+servings <- data.frame (MinServings, MaxServings)
+write.csv(servings, file = "Servings.csv")
+```
+
+Based on PDF  of recipe we find the maximum and minimum servings and created a `.csv` file.
+
+**joining all my recipes together in one file called "MyRecipe" **
+Demonstrating that the data can be merged with into a shared table by merging with the example (Beef Stroganoff) recipes.
+```{r}
+MyRecipe <- rbind(MeatLoaf1_1936, MeatLoaf1_2006, MeatLoaf2_1936, MeatLoaf2_2006, CaramelCustard_1936, CaramelCustard_2006)
+MyRecipe
+```
+
+**Getting the `RecipeName` and `Year` from file name**
+```{r}
+ML1_1936<-lapply(strsplit('MeatLoaf1.1936', split=".", fixed = TRUE),trimws)
+ML1_1936
+ML1_2006<-lapply(strsplit('MeatLoaf1.2006', split=".", fixed = TRUE),trimws)
+ML1_2006
+ML2_1936<-lapply(strsplit('MeatLoaf2.1936', split=".", fixed = TRUE),trimws)
+ML2_1936
+ML2_2006<-lapply(strsplit('MeatLoaf2.2006', split=".", fixed = TRUE),trimws)
+ML2_2006
+CC_1936<-lapply(strsplit('CaramelCusturd.1936', split=".", fixed = TRUE),trimws)
+CC_1936
+CC_2006<-lapply(strsplit('CaramelCusturd.2006', split=".", fixed = TRUE),trimws)
+CC_2006
+
+```
+**Creating data frame consists Recipe and Year, extracted from the File name**
+```{r}
+AddRecipe <-data.frame(c(ML1_1936,ML1_2006,ML2_1936,ML2_2006,CC_1936,CC_2006),stringsAsFactors=FALSE)
+rownames(AddRecipe)<- c("Recipe", "Year")
+colnames(AddRecipe)<-NULL
+AddRecipeName <-(t(AddRecipe))
+AddRecipeName
+
+```
+**generating csv file**
+```{r}
+write.csv(AddRecipeName, file = "AddRecipe.csv", row.names = FALSE)
+```
+**joining Recipe name and year with Servings based on example of Beef Stroganoff**
+```{r}
+Add_Recipe_servings <- cbind(AddRecipeName, servings)
+Add_Recipe_servings
+```
+
+**Generating .csv file of Add_Recipe, that consists Recipe name, year, minserving and max serving**
+```{r}
+write.csv(Add_Recipe_servings, file = "Add_Recipe_servings.csv", row.names = FALSE)
+```
+
+**Combining the data of sample file for Beef Stroganoff with my recipe data with servings**
+```{r}
+# PMC - should be reading commas
+Recipe1 <-read.csv(file = "Recipes.csv", header=TRUE)
+Recipe2 <- read.csv(file = "Add_Recipe_servings.csv", header=TRUE)
+My_Recipe<-rbind(Recipe1, Recipe2)
+My_Recipe
+```
+**Output CSV for combined data**
+```{r}
+write.csv(My_Recipe, file = "Recipes.csv", row.names = FALSE)
+```
+**Joining my all recipe name and year together**
+```{r}
+Recipe_1 = matrix(rep(AddRecipeName[1,], length(MeatLoaf1_1936$Amount)),ncol=2, byrow = T)
+Recipe_2 = matrix(rep(AddRecipeName[2,], length(MeatLoaf1_2006$Amount)),ncol=2, byrow = T)
+Recipe_3 = matrix(rep(AddRecipeName[3,], length(MeatLoaf2_1936$Amount)),ncol=2, byrow = T)
+Recipe_4 = matrix(rep(AddRecipeName[4,], length(MeatLoaf2_2006$Amount)),ncol=2, byrow = T)
+Recipe_5 = matrix(rep(AddRecipeName[5,], length(CaramelCustard_1936$Amount)),ncol=2, byrow = T)
+Recipe_6 = matrix(rep(AddRecipeName[6,], length(CaramelCustard_2006$Amount)),ncol=2, byrow = T)
+MyAllRecipe<-rbind(Recipe_1,Recipe_2,Recipe_3,Recipe_4,Recipe_5,Recipe_6)
+colnames(MyAllRecipe)<- c("Recipe", "Year")
+MyAllRecipe
+```
+** joing data frame MyAllRecipe and MyRecipe to get single table having `name`,`Year`,`Amount`,`Unit`,`Ingredient`**
+```{r}
+Final <- cbind(MyAllRecipe,MyRecipe)
+names(Final)[names(Final) == "Unit"] = "Measure"
+Final
+```
+**Creating CSV file of Final Table.**
+```{r}
+write.csv(Final, file = "Final_Recipe.csv", row.names = FALSE)
+```
+
+## ** Codes for merging with example beef recipe BeefStroganOff.1997 and BeefSroganOff.2006**
+
+```{r}
+write.table(BeefStroganOff_1997, file ="Beef_StroganOff.1997.tab",row.names = FALSE)
+write.table(BeefStroganOff_2006, file ="Beef_StroganOff.2006.tab",row.names = FALSE)
+```
+```{r}
+Beef_1997<- read.table(file = "BeefStroganoff.1997.tab",  sep="\t", header=TRUE)
+Beef_1997
+
+Beef_2006<- read.table(file = "BeefStroganoff.2006.tab",  sep="\t", header=TRUE)
+Beef_2006
+```
+**Getting the `RecipeName` and `Year` from file name**
+```{r}
+BSO_1997<-lapply(strsplit('BeefStroganOff.1997', split=".", fixed = TRUE),trimws)
+BSO_1997
+BSO_2006<-lapply(strsplit('BeefStroganOff.2006', split=".", fixed = TRUE),trimws)
+BSO_2006
+```
+**Creating data frame consists Recipe and Year, extracted from the File name**
+```{r}
+Add_beef <-data.frame(c(BSO_1997,BSO_2006),stringsAsFactors=FALSE)
+rownames(Add_beef)<- c("Recipe", "Year")
+colnames(Add_beef)<-NULL
+Add_BSO <-(t(Add_beef))
+Add_BSO
+
+```
+```{r}
+write.csv(Add_BSO, file = "AddBeef.csv", row.names = FALSE)
+```
+```{r}
+Beef_rep <- rbind(BeefStroganOff_1997, BeefStroganOff_2006)
+Beef_rep
+```
+```{r}
+Rec_1 = matrix(rep(Add_BSO[1,], length(BeefStroganOff_1997$Amount)),ncol=2, byrow = T)
+Rec_2 = matrix(rep(Add_BSO[2,], length(BeefStroganOff_2006$Amount)),ncol=2, byrow = T)
+BeefRecipe<-rbind(Rec_1,Rec_2)
+colnames(BeefRecipe)<- c("Recipe", "Year")
+BeefRecipe
+
+```
+** Again Merging "My all recipe" with "BeefStroganOff" example recipe. ** 
+#Demonstrates that the data can be merged with into a shared table by merging with the example (Beef Stroganoff) recipes.**
+```{r}
+Final_Beef <- cbind(BeefRecipe,Beef_rep)
+names(Final_Beef)[names(Final_Beef) == "Unit"] = "Measure"
+Final_Beef
+```
+```{r}
+MyRecipeAndBeef <- rbind(Final_Beef,Final)
+MyRecipeAndBeef
+```
+**Creating CSV file of after merging My recipe (Final table) and BeefStroganOff (Example recipe)**
+```{r}
+write.csv(MyRecipeAndBeef, file = "Final_All_Recipes.csv", row.names = FALSE)
+```
+
+** Path of my working directory**
+```{r}
+getwd()
+```
+# Part 1 - Assign Recipes
+
+First, generate a list of all files in the Recipes folder.
+```{r,eval=FALSE}
+recipes <- list.files(path = "C:/Users/Divya/Desktop/STAT-700/Mid term project/Recipes", pattern = '*.pdf')
+recipes
+```
+
+Make this reproducible.
+```{r,eval=FALSE}
+set.seed(10010)
+```
+
+Create two randomly sampled list of recipe files and cycle this list through 80 rows
+
+```{r,eval=FALSE}
+recipe.pairs <- matrix(c(sample(recipes),sample(recipes)),ncol=2,nrow=106)
+recipe.pairs
+```
+
+Are there any pairs across rows?
+
+```{r,eval=FALSE}
+sum(recipe.pairs[,1]==recipe.pairs[,2])
+```
+
+Write to a table
+
+```{r,eval=FALSE}
+write.csv(recipe.pairs, file="Recipe.Table.csv",row.names = FALSE)
+```
+
+Read the table in and print:
+
+```{r,eval=FALSE}
+Recipe.Table <- read.csv("Recipe.Table.csv",header=FALSE,skip=1)
+print(Recipe.Table)
+```
+# Part 2 - Check Nutrient Data.
+
+We will be using the USDA food nutrient database, found at https://www.ars.usda.gov/northeast-area/beltsville-md-bhnrc/beltsville-human-nutrition-research-center/nutrient-data-laboratory/docs/usda-national-nutrient-database-for-standard-reference/
+
+Run this to make sure your system can read the required nutrient database tables.
+```{r}
+weight.dat <- read.table("WEIGHT.txt",header=FALSE,sep="^",quote="~")
+names(weight.dat) <- c("NDB_No","Seq","Amount","Msre_Desc","Gm_Wgt","Num_Data_Pts","Std_Dev")
+head(weight.dat)
+summary(weight.dat)
+```
+
+** FOOD_DES from the USDA Nutrition Database.**
+```{r}
+food_des.dat <- read.table("FOOD_DES.txt",header=FALSE,sep="^",quote="~")
+
+names(food_des.dat) <- c("NDB_No","FdGrp_Cd","Long_Desc","Shrt_Desc",
+"ComName","ManufacName","Survey","Ref_desc","Refuse","SciName",
+"N_Factor","Pro_Factor","Fat_Factor","CHO_Factor")
+dim(food_des.dat)
+head(food_des.dat)
+summary(food_des.dat)
+```
+
+**Searching Ingredients in FOOD_DES.dat file**
+** Ingregients search for Meat Loaf, BeefStroganOff and Caramel Custard**
+```{r}
+#grep(pattern="[tT]enderloin,", food_des.dat$Long_Desc, ignore.case = TRUE, value=TRUE) #NDB_No 13922
+#grep(pattern="[bB]eef, ground", food_des.dat$Long_Desc, ignore.case = TRUE, value=TRUE) #NDB_No 23572
+#grep(pattern="[sS]our,", food_des.dat$Long_Desc, ignore.case = TRUE, value=TRUE) #NDB_No 01056
+#grep(pattern="[mM]sustard,", food_des.dat$Long_Desc, ignore.case = TRUE, value=TRUE) #NDB_No 02046
+#grep(pattern="[oO]il,", food_des.dat$Long_Desc, ignore.case = TRUE, value=TRUE) #NDB_No 04582
+#grep(pattern="[mM]ushrooms,", food_des.dat$Long_Desc, ignore.case = TRUE, value=TRUE) #NDB_No 11282
+#grep(pattern="^[eE]gg, yolk,", food_des.dat$Long_Desc, ignore.case = TRUE, value=TRUE) # NDB_No 01125
+#grep(pattern="^[bB]utter, salted", food_des.dat$Long_Desc, ignore.case = TRUE, value=TRUE) #NDB_No 01001
+#grep(pattern="*[fF]lour,", food_des.dat$Long_Desc, ignore.case = TRUE, value=TRUE) #NDB_No 20082
+#grep(pattern="^[oO]nion", food_des.dat$Long_Desc, ignore.case = TRUE, value=TRUE) #NDB_No 11282
+#grep(pattern="^[bB]read, crumbs", food_des.dat$Long_Desc, ignore.case = TRUE, value=TRUE) #NDB_No 18079
+#grep(pattern="^[cC]atsup", food_des.dat$Long_Desc, ignore.case = TRUE, value=TRUE) #NDB_No 11935
+#grep(pattern="^[eE]gg", food_des.dat$Long_Desc, ignore.case = TRUE, value=TRUE) #NDB_No 01123
+#grep(pattern="*[pP]epper", food_des.dat$Long_Desc, ignore.case = TRUE, value=TRUE) #NDB_No 11670
+#grep(pattern="[cC]rackers", food_des.dat$Long_Desc, ignore.case = TRUE, value=TRUE) #NDB_No 18621
+#grep(pattern="[tT]omato,", food_des.dat$Long_Desc, ignore.case = TRUE, value=TRUE) #NDB_No 06559
+#grep(pattern="^[pP]ork, ground,", food_des.dat$Long_Desc, ignore.case = TRUE, value=TRUE) #NDB_No 10972
+#grep(pattern="[bB]acon,", food_des.dat$Long_Desc, ignore.case = TRUE, value=TRUE) #NDB_No 10123
+#grep(pattern="[jJ]uice,", food_des.dat$Long_Desc, ignore.case = TRUE, value=TRUE) #NDB_No 11886
+#grep(pattern="[hH]orseradish,", food_des.dat$Long_Desc, ignore.case = TRUE, value=TRUE) #NDB_No 02055
+#grep(pattern="[sS]tock,", food_des.dat$Long_Desc, ignore.case = TRUE, value=TRUE) #NDB_No 06172
+#grep(pattern="[sS]ugars, granulated", food_des.dat$Long_Desc, ignore.case = TRUE, value=TRUE) #NDB_No 19335
+#grep(pattern="[mM]ilk, whole, 3.25%", food_des.dat$Long_Desc, ignore.case = TRUE, value=TRUE) #NDB_No 01077
+#grep(pattern=" [eE]xtract", food_des.dat$Long_Desc, ignore.case = TRUE, value=TRUE) #NDB_No 02050
+#grep(pattern="[gG]eneric", food_des.dat$Long_Desc, ignore.case = TRUE, value=TRUE) #NDB_No 14555
+```
+
+## Uisng the grep function I matched the recipe ingredient with FOOD_DES.dat and select the same if it is there and if not the i choosed the best possible match available in ingredients. Through this I found the NBD_NO from weight table and manually entered the the `NDB_NO`, `Amount`, `Unit`, `Ingredients` and created a data frame to perfor the required instruction.
+
+
+**To Check John Becker's listed ingredients (in the PDF) are consistent with the USDA database**
+```{r}
+subset(weight.dat, weight.dat$Msre_Desc %in% MyRecipe$Unit)
+```
+
+```{r}
+GrWeight_Sum <- sum((weight.dat$Gm_Wgt[weight.dat$Msre_Desc %in% MyRecipe$Unit])* MyRecipe$unit, is.na=TRUE)
+GrWeight_Sum
+```
+** NUT_DATA from the USDA Nutrition Database.**
+```{r}
+nut_data.dat <- read.table("NUT_DATA.txt",header=FALSE,sep="^",quote="~")
+names(nut_data.dat) <- c("NDB_No","Nutr_No","Nutr_Val","Num_Data_Pts","Std_Error",
+"Src_Cd","Deriv_Cd","Ref_NDB_No","Add_Nutr_Mark","Num_Studies",
+"Min","Max","DF","Low_EB","Up_EB","Stat_cmt","AddMod_Date")
+head(nut_data.dat)
+summary(nut_data.dat)
+```
+
+## Goal of the Mid Term:
+
+1) Create a data table from vectors of the 2 recipes that you were assigned. Columns are to include NDB_No ,  Amount, Unit, Ingredient.
+
+2) Export to tab file and re-import, adding columns for recipe name and year. 
+
+3) Import beef stroganoff recipes and merge these tables with the tables from your 2 recipes. This shows that other students can create your data tables and merge with theirs for the Final Project.
+
+4) to check for errors plotting Measure.1936 vs Measure.2006 and see quickly where the measures are not consistent.
+
+5) Reading the Recipes.csv, append rows for my recipes, then write the table back to Recipes.csv.
+
+6) I have also appended my recipes to BeefStroganOff_1997.tab and BeefStroganOff_2006.tab

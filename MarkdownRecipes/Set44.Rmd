@@ -1,0 +1,183 @@
+---
+title: "Joy Of Cooking Midterm Project Prep"
+author: "Anjun Ma"
+date: "7/20/2018"
+output:
+  pdf_document: default
+---
+
+For this midterm project, we are trying to generate tables for the given two recipes,  
+
+# Step 1. Create table and save in tab file
+```{r}
+# Create data frame for each recipes and years
+Chow_Mein_1936 <- data.frame(Amount = c(0.5,3,2,2.5,3,0.75,0.75,2.5),
+                             Measure=c("lb","Tbs","Tbs","cup","ea","cup","cup","Tbs"),
+                             Ingredient=c("pork chop, center loin, raw,boneless",
+                             "butter, salted","onion, yellow, fresh, chopped",
+                                        "stock, chicken, prepared from recipe",
+                                        "chicken thigh, braised, skinless",
+                         "celery, fresh, diced","mushrooms,canned, sliced, drained",
+                                        "flour, all purpose,self rising, enriched"))
+Chow_Mein_2006 <- data.frame(Amount = c(2,0.5,0.5,2,1,1,1,2,1,1,3),
+                             Measure=c("Tbs","cup","cup","cup","ea","cup","cup","Tbs",
+                                       "cup","Tbs","Tbs"),
+                             Ingredient=c("oil, canola","celery, fresh, diced",
+                                          "green onion, fresh, tops & bulb,chopped",
+                                          "pork ham roast, whole, roased, lean,diced",
+                                          "bell pepper, green, fresh, medium, 2 1/2",
+                                          "mushrooms, portabella, fresh, chopped",
+                                          "sprouts, mung bean, fresh",
+                   "demi glace sauce concentrate, Master's Touch, 1263, food service",
+                                          "consomme, beef, canned, condensed",
+                                      "soy sauce, from soy & wheat","sherry, cooking"))
+Gnocchi_1936 <- data.frame(Amount = c(1,2,2,2,1,1),
+                           Measure=c("cup","Tbs","Tbs","Tbs","ea","Tbs"),
+                           Ingredient=c("milk, whole,3.25%","butter, salted",
+                                        "flour, all purpose, self rising, enriched",
+                                        "starch, corn", "egg york, raw, large",
+                                        "butter, salted"))
+Gnocchi_2006 <- data.frame(Amount = c(2,1.33,3),Measure=c("lb","cup","Tbs"),
+                           Ingredient=c("potato, white, fresh, diced",
+                                        "flour, all purpose, self rising, enriched",
+                                        "butter, salted"))
+
+# Save all tables into tab delimited file, named by recipe and year.
+write.table(Chow_Mein_1936,"ChowMein.1936.tab", sep="\t",row.names = FALSE)
+write.table(Chow_Mein_2006,"ChowMein.2006.tab", sep="\t",row.names = FALSE)
+write.table(Gnocchi_1936,"Gnocchi.1936.tab", sep="\t",row.names = FALSE)
+write.table(Gnocchi_2006,"Gnocchi.2006.tab", sep="\t",row.names = FALSE)
+
+
+
+```
+
+
+# Step 2. Check for inconsistancy
+```{r}
+
+files <- list.files(pattern="*.tab")
+# read each table
+Beef1 <- read.table(files[1],header=TRUE) 
+Beef2 <- read.table(files[2],header=TRUE) 
+Chow1 <- read.table(files[3],header=TRUE)
+Chow2 <- read.table(files[4],header=TRUE) 
+Gnocchi1 <- read.table(files[5],header=TRUE) 
+Gnocchi2 <- read.table(files[6],header=TRUE) 
+
+# Merge the same recipe of different years by ingredient
+Beef_merge <- merge(Beef1,Beef2,by="Ingredient",all=TRUE)
+Chow_merge <- merge(Chow1,Chow2,by="Ingredient",all=TRUE)
+Gnocchi_merge <- merge(Gnocchi1,Gnocchi2,by="Ingredient",all=TRUE)
+
+# Check the consistancy/inconsistancy Measure between two years of
+table(Beef_merge$Measure.x,Beef_merge$Measure.y)
+table(Chow_merge$Measure.x,Chow_merge$Measure.y)
+table(Gnocchi_merge$Measure.x,Gnocchi_merge$Measure.y)
+```
+Comment: instead of merging all six tables together, I thought it is better to compare within recipes for different years.By making contingency table for measure, it is shown that inconsistancy occurred in Beef and Gnocchi table, but not Chow Mein table, for example, Tbs-cup mismatch in Beef data. Then check back to the pdf file to make sure all the differences are not typos, which means they are all TRUE changes. All Measures will be matched with Nut_DES and WEIGHT file later.
+
+
+# Step 3. Match ingredient to FOOD_DES.txt file 
+```{r}
+# read FOOD_DES.txt and name each column
+food_des.dat <- read.table("FOOD_DES.txt",header=FALSE,sep="^",quote="~")
+names(food_des.dat) <- c("NDB_No","FdGrp_Cd","Long_Desc","Shrt_Desc","ComName",
+                         "ManufacName","Survey","Ref_desc","Refuse","SciName",
+                         "N_Factor","Pro_Factor","Fat_Factor","CHO_Factor")
+
+# list all unique ingredient among all tables
+unique_ingredient <- unique(c(as.vector(Beef_merge$Ingredient),
+                            as.vector(Chow_merge$Ingredient),
+                            as.vector(Gnocchi_merge$Ingredient)))
+print(unique_ingredient)
+```
+
+```{r}
+# create a function to seach the key word matched in FOOD_DES file
+match <- function(x) {
+food_des.dat[grep(x, food_des.dat$Long_Desc), c(1,3)]
+}
+
+# Mannually type-in the key words for each Unique Ingredient 
+# (only show one example here)
+match("(S|s)tarch")
+```
+Comment: For me, it was tricky to find proper key words to search for matches in the FOOD_DES data. For some of them, I just used the first word, like (|), but the others are difficult. Like "beef roast, tenderloin, raw, 0\" trim", if use (B|b)eef for searching, it listed over thousand results, hence "tenderloin" was used. I only show one function call here (match("(S|s)tarch")) as an example and skipped the rest. Then just look up the matched list to find the one with the most number of same words, and also record the NDB_No.
+
+However, for "demi glace sauce concentrate, Master's Touch, 1263, food service" in 2006 Chou Mein ingredient, I cannot find a match, even a close one, therefore, I left as it is and record NDB No as 0. However, it can also be deleted later.
+
+
+# Step 4. combining tables and edit ingredient names according to FOOD_DES match 
+```{r}
+newtab <- data.frame() # create empty data frame
+for (i in 1:length(files)){
+  file_name <- unlist(strsplit(files[i],".",fixed=TRUE)) # load file names
+  tab <- read.table(files[i],header=TRUE) # read each table
+  tab <- cbind(Recipe=c(rep(file_name[1],nrow(tab))),
+               Year=c(rep(file_name[2],nrow(tab))),tab) # add columns of recipe and year
+  newtab <- as.data.frame(rbind(newtab,tab)) # combine the table 
+}
+# Create matrix for matched ingredients and corresponding NDB_No in sequence
+Ingredient<-c('Beef, loin, tenderloin roast, boneless, separable lean and fat, trimmed to 0" fat, all grades, raw',
+              'Butter, salted','Wheat flour, white, all-purpose, self-rising, bleached',
+              'Soup, stock, beef, home-prepared','Cream, sour, cultured',
+              'Mustard, prepared, yellow',
+  'Beef, loin, tenderloin roast, boneless, separable lean and fat, trimmed to 0" fat, all grades, raw',
+              'Oil, canola','Butter, salted','Onions, frozen, whole, unprepared',
+              'Mushrooms, white, raw','Soup, stock, beef, home-prepared',
+              'Cream, sour, cultured','Mustard, prepared, yellow',
+          'Pork, fresh, loin, center loin (chops), boneless, separable lean only, raw',
+              'Butter, salted','Onions, frozen, chopped, unprepared',
+              'Soup, stock, chicken, home-prepared',
+           'Chicken, dark meat, thigh, meat only, with added solution, cooked, braised',
+              'Celery, cooked, boiled, drained, without salt',
+              'Mushrooms, canned, drained solids',
+              'Wheat flour, white, all-purpose, self-rising, bleached',
+              'Oil, canola','Celery, cooked, boiled, drained, without salt',
+              'Onions, spring or scallions (includes tops and bulb), raw',
+              'Pork, fresh, leg (ham), whole, separable lean only, cooked, roasted',
+              'Peppers, sweet, green, raw','Mushrooms, portabella, raw',
+              'Mung beans, mature seeds, sprouted, raw',
+              "demi glace sauce concentrate, Master's Touch, 1263, food service",
+              'Soup, beef broth bouillon and consomme, canned, condensed',
+        'Soy sauce made from soy and wheat (shoyu)','Alcoholic beverage, wine, cooking',
+              'Milk, whole, 3.25% milkfat, with added vitamin D','Butter, salted',
+              'Wheat flour, white, all-purpose, self-rising, bleached','Cornstarch',
+        'Egg, yolk, raw, fresh','Butter, salted','Potatoes, white, flesh and skin, raw',
+              'Wheat flour, white, all-purpose, self-rising, bleached','Butter, salted')
+NDB <- c('23336','1001','20082','6170','1056','2046','23336','4582','1001','11289',
+         '11260','6170','1056','2046','10094','1001','11287','6172','5681','11144',
+         '11264','20082','4582','11144','11291','10012','11333','11265','11043','0',
+         '6032','16123','43154','1077','1001','20082','20027','1125','1001','11354',
+         '20082','1001')
+mat <- data.frame(Ingredient=Ingredient,NDB_No=NDB)
+
+# Check if assigned ingredients and NDB_No are in right sequence
+check_table <- cbind(newtab,mat)
+print(check_table)
+
+# generate output table (delete original ingredient)
+complete_table <- cbind(newtab[,1:4],mat)
+
+# output the revised table into a tab file
+write.table(complete_table,"complete.tab", sep="\t",row.names = FALSE)
+
+```
+Comment:The output tab file includes five columns that cover all ingredients in the six recipes. All ingredient, except one that I cannot find, are matched to the best choice in FOOD_DES.txt file and followed by the NDB_No as well.
+
+
+
+# Step 5. Create a Recipe table containing recipe, year, minservings and maxservings
+
+```{r}
+Beef.recipe <- read.csv("Recipes.csv",header=TRUE)  # read the given table of Beef
+recipe <- data.frame(Recipe=c("ChowMein","ChowMein","Gnocchi","Gnocchi"),
+                     Year=c("1936","2006","1936","2006"),
+                     MinServings=c("10","4","4","18"),
+                     MaxServings=c("10","4","4","18")) # Create recipe file  
+all.recipe <- rbind(Beef.recipe,recipe)  # combine the two matrix
+# output csv file
+write.csv(all.recipe,"Merged.Recipes.csv",col.names = TRUE,row.names = FALSE)  
+```
+Comment: Since I already showed how to use the chopped file names to implent matrix, here, for my own convenience, I just directly type all data needed and export.
