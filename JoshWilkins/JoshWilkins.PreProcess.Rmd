@@ -1,5 +1,5 @@
 ---
-title: "Final Project"
+title: "Final Project: Preprocessing"
 author: "Josh Wilkins"
 date: "7/30/2018"
 output:
@@ -22,7 +22,7 @@ It then proceeds to create a master list of all the recipes joined together by
 - Convert amount column to weight
 
 Libraries
-```{r, warning=FALSE, message=FALSE}
+```{r message=FALSE, warning=FALSE, include=FALSE}
 library(stringr)
 library(gsubfn)
 library(data.table)
@@ -498,16 +498,10 @@ nrow(unique(master.list[c("Recipe", "Year")]))
 Not a great result with only about half of the recipes salvaged.
 
 Modify the master list columns before writing it to csv:
-- Remove matched measure column, it was there mostly for debugging and is not needed for analysis.
-- Remove measure column (redundant information), the weight column suffices.
-- Remove NDB_No column, it is no longer needed
-- Replace the amount column with the weight column.
+- Remove measure column (replaceit with the matched measurement column)
 ```{r}
-master.list$Matched_Measure <- NULL
-master.list$Amount <- NULL
 master.list$Measure <- NULL
-master.list$NDB_No <- NULL
-names(master.list)[names(master.list) == 'Gm_Wgt'] <- 'Amount'
+names(master.list)[names(master.list) == 'Matched_Measure'] <- 'Measure'
 ```
 
 Then write the master list to a file so that analyses can be performed. See Josh.Wilkins.Analysis for this.

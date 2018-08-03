@@ -1,415 +1,425 @@
-"Ingredient","Year","Recipe","Amount"
-"apples, raw, with skin (includes foods for usda's food distribution program)",1936,"AppleDumplings",182
-"sugar, turbinado",1936,"AppleDumplings",34.5
-"butter, salted",1936,"AppleDumplings",9.46666666666667
-"apples, raw, with skin (includes foods for usda's food distribution program)",2006,"AppleDumplings",1092
-"sugar, turbinado",2006,"AppleDumplings",101
-"butter, salted",2006,"AppleDumplings",56.75
-"egg, whole, raw, fresh",2006,"AppleDumplings",50
-"wheat flour, white, cake, enriched",1936,"ApplePie",239.75
-"lard",1936,"ApplePie",51.2
-"butter, salted",1936,"ApplePie",28.4
-"apples, raw, with skin (includes foods for usda's food distribution program)",1936,"ApplePie",1092
-"sugars, granulated",1936,"ApplePie",134
-"cornstarch",1936,"ApplePie",192
-"butter, salted",1936,"ApplePie",21.3
-"lemon juice, raw",1936,"ApplePie",15.25
-"milk, whole, 3.25%",1936,"AsparagusTimbales",366
-"butter, salted",1936,"AsparagusTimbales",113.5
-"bread crumbs, plain, dry, grated",2006,"AsparagusTimbales",35.64
-"egg, whole, raw, fresh",1936,"BaconCornMealWaffles",100
-"milk, whole, 3.25% milkfat, without added vitamin a and vitamin d",1936,"BaconCornMealWaffles",427
-"wheat flour, white, cake, enriched",1936,"BaconCornMealWaffles",137
-"sugars, granulated",1936,"BaconCornMealWaffles",12.6
-"cornmeal, degermed, enriched, yellow",1936,"BaconCornMealWaffles",157
-"animal fat, bacon grease",1936,"BaconCornMealWaffles",21.5
-"pork, cured, bacon, unprepared",1936,"BaconCornMealWaffles",336
-"wheat flour, white, all-purpose, self-rising, enriched",2006,"BaconCornMealWaffles",125
-"cornmeal, degermed, enriched, yellow",2006,"BaconCornMealWaffles",157
-"milk, buttermilk, dried",2006,"BaconCornMealWaffles",240
-"butter, salted",2006,"BaconCornMealWaffles",71
-"syrups, maple",2006,"BaconCornMealWaffles",78.75
-"egg, whole, raw, fresh",2006,"BaconCornMealWaffles",100
-"pork, cured, bacon, pre-sliced, cooked, pan-fried",2006,"BaconCornMealWaffles",34.5
-"tapioca, pearl, dry",1936,"BakedPearlTapiocaPudding",76
-"milk, whole, 3.25% milkfat, with added vitamin d",1936,"BakedPearlTapiocaPudding",976
-"butter, salted",1936,"BakedPearlTapiocaPudding",21.3
-"egg, whole, raw, fresh",1936,"BakedPearlTapiocaPudding",100
-"sugars, granulated",1936,"BakedPearlTapiocaPudding",66
-"lemon juice, raw",1936,"BakedPearlTapiocaPudding",22.875
-"sugars, granulated",1936,"BakedPearlTapiocaPudding",50.4
-"vanilla extract",1936,"BakedPearlTapiocaPudding",4.2
-"tapioca, pearl, dry",2006,"BakedPearlTapiocaPudding",76
-"milk, whole, 3.25% milkfat, with added vitamin d",2006,"BakedPearlTapiocaPudding",976
-"egg, whole, raw, fresh",2006,"BakedPearlTapiocaPudding",250
-"sugars, granulated",2006,"BakedPearlTapiocaPudding",150
-"lemon juice, raw",2006,"BakedPearlTapiocaPudding",22.875
-"rice, white, long-grain, parboiled, unenriched, cooked",1936,"BakedRicePudding",316
-"milk, whole, 3.25% milkfat, with added vitamin d",1936,"BakedRicePudding",324.52
-"sugars, granulated",1936,"BakedRicePudding",44.1
-"butter, salted",1936,"BakedRicePudding",14.2
-"egg, whole, raw, fresh",1936,"BakedRicePudding",100
-"lemon juice, raw",1936,"BakedRicePudding",5.08333333333333
-"vanilla extract",1936,"BakedRicePudding",4.2
-"rice, white, long-grain, parboiled, unenriched, cooked",2006,"BakedRicePudding",316
-"milk, whole, 3.25% milkfat, with added vitamin d",2006,"BakedRicePudding",324.52
-"sugars, granulated",2006,"BakedRicePudding",75.6
-"butter, salted",2006,"BakedRicePudding",28.4
-"egg, whole, raw, fresh",2006,"BakedRicePudding",100
-"vanilla extract",2006,"BakedRicePudding",4.2
-"wheat flour, white, all-purpose, self-rising, enriched",1936,"BlueberryMuffins",250
-"sugars, granulated",1936,"BlueberryMuffins",66
-"egg, whole, raw, fresh",1936,"BlueberryMuffins",100
-"butter,salted",1936,"BlueberryMuffins",56.8
-"milk, whole, 3.25% milkfat",1936,"BlueberryMuffins",183
-"blueberries, raw",1936,"BlueberryMuffins",148
-"wheat flour, white, all-purpose, self-rising, enriched",2006,"BlueberryMuffins",250
-"egg, whole, raw, fresh",2006,"BlueberryMuffins",100
-"milk, whole, 3.25% milkfat, with added vitamin d",2006,"BlueberryMuffins",244
-"sugars, granulated",2006,"BlueberryMuffins",66
-"blueberries, raw",2006,"BlueberryMuffins",222
-"butter,salted",2006,"BlueberryMuffins",56.75
-"vanilla extract",2006,"BlueberryMuffins",4.2
-"sugars, granulated",2006,"BlueberryMuffins",25.2
-"milk, whole, 3.25%",1936,"BoiledCustard",488
-"sugar, white, granulated, granulated",1936,"BoiledCustard",50
-"extract, vanilla",1936,"BoiledCustard",2.1
-"sugar, white, granulated, granulated",2006,"BoiledCustard",50
-"milk, whole, 3.25%",2006,"BoiledCustard",488
-"extract, vanilla",2006,"BoiledCustard",4.2
-"milk, whole, 3.25%",1936,"BroccoliTimbales",366
-"egg, raw",1936,"BroccoliTimbales",200
-"butter, salted",1936,"BrusSprout",42.6
-"butter, salted",2006,"BrusSprout",28.4
-"sugars, granulated",1936,"CaramelCustard",100
-"milk, whole, 3.25% milkfat, with added vitamin d",1936,"CaramelCustard",488
-"egg, yolk, raw, fresh",1936,"CaramelCustard",51
-"vanilla extract",1936,"CaramelCustard",2.1
-"water, bottled, generic",1936,"CaramelCustard",14.8
-"egg, whole, raw, fresh",2006,"CaramelCustard",150
-"milk, whole, 3.25% milkfat, with added vitamin d",2006,"CaramelCustard",488
-"sugars, granulated",2006,"CaramelCustard",150
-"extract, vanilla",2006,"CaramelCustard",3.15
-"water, bottled, generic",2006,"CaramelCustard",29.6
-"potatoes, boiled, cooked without skin, flesh, without salt",1936,"ChantillyPotatoes",1002
-"butter, salted",1936,"ChantillyPotatoes",42.6
-"salt, table",1936,"ChantillyPotatoes",6
-"milk, whole, 3.25% milkfat, without added vitamin a and vitamin d",1936,"ChantillyPotatoes",81.33252
-"cream, fluid, heavy whipping",1936,"ChantillyPotatoes",119
-"cheese, cheddar (includes foods for usda's food distribution program)",1936,"ChantillyPotatoes",56.5
-"potatoes, boiled, cooked without skin, flesh, without salt",2006,"ChantillyPotatoes",1002
-"butter, salted",2006,"ChantillyPotatoes",42.6
-"salt, table",2006,"ChantillyPotatoes",6
-"milk, whole, 3.25% milkfat, without added vitamin a and vitamin d",2006,"ChantillyPotatoes",81.33252
-"cream, fluid, heavy whipping",2006,"ChantillyPotatoes",119
-"cheese, parmesan, grated",2006,"ChantillyPotatoes",50
-"chocolate, dark, 45- 59% cacao solids",1936,"ChocolateBavarianCream",56.7
-"water, bottled, generic",1936,"ChocolateBavarianCream",74
-"sugars, granulated",1936,"ChocolateBavarianCream",300
-"butter, salted",1936,"ChocolateBavarianCream",113.5
-"egg, whole, raw, fresh",1936,"ChocolateBavarianCream",200
-"wheat flour, white, cake, enriched",1936,"ChocolateBavarianCream",239.75
-"milk, whole, 3.25% milkfat, without added vitamin a and vitamin d",1936,"ChocolateBavarianCream",122
-"vanilla extract",1936,"ChocolateBavarianCream",4.2
-"wheat flour, white, cake, enriched",2006,"ChocolateBavarianCream",239.75
-"chocolate, dark, 45- 59% cacao solids",2006,"ChocolateBavarianCream",56.7
-"water, bottled, generic",2006,"ChocolateBavarianCream",78.21
-"butter, salted",2006,"ChocolateBavarianCream",113.5
-"egg, whole, raw, fresh",2006,"ChocolateBavarianCream",200
-"sugars, granulated",2006,"ChocolateBavarianCream",300
-"vanilla extract",2006,"ChocolateBavarianCream",4.2
-"gelatins, dry powder, unsweetened",1936,"ChocolateBavarianCream",7
-"water, bottled, generic",1936,"ChocolateBavarianCream",59.25
-"milk, whole, 3.25% milkfat, without added vitamin a and vitamin d",1936,"ChocolateBavarianCream",183
-"chocolate, dark, 45- 59% cacao solids",1936,"ChocolateBavarianCream",28.35
-"cream, fluid, heavy whipping",1936,"ChocolateBavarianCream",240
-"egg, whole, raw, fresh",1936,"ChocolateBavarianCream",50
-"sugars, granulated",1936,"ChocolateBavarianCream",176
-"vanilla extract",1936,"ChocolateBavarianCream",4.2
-"cookies, ladyfingers, without lemon juice and rind",1936,"ChocolateBavarianCream",198
-"gelatins, dry powder, unsweetened",2006,"ChocolateBavarianCream",7
-"water, bottled, generic",2006,"ChocolateBavarianCream",59.25
-"milk, whole, 3.25% milkfat, without added vitamin a and vitamin d",2006,"ChocolateBavarianCream",183
-"chocolate, dark, 45- 59% cacao solids",2006,"ChocolateBavarianCream",28.35
-"cream, fluid, heavy whipping",2006,"ChocolateBavarianCream",240
-"egg, whole, raw, fresh",2006,"ChocolateBavarianCream",50
-"sugars, granulated",2006,"ChocolateBavarianCream",176
-"vanilla extract",2006,"ChocolateBavarianCream",4.2
-"cookies, ladyfingers, without lemon juice and rind",2006,"ChocolateBavarianCream",198
-"milk, whole, 3.25% milkfat, without added vitamin a and vitamin d",1936,"ChocolateCharlotte",30.5
-"chocolate, dark, 45- 59% cacao solids",1936,"ChocolateCharlotte",28.35
-"butter, salted",1936,"ChocolateCharlotte",28.4
-"flour, bread, white, enriched",1936,"ChocolateCharlotte",137
-"sugars, granulated",1936,"ChocolateCharlotte",66
-"egg, whole, raw, fresh",1936,"ChocolateCharlotte",150
-"vanilla extract",1936,"ChocolateCharlotte",4.2
-"butter, salted",1936,"ChocolateSouffle",42.6
-"oil, canola",2006,"ChocolateSouffle",28
-"sugar, white, granulated",2006,"CoffeeBavarianCream",100
-"butter, salted",2006,"CoffeeBavarianCream",56.75
-"egg, raw",2006,"CoffeeBavarianCream",50
-"extract, vanilla",2006,"CoffeeBavarianCream",4.2
-"milk, whole, 3.25%",2006,"CoffeeBavarianCream",122
-"sugar, white, granulated",1936,"CoffeeBavarianCream",200
-"egg, raw",1936,"CoffeeBavarianCream",100
-"milk, whole, 3.25%",1936,"CoffeeBavarianCream",122
-"butter, salted",1936,"CoffeeBavarianCream",113.5
-"butter, salted",1936,"CottagePudding",28.4
-"wheat flour, white, all-purpose, self-rising, enriched",1936,"CottagePudding",187.5
-"milk, whole, 3.25% milkfat, with added vitamin d",1936,"CottagePudding",244
-"butter, salted",2006,"CottagePudding",56.8
-"wheat flour, white, all-purpose, self-rising, enriched",2006,"CottagePudding",41.25
-"milk, whole, 3.25% milkfat, with added vitamin d",2006,"CottagePudding",366
-"butter,salted",1936,"CreamedeggsAsparagus",85.2
-"egg, raw",1936,"CucumberMoussse",200
-"butter, salted",1936,"CucumberMoussse",7.1
-"flour, all purpose, self rising, enriched",1936,"CucumberMoussse",187.5
-"milk, whole, 3.25%",1936,"CucumberMoussse",244
-"sugar, white, granulated, granulated",1936,"CurryEggs",200
-"butter, salted",1936,"CurryEggs",113.5
-"egg, raw",1936,"CurryEggs",50
-"extract, vanilla",1936,"CurryEggs",4.2
-"sugar, white, granulated, granulated",1936,"CurryEggs",50
-"sugar, white, granulated, granulated",2006,"CurryEggs",200
-"egg, raw",2006,"CurryEggs",100
-"extract, vanilla",2006,"CurryEggs",4.2
-"sugar, white, granulated, granulated",2006,"CurryEggs",50
-"milk, whole, 3.25% milkfat, without added vitamin a and vitamin d",1936,"EggsinaNest",488
-"sugars, granulated",1936,"EggsinaNest",50
-"cereals, farina, unenriched, dry",1936,"EggsinaNest",88
-"butter, salted",1936,"EggsinaNest",42.6
-"egg, whole, raw, fresh",1936,"EggsinaNest",100
-"vanilla extract",1936,"EggsinaNest",4.2
-"milk, whole, 3.25% milkfat, without added vitamin a and vitamin d",2006,"EggsinaNest",488
-"sugars, granulated",2006,"EggsinaNest",50
-"cereals, farina, unenriched, dry",2006,"EggsinaNest",44
-"butter, salted",2006,"EggsinaNest",42.6
-"egg, yolk, raw, fresh",2006,"EggsinaNest",34
-"vanilla extract",2006,"EggsinaNest",4.2
-"beef, flank, steak, separable lean and fat, trimmed to 0\"" fat, choice, raw",1936,"EggsInANest",202
-"bread, white, commercially prepared (includes soft bread crumbs)",1936,"EggsInANest",45
-"butter, salted",1936,"EggsInANest",56.75
-"celery, raw",1936,"EggsInANest",22.5
-"egg, whole, raw, fresh",1936,"EggsInANest",50
-"oil, canola",1936,"EggsInANest",42
-"onions, sweet, raw",1936,"EggsInANest",20.39346277
-"tomato juice, canned, without salt added",1936,"EggsInANest",243
-"wheat flour, white, all-purpose, self-rising, enriched",1936,"EggsInANest",15.4029175
-"beef, flank, steak, separable lean and fat, trimmed to 0\"" fat, choice, raw",2006,"EggsInANest",202
-"bread, white, commercially prepared (includes soft bread crumbs)",2006,"EggsInANest",45
-"butter, salted",2006,"EggsInANest",56.75
-"celery, raw",2006,"EggsInANest",22.5
-"egg, whole, raw, fresh",2006,"EggsInANest",50
-"oil, canola",2006,"EggsInANest",42
-"onions, sweet, raw",2006,"EggsInANest",20.39346277
-"tomato juice, canned, without salt added",2006,"EggsInANest",243
-"wheat flour, white, all-purpose, self-rising, enriched",2006,"EggsInANest",15.4029175
-"sugars, granulated",1936,"FarinaPudding",134
-"wheat flour, white, all-purpose, self-rising, enriched",1936,"FarinaPudding",125
-"wheat flour, white, cake, enriched",1936,"FarinaPudding",137
-"sugars, granulated",1936,"FarinaPudding",6.3
-"butter, salted",1936,"FarinaPudding",28.4
-"butter, salted",1936,"FarinaPudding",56.8
-"sugars, granulated",2006,"FarinaPudding",100
-"cornstarch",2006,"FarinaPudding",256
-"wheat flour, white, all-purpose, self-rising, enriched",2006,"FarinaPudding",218.75
-"butter, salted",2006,"FarinaPudding",56.8
-"butter, salted",2006,"FarinaPudding",170.25
-"butter, salted",2006,"FarinaPudding",9.46666666666667
-"butter, salted",1936,"FruitandBerryCobbler",28.4
-"flour, all purpose, self rising, enriched",1936,"FruitandBerryCobbler",250
-"butter, salted",1936,"FruitandBerryCobbler",14.2
-"butter, salted",2006,"FruitandBerryCobbler",42.6
-"butter, salted",1936,"Gnocchi",56.75
-"milk, whole, 3.25%",2006,"Gnocchi",183
-"soup, cream of mushroom, canned, condensed",2006,"Gnocchi",2709
-"butter, salted",1936,"IrishStew",56.8
-"crustaceans, lobster, northern, cooked, moist heat",1936,"IrishStew",226.666666666667
-"egg, yolk, raw, fresh",1936,"IrishStew",51
-"cream, fluid, heavy whipping",1936,"IrishStew",120
-"alcoholic beverage, wine, cooking",1936,"IrishStew",58
-"crustaceans, lobster, northern, cooked, moist heat",2006,"IrishStew",226.666666666667
-"butter, salted",2006,"IrishStew",56.8
-"alcoholic beverage, wine, cooking",2006,"IrishStew",58
-"egg, yolk, raw, fresh",2006,"IrishStew",51
-"cream, fluid, heavy whipping",2006,"IrishStew",120
-"butter, salted",1936,"LeftoverPotatoesO'Brien",42.6
-"potatoes, boiled, cooked without skin, flesh, without salt",1936,"LeftoverPotatoesO'Brien",1002
-"milk, whole, 3.25% milkfat, with added vitamin d",1936,"LeftoverPotatoesO'Brien",80.52
-"butter, salted",2006,"LeftoverPotatoesO'Brien",56.8
-"potatoes, boiled, cooked without skin, flesh, without salt",2006,"LeftoverPotatoesO'Brien",1002
-"cream, fluid, heavy whipping",2006,"LeftoverPotatoesO'Brien",78.54
-"butter, salted",1936,"LimaBeansandMushrooms",14.2
-"butter, salted",1936,"LimaBeansandMushrooms",56.75
-"flour, all purpose, self rising, enriched",1936,"LimaBeansandMushrooms",250
-"beef, ground, 80% lean meat / 20% fat, raw",1936,"LobsterMousse",28.25
-"egg, yolk, raw, fresh",1936,"LobsterMousse",17
-"butter, salted",1936,"LobsterMousse",14.2
-"butter, salted",1936,"LobsterMousse",56.75
-"wheat flour, white, all-purpose, self-rising, enriched",1936,"LobsterMousse",250
-"milk, whole, 3.25%",1936,"lobsterSaladorShrimp",427
-"egg, raw",1936,"lobsterSaladorShrimp",100
-"sugar, white, granulated, granulated",1936,"lobsterSaladorShrimp",66
-"extract, vanilla",1936,"lobsterSaladorShrimp",4.2
-"milk, whole, 3.25%",2006,"lobsterSaladorShrimp",732
-"sugar, white, granulated, granulated",2006,"lobsterSaladorShrimp",10
-"egg, raw",2006,"lobsterSaladorShrimp",150
-"extract, vanilla",2006,"lobsterSaladorShrimp",4.2
-"butter, salted",1936,"MeatLoaf",21.3
-"mushrooms, shiitake, raw",1936,"MeatLoaf",14.25
-"celery, cooked, boiled, drained, without salt",1936,"MeatLoaf",37.5
-"butter, salted",1936,"MeatLoaf",28.4
-"wheat flour, white, all-purpose, self-rising, enriched",1936,"MeatLoaf",375
-"milk, whole, 3.25% milkfat, without added vitamin a and vitamin d",1936,"MeatLoaf",244
-"egg, whole, raw, fresh",1936,"MeatLoaf",150
-"milk, whole, 3.25% milkfat, with added vitamin d",1936,"MeatLoaf1",366
-"egg, whole, raw, fresh",1936,"MeatLoaf1",200
-"mushrooms, portabella, raw",1936,"MeatLoaf1",172
-"milk, whole, 3.25% milkfat, with added vitamin d",2006,"MeatLoaf1",366
-"egg, whole, raw, fresh",2006,"MeatLoaf1",200
-"mushrooms, portabella, raw",2006,"MeatLoaf1",172
-"gelatins, dry powder, unsweetened",1936,"MeatLoaf2",14
-"water, bottled, generic",1936,"MeatLoaf2",474
-"pineapple juice, canned or bottled, unsweetened, without added ascorbic acid",1936,"MeatLoaf2",375
-"sugars, granulated",1936,"MeatLoaf2",150
-"pineapple, canned, juice pack, drained",1936,"MeatLoaf2",487.5
-"lemon juice, raw",1936,"MeatLoaf2",45.75
-"gelatins, dry powder, unsweetened",2006,"MeatLoaf2",10.5
-"water, bottled, generic",2006,"MeatLoaf2",474
-"pineapple juice, canned or bottled, unsweetened, without added ascorbic acid",2006,"MeatLoaf2",375
-"sugars, granulated",2006,"MeatLoaf2",150
-"pineapple, canned, juice pack, drained",2006,"MeatLoaf2",487.5
-"lemon juice, raw",2006,"MeatLoaf2",45.75
-NA,1936,"MoldedCustard",185
-NA,1936,"MoldedCustard",1464
-NA,1936,"MoldedCustard",50.4
-NA,2006,"MoldedCustard",138.75
-NA,2006,"MoldedCustard",976
-NA,2006,"MoldedCustard",100
-NA,2006,"MoldedCustard",2.1
-"wheat flour, white, cake, enriched",1936,"Moussaka",274
-"lard",1936,"Moussaka",9.6
-"butter, salted",1936,"Moussaka",14.2
-"milk, whole, 3.25% milkfat, without added vitamin a and vitamin d",1936,"Moussaka",183
-"wheat flour, white, all-purpose, self-rising, enriched",2006,"Moussaka",218.75
-"butter, salted",2006,"Moussaka",56.8
-"milk, whole, 3.25% milkfat, without added vitamin a and vitamin d",2006,"Moussaka",183
-"butter,salted",1936,"MushroomTimbales",28.4
-"milk, whole, 3.25%",1936,"MushroomTimbales",244
-"bread crumbs, plain, dry, grated",1936,"MushroomTimbales",27
-"butter, salted",1936,"MushroomTimbales",28.4
-"butter,salted",2006,"MushroomTimbales",56.8
-"milk, whole, 3.25%",2006,"MushroomTimbales",488
-"bread crumbs, plain, dry, grated",2006,"MushroomTimbales",54
-"cheese, parmesan, grated",2006,"MushroomTimbales",33
-"bread, crumbs, dry, grated, plain",1936,"PineappleGelatin",54
-"butter, salted",1936,"PineappleGelatin",113.5
-"salad dressing, mayonnaise, regular",1936,"RicePudding",110
-"lemon juice, raw",2006,"RicePudding",36
-"egg,raw",1936,"RolledBiscuits",100
-"butter, salted",1936,"RolledBiscuits",28.4
-"butter, salted",2006,"RolledBiscuits",14.2
-"oil, canola",2006,"RolledBiscuits",42
-"butter, salted",2006,"RolledBiscuits",28.4
-"butter, salted",1936,"SauteedSummerSquash",56.8
-"wheat flour, white, all-purpose, self-rising, enriched",1936,"SauteedSummerSquash",250
-"milk, whole, 3.25% milkfat, with added vitamin d",1936,"SauteedSummerSquash",305
-"crustaceans, shrimp, cooked",1936,"SauteedSummerSquash",113.333333333333
-"peas, green, canned, no salt added, drained solids",1936,"SauteedSummerSquash",170
-"egg, raw",1936,"ScallopedPotatoes",100
-"extract, vanilla",1936,"ScallopedPotatoes",2.1
-"egg,raw",2006,"ScallopedPotatoes",200
-"butter, salted",2006,"ScallopedPotatoes",14.2
-"sugars, granulated",1936,"ScallopedCauliflower",66
-"milk, whole, 3.25% milkfat, with added vitamin d",1936,"ScallopedCauliflower",183
-"butter, salted",1936,"ScallopedCauliflower",28.4
-"egg, whole, raw, fresh",1936,"ScallopedCauliflower",250
-"vanilla extract",1936,"ScallopedCauliflower",4.2
-"wheat flour, white, bread, enriched",1936,"ScallopedCauliflower",137
-"nuts, almonds",1936,"ScallopedCauliflower",95
-"nuts, almonds, slivered",2006,"ScallopedCauliflower",324
-"water, bottled, generic",2006,"ScallopedCauliflower",29.6
-"sugars, granulated",2006,"ScallopedCauliflower",300
-"cream, fluid, heavy whipping",2006,"ScallopedCauliflower",120
-"butter, salted",2006,"ScallopedCauliflower",85.2
-"egg, whole, raw, fresh",2006,"ScallopedCauliflower",300
-"wheat flour, white, all-purpose, self-rising, enriched",2006,"ScallopedCauliflower",41.25
-"vanilla extract",2006,"ScallopedCauliflower",13
-"oil, almond",2006,"ScallopedCauliflower",4.5
-"chocolate, dark, 45- 59% cacao solids",1936,"ScallopedOysters",56.7
-"sugars, granulated",1936,"ScallopedOysters",100
-"egg, whole, raw, fresh",1936,"ScallopedOysters",50
-"butter, salted",1936,"ScallopedOysters",14.2
-"wheat flour, white, bread, enriched",1936,"ScallopedOysters",137
-"milk, whole, 3.25% milkfat, without added vitamin a and vitamin d",1936,"ScallopedOysters",122
-"egg,raw",1936,"ScallopedOysters",350
-"beets, cooked, boiled. drained, with salt",1936,"SouffledOmelet",510
-"sugars, granulated",1936,"SouffledOmelet",100
-"cornstarch",1936,"SouffledOmelet",128
-"vinegar, cider",1936,"SouffledOmelet",78.87
-"water, bottled, generic",1936,"SouffledOmelet",40.29
-"butter, salted",1936,"SouffledOmelet",28.4
-"sugar, white, granulated, granulated",1936,"SteamedPlumPudding",100
-"egg, raw",1936,"SteamedPlumPudding",100
-"milk, whole, 3.25%",1936,"SteamedPlumPudding",976
-"extract, vanilla",1936,"SteamedPlumPudding",4.2
-"milk, whole, 3.25%",2006,"SteamedPlumPudding",610
-"sugar, white, granulated, granulated",2006,"SteamedPlumPudding",66
-"extract, vanilla",2006,"SteamedPlumPudding",4.2
-"sugars, granulated",1936,"StickyToffeePudding",100
-"milk, whole, 3.25% milkfat, without added vitamin a and vitamin d",1936,"StickyToffeePudding",976
-"vanilla extract",1936,"StickyToffeePudding",4.2
-"milk, whole, 3.25% milkfat, without added vitamin a and vitamin d",2006,"StickyToffeePudding",610
-"sugars, granulated",2006,"StickyToffeePudding",66
-"vanilla extract",2006,"StickyToffeePudding",4.2
-"tomatoes, red, ripe, canned, packed in tomato juice, no salt added",1936,"StovetopMacaroniandCheese",840
-"sugars, granulated",1936,"StovetopMacaroniandCheese",6.3
-"onions, yellow, sauteed",1936,"StovetopMacaroniandCheese",261
-"lemon juice, raw",1936,"StovetopMacaroniandCheese",30.5
-"celery, raw",1936,"StovetopMacaroniandCheese",160
-"gelatins, dry powder, unsweetened",1936,"StovetopMacaroniandCheese",14
-"water, bottled, generic",1936,"StovetopMacaroniandCheese",118.5
-"cream, whipped, cream topping, pressurized",1936,"StovetopMacaroniandCheese",30
-"lemon juice, raw",1936,"StovetopMacaroniandCheese",45.75
-"horseradish, prepared",1936,"StovetopMacaroniandCheese",30
-"tomato juice, canned, without salt added",2006,"StovetopMacaroniandCheese",972
-"tomato products, canned, puree, without salt added",2006,"StovetopMacaroniandCheese",125
-"onions, yellow, sauteed",2006,"StovetopMacaroniandCheese",43.5
-"celery, raw",2006,"StovetopMacaroniandCheese",80
-"lemon juice, raw",2006,"StovetopMacaroniandCheese",30.5
-"sugars, granulated",2006,"StovetopMacaroniandCheese",8.4
-"gelatins, dry powder, unsweetened",2006,"StovetopMacaroniandCheese",7
-"water, bottled, generic",2006,"StovetopMacaroniandCheese",118.5
-"avocados, raw, california",2006,"StovetopMacaroniandCheese",50
-"gelatins, dry powder, unsweetened",1936,"Sukiyaki",14
-"tomato juice, canned, with salt added",1936,"Sukiyaki",972
-"gelatins, dry powder, unsweetened",2006,"Sukiyaki",3.5
-"soup, tomato, canned, condensed, reduced sodium",2006,"Sukiyaki",3257.25
-"tomato juice, canned, without salt added",2006,"Sukiyaki",486
-"gelatin desserts, dry mix, reduced calorie, with aspartame, added phosphorus, potassium, sodium, vitamin c",2006,"Sukiyaki",30
-"fish, tuna, light, canned in water, drained solids (includes foods for usda's food distribution program)",1936,"SweetandSourBrisket",154
-"celery, raw",1936,"SweetandSourBrisket",101
-"salad dressing, mayonnaise, regular",1936,"SweetandSourBrisket",110
-"fish, tuna, light, canned in water, drained solids (includes foods for usda's food distribution program)",2006,"SweetandSourBrisket",154
-"celery, raw",2006,"SweetandSourBrisket",101
-"salad dressing, mayonnaise, regular",2006,"SweetandSourBrisket",55
-"butter, salted",1936,"SweetandSourBeets",85.2
-"cheese, blue",1936,"SweetandSourBeets",85.05
-"cream, fluid, heavy whipping",1936,"SweetandSourBeets",45
-"potatoes, white, flesh and skin, baked",1936,"SweetandSourBeets",1794
-"butter, salted",2006,"SweetandSourBeets",42.6
-"cheese, parmesan, grated",2006,"SweetandSourBeets",50
-"milk, whole, 3.25% milkfat, without added vitamin a and vitamin d",2006,"SweetandSourBeets",45
-"potatoes, white, flesh and skin, baked",2006,"SweetandSourBeets",1794
-"butter,salted",2006,"tapiocacustad",14.2
-"butter,salted",1936,"tapiocacustad",14.2
-"veal, shoulder, whole (arm and blade), separable lean and fat, raw",1936,"TapiocaCustard",1134
-"celery, raw",1936,"TapiocaCustard",240
-"onions, raw",1936,"TapiocaCustard",560
-"water, bottled, generic",1936,"TapiocaCustard",948
-"butter, salted",1936,"TapiocaCustard",42.6
-"wheat flour, white, all-purpose, self-rising, enriched",1936,"TapiocaCustard",23.4375
-"soup, stock, beef, home-prepared",1936,"TapiocaCustard",480
-"egg, yolk, raw, fresh",1936,"TapiocaCustard",51
-"lemon juice, raw",1936,"TapiocaCustard",45.75
-"rice, white, long-grain, regular, unenriched, cooked without salt",1936,"TapiocaCustard",474
+"Amount","Ingredient","NDB_No","Year","Recipe","Gm_Wgt","Measure"
+1,"apples, raw, with skin (includes foods for usda's food distribution program)",9003,1936,"AppleDumplings",182,"medium (3"" dia)"
+7.5,"sugar, turbinado",19908,1936,"AppleDumplings",34.5,"tsp"
+0.666666666666667,"butter, salted",1001,1936,"AppleDumplings",9.46666666666667,"tbsp"
+6,"apples, raw, with skin (includes foods for usda's food distribution program)",9003,2006,"AppleDumplings",1092,"medium (3"" dia)"
+0.5,"sugar, turbinado",19908,2006,"AppleDumplings",101,"cup"
+0.25,"butter, salted",1001,2006,"AppleDumplings",56.75,"cup"
+1,"egg, whole, raw, fresh",1123,2006,"AppleDumplings",50,"large"
+1.75,"wheat flour, white, cake, enriched",20084,1936,"ApplePie",239.75,"cup unsifted, dipped"
+4,"lard",4002,1936,"ApplePie",51.2,"tbsp"
+2,"butter, salted",1001,1936,"ApplePie",28.4,"tbsp"
+6,"apples, raw, with skin (includes foods for usda's food distribution program)",9003,1936,"ApplePie",1092,"medium (3"" dia)"
+0.67,"sugars, granulated",19335,1936,"ApplePie",134,"cup"
+1.5,"cornstarch",20027,1936,"ApplePie",192,"cup"
+1.5,"butter, salted",1001,1936,"ApplePie",21.3,"tbsp"
+0.5,"lemon juice, raw",9152,1936,"ApplePie",15.25,"fl oz"
+1.5,"milk, whole, 3.25%",1211,1936,"AsparagusTimbales",366,"cup"
+0.5,"butter, salted",1001,1936,"AsparagusTimbales",113.5,"cup"
+0.33,"bread crumbs, plain, dry, grated",18079,2006,"AsparagusTimbales",35.64,"cup"
+2,"egg, whole, raw, fresh",1123,1936,"BaconCornMealWaffles",100,"large"
+1.75,"milk, whole, 3.25% milkfat, without added vitamin a and vitamin d",1211,1936,"BaconCornMealWaffles",427,"cup"
+1,"wheat flour, white, cake, enriched",20084,1936,"BaconCornMealWaffles",137,"cup unsifted, dipped"
+3,"sugars, granulated",19335,1936,"BaconCornMealWaffles",12.6,"tsp"
+1,"cornmeal, degermed, enriched, yellow",20022,1936,"BaconCornMealWaffles",157,"cup"
+5,"animal fat, bacon grease",4609,1936,"BaconCornMealWaffles",21.5,"tsp"
+12,"pork, cured, bacon, unprepared",10123,1936,"BaconCornMealWaffles",336,"slice raw"
+1,"wheat flour, white, all-purpose, self-rising, enriched",20082,2006,"BaconCornMealWaffles",125,"cup"
+1,"cornmeal, degermed, enriched, yellow",20022,2006,"BaconCornMealWaffles",157,"cup"
+2,"milk, buttermilk, dried",1094,2006,"BaconCornMealWaffles",240,"cup"
+5,"butter, salted",1001,2006,"BaconCornMealWaffles",71,"tbsp"
+0.25,"syrups, maple",19353,2006,"BaconCornMealWaffles",78.75,"cup"
+2,"egg, whole, raw, fresh",1123,2006,"BaconCornMealWaffles",100,"large"
+3,"pork, cured, bacon, pre-sliced, cooked, pan-fried",10862,2006,"BaconCornMealWaffles",34.5,"slice"
+0.5,"tapioca, pearl, dry",20068,1936,"BakedPearlTapiocaPudding",76,"cup"
+4,"milk, whole, 3.25% milkfat, with added vitamin d",1077,1936,"BakedPearlTapiocaPudding",976,"cup"
+1.5,"butter, salted",1001,1936,"BakedPearlTapiocaPudding",21.3,"tbsp"
+2,"egg, whole, raw, fresh",1123,1936,"BakedPearlTapiocaPudding",100,"large"
+0.33,"sugars, granulated",19335,1936,"BakedPearlTapiocaPudding",66,"cup"
+0.75,"lemon juice, raw",9152,1936,"BakedPearlTapiocaPudding",22.875,"fl oz"
+12,"sugars, granulated",19335,1936,"BakedPearlTapiocaPudding",50.4,"tsp"
+1,"vanilla extract",2050,1936,"BakedPearlTapiocaPudding",4.2,"tsp"
+0.5,"tapioca, pearl, dry",20068,2006,"BakedPearlTapiocaPudding",76,"cup"
+4,"milk, whole, 3.25% milkfat, with added vitamin d",1077,2006,"BakedPearlTapiocaPudding",976,"cup"
+5,"egg, whole, raw, fresh",1123,2006,"BakedPearlTapiocaPudding",250,"large"
+0.75,"sugars, granulated",19335,2006,"BakedPearlTapiocaPudding",150,"cup"
+0.75,"lemon juice, raw",9152,2006,"BakedPearlTapiocaPudding",22.875,"fl oz"
+2,"rice, white, long-grain, parboiled, unenriched, cooked",20447,1936,"BakedRicePudding",316,"cup"
+1.33,"milk, whole, 3.25% milkfat, with added vitamin d",1077,1936,"BakedRicePudding",324.52,"cup"
+10.5,"sugars, granulated",19335,1936,"BakedRicePudding",44.1,"tsp"
+1,"butter, salted",1001,1936,"BakedRicePudding",14.2,"tbsp"
+2,"egg, whole, raw, fresh",1123,1936,"BakedRicePudding",100,"large"
+0.166666666666667,"lemon juice, raw",9152,1936,"BakedRicePudding",5.08333333333333,"fl oz"
+1,"vanilla extract",2050,1936,"BakedRicePudding",4.2,"tsp"
+2,"rice, white, long-grain, parboiled, unenriched, cooked",20447,2006,"BakedRicePudding",316,"cup"
+1.33,"milk, whole, 3.25% milkfat, with added vitamin d",1077,2006,"BakedRicePudding",324.52,"cup"
+18,"sugars, granulated",19335,2006,"BakedRicePudding",75.6,"tsp"
+2,"butter, salted",1001,2006,"BakedRicePudding",28.4,"tbsp"
+2,"egg, whole, raw, fresh",1123,2006,"BakedRicePudding",100,"large"
+1,"vanilla extract",2050,2006,"BakedRicePudding",4.2,"tsp"
+2,"wheat flour, white, all-purpose, self-rising, enriched",20082,1936,"BlueberryMuffins",250,"cup"
+0.33,"sugars, granulated",19335,1936,"BlueberryMuffins",66,"cup"
+2,"egg, whole, raw, fresh",1123,1936,"BlueberryMuffins",100,"large"
+4,"butter,salted",1001,1936,"BlueberryMuffins",56.8,"tbsp"
+0.75,"milk, whole, 3.25% milkfat",1077,1936,"BlueberryMuffins",183,"cup"
+1,"blueberries, raw",9050,1936,"BlueberryMuffins",148,"cup"
+2,"wheat flour, white, all-purpose, self-rising, enriched",20082,2006,"BlueberryMuffins",250,"cup"
+2,"egg, whole, raw, fresh",1123,2006,"BlueberryMuffins",100,"large"
+1,"milk, whole, 3.25% milkfat, with added vitamin d",1077,2006,"BlueberryMuffins",244,"cup"
+0.33,"sugars, granulated",19335,2006,"BlueberryMuffins",66,"cup"
+1.5,"blueberries, raw",9050,2006,"BlueberryMuffins",222,"cup"
+0.25,"butter,salted",1001,2006,"BlueberryMuffins",56.75,"cup"
+1,"vanilla extract",2050,2006,"BlueberryMuffins",4.2,"tsp"
+6,"sugars, granulated",19335,2006,"BlueberryMuffins",25.2,"tsp"
+2,"milk, whole, 3.25%",1211,1936,"BoiledCustard",488,"cup"
+0.25,"sugar, white, granulated, granulated",19335,1936,"BoiledCustard",50,"cup"
+0.5,"extract, vanilla",2050,1936,"BoiledCustard",2.1,"tsp"
+0.25,"sugar, white, granulated, granulated",19335,2006,"BoiledCustard",50,"cup"
+2,"milk, whole, 3.25%",1211,2006,"BoiledCustard",488,"cup"
+1,"extract, vanilla",2050,2006,"BoiledCustard",4.2,"tsp"
+1.5,"milk, whole, 3.25%",1211,1936,"BroccoliTimbales",366,"cup"
+4,"egg, raw",1123,1936,"BroccoliTimbales",200,"large"
+3,"butter, salted",1001,1936,"BrusSprout",42.6,"tbsp"
+2,"butter, salted",1001,2006,"BrusSprout",28.4,"tbsp"
+0.5,"sugars, granulated",19335,1936,"CaramelCustard",100,"cup"
+2,"milk, whole, 3.25% milkfat, with added vitamin d",1077,1936,"CaramelCustard",488,"cup"
+3,"egg, yolk, raw, fresh",1125,1936,"CaramelCustard",51,"large"
+0.5,"vanilla extract",2050,1936,"CaramelCustard",2.1,"tsp"
+0.5,"water, bottled, generic",14555,1936,"CaramelCustard",14.8,"fl oz"
+3,"egg, whole, raw, fresh",1123,2006,"CaramelCustard",150,"large"
+2,"milk, whole, 3.25% milkfat, with added vitamin d",1077,2006,"CaramelCustard",488,"cup"
+0.75,"sugars, granulated",19335,2006,"CaramelCustard",150,"cup"
+0.75,"extract, vanilla",2050,2006,"CaramelCustard",3.15,"tsp"
+1,"water, bottled, generic",14555,2006,"CaramelCustard",29.6,"fl oz"
+6,"potatoes, boiled, cooked without skin, flesh, without salt",11367,1936,"ChantillyPotatoes",1002,"medium (2-1/4"" to 3-1/4"" dia.)"
+3,"butter, salted",1001,1936,"ChantillyPotatoes",42.6,"tbsp"
+1,"salt, table",2047,1936,"ChantillyPotatoes",6,"tsp"
+0.33333,"milk, whole, 3.25% milkfat, without added vitamin a and vitamin d",1211,1936,"ChantillyPotatoes",81.33252,"cup"
+0.5,"cream, fluid, heavy whipping",1053,1936,"ChantillyPotatoes",119,"cup, fluid (yields 2 cups whipped)"
+0.5,"cheese, cheddar (includes foods for usda's food distribution program)",1009,1936,"ChantillyPotatoes",56.5,"cup, shredded"
+6,"potatoes, boiled, cooked without skin, flesh, without salt",11367,2006,"ChantillyPotatoes",1002,"medium (2-1/4"" to 3-1/4"" dia.)"
+3,"butter, salted",1001,2006,"ChantillyPotatoes",42.6,"tbsp"
+1,"salt, table",2047,2006,"ChantillyPotatoes",6,"tsp"
+0.33333,"milk, whole, 3.25% milkfat, without added vitamin a and vitamin d",1211,2006,"ChantillyPotatoes",81.33252,"cup"
+0.5,"cream, fluid, heavy whipping",1053,2006,"ChantillyPotatoes",119,"cup, fluid (yields 2 cups whipped)"
+0.5,"cheese, parmesan, grated",1032,2006,"ChantillyPotatoes",50,"cup"
+2,"chocolate, dark, 45- 59% cacao solids",19902,1936,"ChocolateBavarianCream",56.7,"oz"
+2.5,"water, bottled, generic",14555,1936,"ChocolateBavarianCream",74,"fl oz"
+1.5,"sugars, granulated",19335,1936,"ChocolateBavarianCream",300,"cup"
+0.5,"butter, salted",1001,1936,"ChocolateBavarianCream",113.5,"cup"
+4,"egg, whole, raw, fresh",1123,1936,"ChocolateBavarianCream",200,"large"
+1.75,"wheat flour, white, cake, enriched",20084,1936,"ChocolateBavarianCream",239.75,"cup unsifted, dipped"
+0.5,"milk, whole, 3.25% milkfat, without added vitamin a and vitamin d",1211,1936,"ChocolateBavarianCream",122,"cup"
+1,"vanilla extract",2050,1936,"ChocolateBavarianCream",4.2,"tsp"
+1.75,"wheat flour, white, cake, enriched",20084,2006,"ChocolateBavarianCream",239.75,"cup unsifted, dipped"
+2,"chocolate, dark, 45- 59% cacao solids",19902,2006,"ChocolateBavarianCream",56.7,"oz"
+0.33,"water, bottled, generic",14555,2006,"ChocolateBavarianCream",78.21,"cup"
+0.5,"butter, salted",1001,2006,"ChocolateBavarianCream",113.5,"cup"
+4,"egg, whole, raw, fresh",1123,2006,"ChocolateBavarianCream",200,"large"
+1.5,"sugars, granulated",19335,2006,"ChocolateBavarianCream",300,"cup"
+1,"vanilla extract",2050,2006,"ChocolateBavarianCream",4.2,"tsp"
+1,"gelatins, dry powder, unsweetened",19177,1936,"ChocolateBavarianCream",7,"envelope (1 tbsp)"
+0.25,"water, bottled, generic",14555,1936,"ChocolateBavarianCream",59.25,"cup"
+0.75,"milk, whole, 3.25% milkfat, without added vitamin a and vitamin d",1211,1936,"ChocolateBavarianCream",183,"cup"
+1,"chocolate, dark, 45- 59% cacao solids",19902,1936,"ChocolateBavarianCream",28.35,"oz"
+2,"cream, fluid, heavy whipping",1053,1936,"ChocolateBavarianCream",240,"cup, whipped"
+1,"egg, whole, raw, fresh",1123,1936,"ChocolateBavarianCream",50,"large"
+0.88,"sugars, granulated",19335,1936,"ChocolateBavarianCream",176,"cup"
+1,"vanilla extract",2050,1936,"ChocolateBavarianCream",4.2,"tsp"
+18,"cookies, ladyfingers, without lemon juice and rind",18423,1936,"ChocolateBavarianCream",198,"ladyfinger"
+1,"gelatins, dry powder, unsweetened",19177,2006,"ChocolateBavarianCream",7,"envelope (1 tbsp)"
+0.25,"water, bottled, generic",14555,2006,"ChocolateBavarianCream",59.25,"cup"
+0.75,"milk, whole, 3.25% milkfat, without added vitamin a and vitamin d",1211,2006,"ChocolateBavarianCream",183,"cup"
+1,"chocolate, dark, 45- 59% cacao solids",19902,2006,"ChocolateBavarianCream",28.35,"oz"
+2,"cream, fluid, heavy whipping",1053,2006,"ChocolateBavarianCream",240,"cup, whipped"
+1,"egg, whole, raw, fresh",1123,2006,"ChocolateBavarianCream",50,"large"
+0.88,"sugars, granulated",19335,2006,"ChocolateBavarianCream",176,"cup"
+1,"vanilla extract",2050,2006,"ChocolateBavarianCream",4.2,"tsp"
+18,"cookies, ladyfingers, without lemon juice and rind",18423,2006,"ChocolateBavarianCream",198,"ladyfinger"
+1,"milk, whole, 3.25% milkfat, without added vitamin a and vitamin d",1211,1936,"ChocolateCharlotte",30.5,"fl oz"
+1,"chocolate, dark, 45- 59% cacao solids",19902,1936,"ChocolateCharlotte",28.35,"oz"
+2,"butter, salted",1001,1936,"ChocolateCharlotte",28.4,"tbsp"
+1,"flour, bread, white, enriched",20083,1936,"ChocolateCharlotte",137,"cup"
+0.33,"sugars, granulated",19335,1936,"ChocolateCharlotte",66,"cup"
+3,"egg, whole, raw, fresh",1123,1936,"ChocolateCharlotte",150,"large"
+1,"vanilla extract",2050,1936,"ChocolateCharlotte",4.2,"tsp"
+3,"butter, salted",1001,1936,"ChocolateSouffle",42.6,"tbsp"
+2,"oil, canola",4582,2006,"ChocolateSouffle",28,"tbsp"
+0.5,"sugar, white, granulated",19335,2006,"CoffeeBavarianCream",100,"cup"
+0.25,"butter, salted",1001,2006,"CoffeeBavarianCream",56.75,"cup"
+1,"egg, raw",1123,2006,"CoffeeBavarianCream",50,"large"
+1,"extract, vanilla",2050,2006,"CoffeeBavarianCream",4.2,"tsp"
+0.5,"milk, whole, 3.25%",1211,2006,"CoffeeBavarianCream",122,"cup"
+1,"sugar, white, granulated",19335,1936,"CoffeeBavarianCream",200,"cup"
+2,"egg, raw",1123,1936,"CoffeeBavarianCream",100,"large"
+0.5,"milk, whole, 3.25%",1211,1936,"CoffeeBavarianCream",122,"cup"
+0.5,"butter, salted",1001,1936,"CoffeeBavarianCream",113.5,"cup"
+2,"butter, salted",1001,1936,"CottagePudding",28.4,"tbsp"
+1.5,"wheat flour, white, all-purpose, self-rising, enriched",20082,1936,"CottagePudding",187.5,"cup"
+1,"milk, whole, 3.25% milkfat, with added vitamin d",1077,1936,"CottagePudding",244,"cup"
+4,"butter, salted",1001,2006,"CottagePudding",56.8,"tbsp"
+0.33,"wheat flour, white, all-purpose, self-rising, enriched",20082,2006,"CottagePudding",41.25,"cup"
+1.5,"milk, whole, 3.25% milkfat, with added vitamin d",1077,2006,"CottagePudding",366,"cup"
+6,"butter,salted",1001,1936,"CreamedeggsAsparagus",85.2,"tbsp"
+4,"egg, raw",1123,1936,"CucumberMoussse",200,"large"
+0.5,"butter, salted",1001,1936,"CucumberMoussse",7.1,"tbsp"
+1.5,"flour, all purpose, self rising, enriched",20082,1936,"CucumberMoussse",187.5,"cup"
+1,"milk, whole, 3.25%",1211,1936,"CucumberMoussse",244,"cup"
+1,"sugar, white, granulated, granulated",19335,1936,"CurryEggs",200,"cup"
+0.5,"butter, salted",1001,1936,"CurryEggs",113.5,"cup"
+1,"egg, raw",1123,1936,"CurryEggs",50,"large"
+1,"extract, vanilla",2050,1936,"CurryEggs",4.2,"tsp"
+0.25,"sugar, white, granulated, granulated",19335,1936,"CurryEggs",50,"cup"
+1,"sugar, white, granulated, granulated",19335,2006,"CurryEggs",200,"cup"
+2,"egg, raw",1123,2006,"CurryEggs",100,"large"
+1,"extract, vanilla",2050,2006,"CurryEggs",4.2,"tsp"
+0.25,"sugar, white, granulated, granulated",19335,2006,"CurryEggs",50,"cup"
+2,"milk, whole, 3.25% milkfat, without added vitamin a and vitamin d",1211,1936,"EggsinaNest",488,"cup"
+0.25,"sugars, granulated",19335,1936,"EggsinaNest",50,"cup"
+0.5,"cereals, farina, unenriched, dry",8172,1936,"EggsinaNest",88,"cup"
+3,"butter, salted",1001,1936,"EggsinaNest",42.6,"tbsp"
+2,"egg, whole, raw, fresh",1123,1936,"EggsinaNest",100,"large"
+1,"vanilla extract",2050,1936,"EggsinaNest",4.2,"tsp"
+2,"milk, whole, 3.25% milkfat, without added vitamin a and vitamin d",1211,2006,"EggsinaNest",488,"cup"
+0.25,"sugars, granulated",19335,2006,"EggsinaNest",50,"cup"
+0.25,"cereals, farina, unenriched, dry",8172,2006,"EggsinaNest",44,"cup"
+3,"butter, salted",1001,2006,"EggsinaNest",42.6,"tbsp"
+2,"egg, yolk, raw, fresh",1125,2006,"EggsinaNest",34,"large"
+1,"vanilla extract",2050,2006,"EggsinaNest",4.2,"tsp"
+1,"beef, flank, steak, separable lean and fat, trimmed to 0\"" fat, choice, raw",13065,1936,"EggsInANest",202,"steak"
+1,"bread, white, commercially prepared (includes soft bread crumbs)",18069,1936,"EggsInANest",45,"cup, crumbs"
+0.25,"butter, salted",1001,1936,"EggsInANest",56.75,"cup"
+3,"celery, raw",11143,1936,"EggsInANest",22.5,"tbsp"
+1,"egg, whole, raw, fresh",1123,1936,"EggsInANest",50,"large"
+3,"oil, canola",4582,1936,"EggsInANest",42,"tbsp"
+0.06161167,"onions, sweet, raw",11294,1936,"EggsInANest",20.39346277,"onion"
+1,"tomato juice, canned, without salt added",11886,1936,"EggsInANest",243,"cup"
+0.12322334,"wheat flour, white, all-purpose, self-rising, enriched",20082,1936,"EggsInANest",15.4029175,"cup"
+1,"beef, flank, steak, separable lean and fat, trimmed to 0\"" fat, choice, raw",13065,2006,"EggsInANest",202,"steak"
+1,"bread, white, commercially prepared (includes soft bread crumbs)",18069,2006,"EggsInANest",45,"cup, crumbs"
+0.25,"butter, salted",1001,2006,"EggsInANest",56.75,"cup"
+3,"celery, raw",11143,2006,"EggsInANest",22.5,"tbsp"
+1,"egg, whole, raw, fresh",1123,2006,"EggsInANest",50,"large"
+3,"oil, canola",4582,2006,"EggsInANest",42,"tbsp"
+0.06161167,"onions, sweet, raw",11294,2006,"EggsInANest",20.39346277,"onion"
+1,"tomato juice, canned, without salt added",11886,2006,"EggsInANest",243,"cup"
+0.12322334,"wheat flour, white, all-purpose, self-rising, enriched",20082,2006,"EggsInANest",15.4029175,"cup"
+0.67,"sugars, granulated",19335,1936,"FarinaPudding",134,"cup"
+1,"wheat flour, white, all-purpose, self-rising, enriched",20082,1936,"FarinaPudding",125,"cup"
+1,"wheat flour, white, cake, enriched",20084,1936,"FarinaPudding",137,"cup unsifted, dipped"
+1.5,"sugars, granulated",19335,1936,"FarinaPudding",6.3,"tsp"
+2,"butter, salted",1001,1936,"FarinaPudding",28.4,"tbsp"
+4,"butter, salted",1001,1936,"FarinaPudding",56.8,"tbsp"
+0.5,"sugars, granulated",19335,2006,"FarinaPudding",100,"cup"
+2,"cornstarch",20027,2006,"FarinaPudding",256,"cup"
+1.75,"wheat flour, white, all-purpose, self-rising, enriched",20082,2006,"FarinaPudding",218.75,"cup"
+4,"butter, salted",1001,2006,"FarinaPudding",56.8,"tbsp"
+0.75,"butter, salted",1001,2006,"FarinaPudding",170.25,"cup"
+0.666666666666667,"butter, salted",1001,2006,"FarinaPudding",9.46666666666667,"tbsp"
+2,"butter, salted",1001,1936,"FruitandBerryCobbler",28.4,"tbsp"
+2,"flour, all purpose, self rising, enriched",20082,1936,"FruitandBerryCobbler",250,"cup"
+1,"butter, salted",1001,1936,"FruitandBerryCobbler",14.2,"tbsp"
+3,"butter, salted",1001,2006,"FruitandBerryCobbler",42.6,"tbsp"
+0.25,"butter, salted",1001,1936,"Gnocchi",56.75,"cup"
+0.75,"milk, whole, 3.25%",1211,2006,"Gnocchi",183,"cup"
+10.75,"soup, cream of mushroom, canned, condensed",6043,2006,"Gnocchi",2709,"cup"
+2,"oil, canola",4582,2006,"HotSlaw",28,"tbsp"
+2,"onions, yellow, sauteed",11286,2006,"HotSlaw",174,"cup chopped"
+3,"lamb, composite of trimmed retail cuts, separable lean only, trimmed to 1/4\"" fat, choice, raw",17003,2006,"HotSlaw",1360.8,"lb"
+6,"potatoes, boiled, cooked in skin, flesh, without salt",11365,2006,"HotSlaw",816,"potato (2-1/2"" dia, sphere)"
+3,"soup, stock, chicken, home-prepared",6172,2006,"HotSlaw",720,"cup"
+4,"potatoes, au gratin, home-prepared from recipe using butter",11373,2006,"HotSlaw",980,"cup"
+6,"potatoes, boiled, cooked without skin, flesh, without salt",11367,2006,"HotSlaw",1002,"medium (2-1/4"" to 3-1/4"" dia.)"
+1,"peppers, sweet, green, raw",11333,2006,"HotSlaw",119,"medium (approx 2-3/4"" long, 2-1/2"" dia)"
+1,"onions, yellow, sauteed",11286,2006,"HotSlaw",87,"cup chopped"
+1,"wheat flour, white, all-purpose, self-rising, enriched",20082,2006,"HotSlaw",125,"cup"
+1,"milk, whole, 3.25% milkfat, without added vitamin a and vitamin d",1211,2006,"HotSlaw",244,"cup"
+0.25,"bread, crumbs, dry, grated, plain",18079,2006,"HotSlaw",27,"cup"
+2,"butter, salted",1001,2006,"HotSlaw",28.4,"tbsp"
+3,"butter, salted",1001,1936,"LeftoverPotatoesO'Brien",42.6,"tbsp"
+6,"potatoes, boiled, cooked without skin, flesh, without salt",11367,1936,"LeftoverPotatoesO'Brien",1002,"medium (2-1/4"" to 3-1/4"" dia.)"
+0.33,"milk, whole, 3.25% milkfat, with added vitamin d",1077,1936,"LeftoverPotatoesO'Brien",80.52,"cup"
+4,"butter, salted",1001,2006,"LeftoverPotatoesO'Brien",56.8,"tbsp"
+6,"potatoes, boiled, cooked without skin, flesh, without salt",11367,2006,"LeftoverPotatoesO'Brien",1002,"medium (2-1/4"" to 3-1/4"" dia.)"
+0.33,"cream, fluid, heavy whipping",1053,2006,"LeftoverPotatoesO'Brien",78.54,"cup, fluid (yields 2 cups whipped)"
+1,"butter, salted",1001,1936,"LimaBeansandMushrooms",14.2,"tbsp"
+0.25,"butter, salted",1001,1936,"LimaBeansandMushrooms",56.75,"cup"
+2,"flour, all purpose, self rising, enriched",20082,1936,"LimaBeansandMushrooms",250,"cup"
+1,"beef, ground, 80% lean meat / 20% fat, raw",23572,1936,"LobsterMousse",28.25,"oz"
+1,"egg, yolk, raw, fresh",1125,1936,"LobsterMousse",17,"large"
+1,"butter, salted",1001,1936,"LobsterMousse",14.2,"tbsp"
+0.25,"butter, salted",1001,1936,"LobsterMousse",56.75,"cup"
+2,"wheat flour, white, all-purpose, self-rising, enriched",20082,1936,"LobsterMousse",250,"cup"
+1.75,"milk, whole, 3.25%",1211,1936,"lobsterSaladorShrimp",427,"cup"
+2,"egg, raw",1123,1936,"lobsterSaladorShrimp",100,"large"
+0.33,"sugar, white, granulated, granulated",19335,1936,"lobsterSaladorShrimp",66,"cup"
+1,"extract, vanilla",2050,1936,"lobsterSaladorShrimp",4.2,"tsp"
+3,"milk, whole, 3.25%",1211,2006,"lobsterSaladorShrimp",732,"cup"
+0.05,"sugar, white, granulated, granulated",19335,2006,"lobsterSaladorShrimp",10,"cup"
+3,"egg, raw",1123,2006,"lobsterSaladorShrimp",150,"large"
+1,"extract, vanilla",2050,2006,"lobsterSaladorShrimp",4.2,"tsp"
+1.5,"butter, salted",1001,1936,"MeatLoaf",21.3,"tbsp"
+0.75,"mushrooms, shiitake, raw",11238,1936,"MeatLoaf",14.25,"piece whole"
+0.25,"celery, cooked, boiled, drained, without salt",11144,1936,"MeatLoaf",37.5,"cup, diced"
+2,"butter, salted",1001,1936,"MeatLoaf",28.4,"tbsp"
+3,"wheat flour, white, all-purpose, self-rising, enriched",20082,1936,"MeatLoaf",375,"cup"
+1,"milk, whole, 3.25% milkfat, without added vitamin a and vitamin d",1211,1936,"MeatLoaf",244,"cup"
+3,"egg, whole, raw, fresh",1123,1936,"MeatLoaf",150,"large"
+1.5,"milk, whole, 3.25% milkfat, with added vitamin d",1077,1936,"MeatLoaf1",366,"cup"
+4,"egg, whole, raw, fresh",1123,1936,"MeatLoaf1",200,"large"
+2,"mushrooms, portabella, raw",11265,1936,"MeatLoaf1",172,"cup diced"
+1.5,"milk, whole, 3.25% milkfat, with added vitamin d",1077,2006,"MeatLoaf1",366,"cup"
+4,"egg, whole, raw, fresh",1123,2006,"MeatLoaf1",200,"large"
+2,"mushrooms, portabella, raw",11265,2006,"MeatLoaf1",172,"cup diced"
+2,"gelatins, dry powder, unsweetened",19177,1936,"MeatLoaf2",14,"envelope (1 tbsp)"
+2,"water, bottled, generic",14555,1936,"MeatLoaf2",474,"cup"
+1.5,"pineapple juice, canned or bottled, unsweetened, without added ascorbic acid",9273,1936,"MeatLoaf2",375,"cup"
+0.75,"sugars, granulated",19335,1936,"MeatLoaf2",150,"cup"
+2.5,"pineapple, canned, juice pack, drained",9354,1936,"MeatLoaf2",487.5,"cup, crushed"
+0.1875,"lemon juice, raw",9152,1936,"MeatLoaf2",45.75,"cup"
+1.5,"gelatins, dry powder, unsweetened",19177,2006,"MeatLoaf2",10.5,"envelope (1 tbsp)"
+2,"water, bottled, generic",14555,2006,"MeatLoaf2",474,"cup"
+1.5,"pineapple juice, canned or bottled, unsweetened, without added ascorbic acid",9273,2006,"MeatLoaf2",375,"cup"
+0.75,"sugars, granulated",19335,2006,"MeatLoaf2",150,"cup"
+2.5,"pineapple, canned, juice pack, drained",9354,2006,"MeatLoaf2",487.5,"cup, crushed"
+0.1875,"lemon juice, raw",9152,2006,"MeatLoaf2",45.75,"cup"
+1,NA,20046,1936,"MoldedCustard",185,"cup"
+6,NA,1077,1936,"MoldedCustard",1464,"cup"
+12,NA,19335,1936,"MoldedCustard",50.4,"tsp"
+0.75,NA,20046,2006,"MoldedCustard",138.75,"cup"
+4,NA,1077,2006,"MoldedCustard",976,"cup"
+0.5,NA,19335,2006,"MoldedCustard",100,"cup"
+0.5,NA,2050,2006,"MoldedCustard",2.1,"tsp"
+2,"wheat flour, white, cake, enriched",20084,1936,"Moussaka",274,"cup unsifted, dipped"
+0.75,"lard",4002,1936,"Moussaka",9.6,"tbsp"
+1,"butter, salted",1001,1936,"Moussaka",14.2,"tbsp"
+0.75,"milk, whole, 3.25% milkfat, without added vitamin a and vitamin d",1211,1936,"Moussaka",183,"cup"
+1.75,"wheat flour, white, all-purpose, self-rising, enriched",20082,2006,"Moussaka",218.75,"cup"
+4,"butter, salted",1001,2006,"Moussaka",56.8,"tbsp"
+0.75,"milk, whole, 3.25% milkfat, without added vitamin a and vitamin d",1211,2006,"Moussaka",183,"cup"
+2,"butter,salted",1001,1936,"MushroomTimbales",28.4,"tbsp"
+1,"milk, whole, 3.25%",1211,1936,"MushroomTimbales",244,"cup"
+0.25,"bread crumbs, plain, dry, grated",18079,1936,"MushroomTimbales",27,"cup"
+2,"butter, salted",1001,1936,"MushroomTimbales",28.4,"tbsp"
+4,"butter,salted",1001,2006,"MushroomTimbales",56.8,"tbsp"
+2,"milk, whole, 3.25%",1211,2006,"MushroomTimbales",488,"cup"
+0.5,"bread crumbs, plain, dry, grated",18079,2006,"MushroomTimbales",54,"cup"
+0.33,"cheese, parmesan, grated",1032,2006,"MushroomTimbales",33,"cup"
+0.5,"bread, crumbs, dry, grated, plain",18079,1936,"PineappleGelatin",54,"cup"
+0.5,"butter, salted",1001,1936,"PineappleGelatin",113.5,"cup"
+0.5,"salad dressing, mayonnaise, regular",4025,1936,"RicePudding",110,"cup"
+2,"lemon juice, raw",2047,2006,"RicePudding",36,"tbsp"
+2,"egg,raw",1123,1936,"RolledBiscuits",100,"large"
+2,"butter, salted",1001,1936,"RolledBiscuits",28.4,"tbsp"
+1,"butter, salted",1001,2006,"RolledBiscuits",14.2,"tbsp"
+3,"oil, canola",4582,2006,"RolledBiscuits",42,"tbsp"
+2,"butter, salted",1001,2006,"RolledBiscuits",28.4,"tbsp"
+4,"butter, salted",1001,1936,"SauteedSummerSquash",56.8,"tbsp"
+2,"wheat flour, white, all-purpose, self-rising, enriched",20082,1936,"SauteedSummerSquash",250,"cup"
+1.25,"milk, whole, 3.25% milkfat, with added vitamin d",1077,1936,"SauteedSummerSquash",305,"cup"
+4,"crustaceans, shrimp, cooked",15271,1936,"SauteedSummerSquash",113.333333333333,"oz"
+1,"peas, green, canned, no salt added, drained solids",11813,1936,"SauteedSummerSquash",170,"cup"
+2,"egg, raw",1123,1936,"ScallopedPotatoes",100,"large"
+0.5,"extract, vanilla",2050,1936,"ScallopedPotatoes",2.1,"tsp"
+4,"egg,raw",1123,2006,"ScallopedPotatoes",200,"large"
+1,"butter, salted",1001,2006,"ScallopedPotatoes",14.2,"tbsp"
+0.33,"sugars, granulated",19335,1936,"ScallopedCauliflower",66,"cup"
+0.75,"milk, whole, 3.25% milkfat, with added vitamin d",1077,1936,"ScallopedCauliflower",183,"cup"
+2,"butter, salted",1001,1936,"ScallopedCauliflower",28.4,"tbsp"
+5,"egg, whole, raw, fresh",1123,1936,"ScallopedCauliflower",250,"large"
+1,"vanilla extract",2050,1936,"ScallopedCauliflower",4.2,"tsp"
+1,"wheat flour, white, bread, enriched",20084,1936,"ScallopedCauliflower",137,"cup unsifted, dipped"
+1,"nuts, almonds",12061,1936,"ScallopedCauliflower",95,"cup, ground"
+3,"nuts, almonds, slivered",12061,2006,"ScallopedCauliflower",324,"cup, slivered"
+1,"water, bottled, generic",14555,2006,"ScallopedCauliflower",29.6,"fl oz"
+1.5,"sugars, granulated",19335,2006,"ScallopedCauliflower",300,"cup"
+1,"cream, fluid, heavy whipping",1053,2006,"ScallopedCauliflower",120,"cup, whipped"
+6,"butter, salted",1001,2006,"ScallopedCauliflower",85.2,"tbsp"
+6,"egg, whole, raw, fresh",1123,2006,"ScallopedCauliflower",300,"large"
+0.33,"wheat flour, white, all-purpose, self-rising, enriched",20082,2006,"ScallopedCauliflower",41.25,"cup"
+1,"vanilla extract",2050,2006,"ScallopedCauliflower",13,"tbsp"
+1,"oil, almond",4529,2006,"ScallopedCauliflower",4.5,"tsp"
+2,"chocolate, dark, 45- 59% cacao solids",19902,1936,"ScallopedOysters",56.7,"oz"
+0.5,"sugars, granulated",19335,1936,"ScallopedOysters",100,"cup"
+1,"egg, whole, raw, fresh",1123,1936,"ScallopedOysters",50,"large"
+1,"butter, salted",1001,1936,"ScallopedOysters",14.2,"tbsp"
+1,"wheat flour, white, bread, enriched",20083,1936,"ScallopedOysters",137,"cup"
+0.5,"milk, whole, 3.25% milkfat, without added vitamin a and vitamin d",1211,1936,"ScallopedOysters",122,"cup"
+7,"egg,raw",1123,1936,"ScallopedOysters",350,"large"
+1,"rice, white, long-grain, parboiled, enriched, dry",20046,1936,"ShrimpWiggle",185,"cup"
+6,"milk, whole, 3.25% milkfat, without added vitamin a and vitamin d",1211,1936,"ShrimpWiggle",1464,"cup"
+12,"sugars, granulated",19335,1936,"ShrimpWiggle",50.4,"tsp"
+0.75,"rice, white, long-grain, parboiled, enriched, dry",20046,2006,"ShrimpWiggle",138.75,"cup"
+4,"milk, whole, 3.25% milkfat, without added vitamin a and vitamin d",1211,2006,"ShrimpWiggle",976,"cup"
+0.5,"sugars, granulated",19335,2006,"ShrimpWiggle",100,"cup"
+0.5,"vanilla extract",2050,2006,"ShrimpWiggle",6.5,"tbsp"
+3,"beets, cooked, boiled. drained, with salt",11734,1936,"SteamedCaramelPudding",510,"cup slices"
+0.5,"sugars, granulated",19335,1936,"SteamedCaramelPudding",100,"cup"
+1,"cornstarch",20027,1936,"SteamedCaramelPudding",128,"cup"
+0.33,"vinegar, cider",2048,1936,"SteamedCaramelPudding",78.87,"cup"
+0.17,"water, bottled, generic",14555,1936,"SteamedCaramelPudding",40.29,"cup"
+2,"butter, salted",1001,1936,"SteamedCaramelPudding",28.4,"tbsp"
+0.5,"sugar, white, granulated, granulated",19335,1936,"StovetopMacaroniandCheese",100,"cup"
+2,"egg, raw",1123,1936,"StovetopMacaroniandCheese",100,"large"
+4,"milk, whole, 3.25%",1211,1936,"StovetopMacaroniandCheese",976,"cup"
+1,"extract, vanilla",2050,1936,"StovetopMacaroniandCheese",4.2,"tsp"
+2.5,"milk, whole, 3.25%",1211,2006,"StovetopMacaroniandCheese",610,"cup"
+0.33,"sugar, white, granulated, granulated",19335,2006,"StovetopMacaroniandCheese",66,"cup"
+1,"extract, vanilla",2050,2006,"StovetopMacaroniandCheese",4.2,"tsp"
+0.5,"sugars, granulated",19335,1936,"StovetopRicePudding",100,"cup"
+4,"milk, whole, 3.25% milkfat, without added vitamin a and vitamin d",1211,1936,"StovetopRicePudding",976,"cup"
+1,"vanilla extract",2050,1936,"StovetopRicePudding",4.2,"tsp"
+2.5,"milk, whole, 3.25% milkfat, without added vitamin a and vitamin d",1211,2006,"StovetopRicePudding",610,"cup"
+0.33,"sugars, granulated",19335,2006,"StovetopRicePudding",66,"cup"
+1,"vanilla extract",2050,2006,"StovetopRicePudding",4.2,"tsp"
+3.5,"tomatoes, red, ripe, canned, packed in tomato juice, no salt added",11885,1936,"Sukiyaki",840,"cup"
+1.5,"sugars, granulated",19335,1936,"Sukiyaki",6.3,"tsp"
+3,"onions, yellow, sauteed",11286,1936,"Sukiyaki",261,"cup chopped"
+1,"lemon juice, raw",9152,1936,"Sukiyaki",30.5,"fl oz"
+4,"celery, raw",11143,1936,"Sukiyaki",160,"stalk, medium (7-1/2"" - 8"" long)"
+2,"gelatins, dry powder, unsweetened",19177,1936,"Sukiyaki",14,"envelope (1 tbsp)"
+0.5,"water, bottled, generic",14555,1936,"Sukiyaki",118.5,"cup"
+0.5,"cream, whipped, cream topping, pressurized",1054,1936,"Sukiyaki",30,"cup"
+1.5,"lemon juice, raw",9152,1936,"Sukiyaki",45.75,"fl oz"
+2,"horseradish, prepared",2055,1936,"Sukiyaki",30,"tbsp"
+4,"tomato juice, canned, without salt added",11886,2006,"Sukiyaki",972,"cup"
+0.5,"tomato products, canned, puree, without salt added",11547,2006,"Sukiyaki",125,"cup"
+0.5,"onions, yellow, sauteed",11286,2006,"Sukiyaki",43.5,"cup chopped"
+2,"celery, raw",11143,2006,"Sukiyaki",80,"stalk, medium (7-1/2"" - 8"" long)"
+1,"lemon juice, raw",9152,2006,"Sukiyaki",30.5,"fl oz"
+2,"sugars, granulated",19335,2006,"Sukiyaki",8.4,"tsp"
+0.25,"gelatins, dry powder, unsweetened",19177,2006,"Sukiyaki",7,"package (1 oz)"
+0.5,"water, bottled, generic",14555,2006,"Sukiyaki",118.5,"cup"
+1,"avocados, raw, california",9038,2006,"Sukiyaki",50,"NLEA serving"
+2,"gelatins, dry powder, unsweetened",19177,1936,"SweetandSourBrisket",14,"envelope (1 tbsp)"
+4,"tomato juice, canned, with salt added",11540,1936,"SweetandSourBrisket",972,"cup"
+0.125,"gelatins, dry powder, unsweetened",19177,2006,"SweetandSourBrisket",3.5,"package (1 oz)"
+10.75,"soup, tomato, canned, condensed, reduced sodium",6956,2006,"SweetandSourBrisket",3257.25,"can 10.7 oz"
+2,"tomato juice, canned, without salt added",11886,2006,"SweetandSourBrisket",486,"cup"
+3,"gelatin desserts, dry mix, reduced calorie, with aspartame, added phosphorus, potassium, sodium, vitamin c",19703,2006,"SweetandSourBrisket",30,"package (0.35 oz)"
+1,"fish, tuna, light, canned in water, drained solids (includes foods for usda's food distribution program)",15121,1936,"SweetandSourBeets",154,"cup, solid or chunks"
+1,"celery, raw",11143,1936,"SweetandSourBeets",101,"cup chopped"
+0.5,"salad dressing, mayonnaise, regular",4025,1936,"SweetandSourBeets",110,"cup"
+1,"fish, tuna, light, canned in water, drained solids (includes foods for usda's food distribution program)",15121,2006,"SweetandSourBeets",154,"cup, solid or chunks"
+1,"celery, raw",11143,2006,"SweetandSourBeets",101,"cup chopped"
+0.25,"salad dressing, mayonnaise, regular",4025,2006,"SweetandSourBeets",55,"cup"
+6,"butter, salted",1001,1936,"SweetPotatoSouffle",85.2,"tbsp"
+3,"cheese, blue",1004,1936,"SweetPotatoSouffle",85.05,"oz"
+3,"cream, fluid, heavy whipping",1053,1936,"SweetPotatoSouffle",45,"tbsp"
+6,"potatoes, white, flesh and skin, baked",11357,1936,"SweetPotatoSouffle",1794,"potato large (3"" to 4-1/4"" dia)"
+3,"butter, salted",1001,2006,"SweetPotatoSouffle",42.6,"tbsp"
+0.5,"cheese, parmesan, grated",1032,2006,"SweetPotatoSouffle",50,"cup"
+3,"milk, whole, 3.25% milkfat, without added vitamin a and vitamin d",1211,2006,"SweetPotatoSouffle",45,"tbsp"
+6,"potatoes, white, flesh and skin, baked",11357,2006,"SweetPotatoSouffle",1794,"potato large (3"" to 4-1/4"" dia)"
+1,"butter,salted",1001,2006,"tapiocacustad",14.2,"tbsp"
+1,"butter,salted",1001,1936,"tapiocacustad",14.2,"tbsp"
+2.5,"veal, shoulder, whole (arm and blade), separable lean and fat, raw",17116,1936,"TapiocaCustard",1134,"lb"
+6,"celery, raw",11143,1936,"TapiocaCustard",240,"stalk, medium (7-1/2"" - 8"" long)"
+8,"onions, raw",11282,1936,"TapiocaCustard",560,"small"
+4,"water, bottled, generic",14555,1936,"TapiocaCustard",948,"cup"
+3,"butter, salted",1001,1936,"TapiocaCustard",42.6,"tbsp"
+0.1875,"wheat flour, white, all-purpose, self-rising, enriched",20082,1936,"TapiocaCustard",23.4375,"cup"
+2,"soup, stock, beef, home-prepared",6170,1936,"TapiocaCustard",480,"cup"
+3,"egg, yolk, raw, fresh",1125,1936,"TapiocaCustard",51,"large"
+0.1875,"lemon juice, raw",9152,1936,"TapiocaCustard",45.75,"cup"
+3,"rice, white, long-grain, regular, unenriched, cooked without salt",20445,1936,"TapiocaCustard",474,"cup"
