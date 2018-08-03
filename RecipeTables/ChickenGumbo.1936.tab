@@ -1,10 +1,10 @@
-Recipe	Year	Amount	Unit	Ingredient
-Chicken Gumbo	1936	3	lb	chicken dark meat, stewing, raw, skinless
-Chicken Gumbo	1936	0.25	cup	fat, bacon, cooked, rendered
-Chicken Gumbo	1936	2	cup	tomatoes, fresh, year round average, chopped
-Chicken Gumbo	1936	0.5	cup	corn, supersweet, yellow, streamfresh, forzen, kernels
-Chicken Gumbo	1936	1	cup	okra, cooked, drained, sliced
-Chicken Gumbo	1936	0.25	cup	onion, yellow, fresh, chopped
-Chicken Gumbo	1936	0.25	cup	rice, white, dry, long grain, enriched
-Chicken Gumbo	1936	0.5	cup	flour, all purpose, self rising, enriched
-Chicken Gumbo	1936	8	cup	water, generic
+"Amount"	"Measure"	"Ingredient"
+3	"lb"	"chicken dark meat, stewing, raw, skinless"
+0.25	"cup"	"fat, bacon, cooked, rendered"
+2	"cup"	"tomatoes, fresh, year round average, chopped"
+0.5	"cup"	"corn, supersweet, yellow, streamfresh, forzen, kernels"
+1	"cup"	"okra, cooked, drained, sliced"
+0.25	"cup"	"onion, yellow, fresh, chopped"
+0.25	"cup"	"rice, white, dry, long grain, enriched"
+0.5	"cup"	"flour, all purpose, self rising, enriched"
+8	"cup"	"water, generic"

@@ -1,5 +1,5 @@
-"Amount"	"Unit"	"Ingredient"	"NDB_No"
-"1"	2.25	"tsp"	"Gelatins, dry powder, unsweetened"	19177
-"2"	10.75	"oz"	"Soup, tomato, canned, condensed, reduced sodium"	6956
-"3"	2	"cup"	"Tomato juice, canned, without salt added"	11886
-"4"	3	"oz"	"Gelatin desserts, dry mix, reduced calorie, with aspartame, added phosphorus, potassium, sodium, vitamin C"	19703
+"Amount"	"Measure"	"Ingredient"	"NDB_No"
+2.25	"tsp"	"Gelatins, dry powder, unsweetened"	19177
+10.75	"oz"	"Soup, tomato, canned, condensed, reduced sodium"	6956
+2	"cup"	"Tomato juice, canned, without salt added"	11886
+3	"oz"	"Gelatin desserts, dry mix, reduced calorie, with aspartame, added phosphorus, potassium, sodium, vitamin C"	19703
