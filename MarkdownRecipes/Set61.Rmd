@@ -1,0 +1,164 @@
+---
+title: "Midterm Project"
+author: "Tarkom Augustine"
+date: "July 21, 2018"
+output: word_document
+---
+
+# Instructions
+
+First, generate a list of all files in the Recipes folder.
+```{r,eval=FALSE}
+setwd("./")
+recipes <- list.files(path = "./", pattern = '*.pdf')
+```
+
+Make this reproducible.
+```{r,eval=FALSE}
+set.seed(10010)
+```
+
+Create two randomly sampled list of recipe files and cycle this list through 80 rows
+
+```{r,eval=FALSE}
+recipe.pairs <- matrix(c(sample(recipes), sample(recipes)), ncol=2, nrow=80)
+```
+
+Are there any pairs across rows?
+
+```{r,eval=FALSE}
+sum(recipe.pairs[,1]==recipe.pairs[,2])
+```
+
+Write to a table
+
+```{r,eval=FALSE}
+write.csv(recipe.pairs, file="Recipe.Table.csv", row.names = FALSE)
+```
+
+Read the table in and print:
+
+```{r,eval=FALSE}
+Recipe.Table <- read.csv("Recipe.Table.csv", header=FALSE, skip=1)
+print(Recipe.Table)
+```
+
+# Part 2 - Check Nutrient Data.
+
+We will be using the USDA food nutrient database, found at https://www.ars.usda.gov/northeast-area/beltsville-md-bhnrc/beltsville-human-nutrition-research-center/nutrient-data-laboratory/docs/usda-national-nutrient-database-for-standard-reference/
+
+Run this to make sure your system can read the required nutrient database tables.
+
+```{r}
+ weight <- read.table("WEIGHT.txt", header = F, sep = "^", quote = "~")
+  names(weight) <- c("NDB_No", "Seq", "Amount", "Msre_Desc", "Gm_Wgt", "Num_Data_Pts", "Std_Dev")
+  head(weight)
+summary(weight)
+```
+
+
+```{r}
+ food <- read.table("FOOD_DES.txt", header = F, sep = "^", quote = "~")
+  names(food) <- c("NDB_No", "FdGrp_Cd", "Long_Desc", "Shrt_Desc", "ComName", "ManuFacName", "Survey", 
+                     "Ref_desc", "Refuse",
+                     "SciName", "N_Factor", "Pro_Factor", "Fat_Factor", "CHO_Factor")
+  
+ head(food)
+summary(food)
+```
+
+# Part I
+
+ ***Assigned Recipes: Tapioca Custard, Molded Custard**
+
+# Create data tables for the required recipes for the respective years in the form Amount, Unit and Ingredient. Let Measure be Unit.
+
+```{r setup, include=FALSE}
+# creating data tables for the required recipes 
+
+molded_custard_36 <- data.frame(Amount = c(1.00, 1.75, 2.00, 0.33, 1.00), 
+                                Unit = c("Tbs", "cup", "lrg", "cup", "tsp"), 
+                                Ingredient = c('gelatin, dry, unsweetened', 
+                                                'milk, whole, 3.25%', 
+                                                'egg, raw',
+                                                'sugar, white, granulated, granulated',
+                                                'extract, vanilla'))
+molded_custard_36
+
+molded_custard_06 <- data.frame(Amount = c(3.00, 2.25, 0.05, 3.00, 1.00), 
+                                Unit = c("cup", "tsp", "cup", "lrg", "tsp"),
+                                Ingredient = c('milk, whole, 3.25%', 
+                                                'gelatin, dry, unsweetened', 
+                                                'sugar, white, granulated, granulated', 
+                                                'egg, raw',
+                                                'extract, vanilla'))
+molded_custard_06
+
+tapioca_custad_36 <- data.frame(Amount = c(0.33, 0.50, 2.00, 4.00, 1.00),
+                                Unit = c("cup", "cup", "lrg", "cup", "tsp"),
+                                Ingredient = c('tapioca, quick cooking, dry',
+                                                'sugar, white, granulated, granulated',
+                                                'egg, raw',
+                                                'milk, whole, 3.25%',
+                                                'extract, vanilla'))
+tapioca_custad_36
+
+tapioca_custad_06 <- data.frame(Amount = c(2.50, 0.33, 3.00, 1.00),
+                                Unit = c("cup", "cup", "Tbs", "tsp"),
+                                Ingredient = c('milk, whole, 3.25%',
+                                                'sugar, white, granulated, granulated',
+                                                'tapioca, quick cooking, dry',
+                                                'extract, vanilla'))
+tapioca_custad_06
+
+```
+
+# Part II
+
+# Next, write each of your assigned recipes to a tab delimited file. Make sure that you have your created delimited files name as a combination for the recipes name and year
+ 
+
+
+```{r}
+# writing a tab delimiter
+write.table(molded_custard_36, "molded_custard_36.tab", sep="\t")
+write.table(molded_custard_06, "molded_custard_06.tab", sep="\t")
+write.table(tapioca_custad_36, "tapioca_custad_36.tab", sep="\t")
+write.table(tapioca_custad_06, "tapioca_custad_06.tab", sep="\t")
+```
+
+
+# Part III
+
+# Now, you need to read the tab delimited files and  merge the tables with the example Beef Stroganoff tables
+
+```{r}
+# reading data into R
+BeefStroganoff.1997 <- read.table("BeefStroganoff.1997.tab", sep="", header = TRUE)
+BeefStroganoff.1997
+BeefStroganoff.2006 <- read.table("BeefStroganoff.2006.tab", sep = "", header = TRUE)
+BeefStroganoff.2006
+moldedCustard_36 <- read.table("molded_custard_36.tab", sep="", header = TRUE)
+moldedCustard_36
+moldedCustard_06 <- read.table("molded_custard_06.tab", sep="", header = TRUE)
+moldedCustard_06
+tapiocaCustad_36 <- read.table("tapioca_custad_36.tab", sep="", header = TRUE)
+tapiocaCustad_36
+tapiocaCustad_06 <- read.table("tapioca_custad_06.tab", sep="", header = TRUE)
+tapiocaCustad_06
+
+# Merging all files
+merg <-Reduce(function(...) merge(..., all=TRUE, by="Ingredient"), 
+           list(BeefStroganoff.1997, BeefStroganoff.2006,  moldedCustard_36, 
+                moldedCustard_06, tapiocaCustad_36, tapiocaCustad_06))
+merg
+```
+
+# Part IV
+
+Show that the ingredients and units can be cross referenced into the WEIGHT and FOOD_DES table
+
+```{r}
+table(merg$Unit.x,merg$Unit.y)
+plot(merg$Amount.x, merg$Amount.y)
+```

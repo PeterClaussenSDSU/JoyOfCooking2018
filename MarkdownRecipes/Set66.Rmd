@@ -1,0 +1,283 @@
+---
+title: "Joy Of Cooking Midterm Project Prep"
+author: "Set 66"
+date: "July 26, 2018"
+output:
+  word_document: default
+  html_document: default
+---
+
+# Part A
+You are given two different recipes. Each recipe will contain a version from 1936 and a version from 2006, so 4 total recipes. Create a dataframe for each recipe and year. Once you have created the 4 dataframes, export each dataframe into a file.
+
+```{r}
+RoteGrutze1936 <- data.frame (Amount = c(2.00, 0.50, 0.50),
+Measure = c("cup", "cup", "cup"),
+Ingredient = c("juice,orange,chilled", "sugar,white,granulated", "hot cereal,farina,dry,unenriched"))
+#create recipe for RoteGrutze year 1936
+
+ 
+RoteGrutze2006 <- data.frame (Amount = c(2.00, 0.50, 4.00),
+Measure = c("cup", "cup", "tbs"),
+Ingredient = c("juice,orange,chilled", "sugar,white,granulated", "hot cereal,farina,dry,unenriched"))
+#create recipe for RoteGrutze year 2006
+ 
+TomatoAspic1936 <- data.frame(Amount = c(2.00, 4.00),
+Measure = c("tbs", "cup"),
+Ingredient = c("gelatin,dry,unsweetened", "juice,tomato,salted"))
+#create recipe for TomatoAspic year 1936 I chose the quick tomato aspic for both years
+ 
+TomatoAspic2006 <- data.frame(Amount = c(2.25, 10.75, 2.00, 3.00),
+Measure = c("tsp", "oz", "cup", "oz"),
+Ingredient = c("gelatin,dry,unsweetened", "soup,tomato,canned,condensed", "juice,tomato,canned,unsalted", "gelatin,lemon,Jell-O"))
+#create recipe for TomatoAspic year 2006
+ 
+ 
+write.table(RoteGrutze1936, "RoteGrutze19363.tab")
+write.table(RoteGrutze2006, "RoteGrutze20063.tab")
+write.table(TomatoAspic1936, "TomatoAspic19363.tab")
+write.table(TomatoAspic2006, "TomatoAspic20063.tab") #export tables to file
+```
+
+#Part B
+Use the BeefStroganoff.1997.tab and BeefStroganoff.2006.tab and read in your four files that you created in part a. Once you have read in the files, Merge your 1936 files with the Beef Stroganoff 1997 file and merge your 2006 file with the Beef Stroganoff 2006 file. This will show that the data you have create will merge into the shared table.
+
+```{r}
+setwd("./")
+BeefStrog1997 = read.table("BeefStroganoff.1997.tab", header = T, stringsAsFactors = F)
+BeefStrog2006 = read.table("BeefStroganoff.2006.tab", header = T, stringsAsFactors = F)
+RoteGru1936 = read.table("RoteGrutze19363.tab", header = T, stringsAsFactors = F)
+RoteGru2006 = read.table("RoteGrutze20063.tab", header = T, stringsAsFactors = F)
+TomatoAs1936 = read.table("TomatoAspic19363.tab", header = T, stringsAsFactors = F)
+TomatoAs2006 = read.table("TomatoAspic20063.tab", header = T, stringsAsFactors = F)
+
+Rec1936 = rbind(RoteGru1936, TomatoAs1936)
+Rec2006 = rbind(RoteGru2006, TomatoAs2006)
+
+MergeEarly = rbind(Rec1936, BeefStrog1997)
+MergeLate = rbind(Rec2006, BeefStrog2006)
+
+MergeEarly
+MergeLate
+```
+
+#Part C 
+Import the FOOD_DES.txt file. The file includes ingredients. Take the ingredients in your recipes and the Beef Stroganoff Recipes and find the ingredients in the FOOD_DES file. The ingredients may not be the exact same as your ingredients. Try to find the ingredient closest to yours. Once you have found a matching ingredient replace your ingredient with the new ingredient. Create a new column in your data table for the NDB_No. You will need to use the NDB_No for each ingredient and add that to your data table as well. 
+```{r}
+setwd("./")
+fooddes <- read.table("FOOD_DES.txt", header = F, sep = "^", quote = "~")
+names(fooddes) <- c("NDB_No", "FdGrp_Cd", "Long_Desc", "Shrt_Desc", "ComName",
+                    "ManufacName", "Survery", "Ref_desc", "Refuse", "SciName",
+                    "N_Factor", "Pro_Factor", "Fat_Factor", "CHO_Factor")
+
+ing <- BeefStrog2006$Ingredient #substitute TomatoAspic2006 with other recipes to list my ingredients when finding them in the fooddes table
+ing #list ingredients
+
+lookup <- function(food) {
+fooddes[grep(food, fooddes$Long_Desc), c(1,3)]
+} #function to search for ingredients in fooddes
+
+lookup("(T|t)omato") #look up word to find ingredient
+```
+Change your ingredients to the new ingredients and add a column for the NDB_No.
+```{r}
+#name ingredients found in the fooddes table
+
+rotegru2006.1 <- ("Cereals,farina,unenriched,dry")
+rotegru2006.1a <- (8172)
+rotegru2006.2 <- ("Orange juice,chilled,includes from concentrate")
+rotegru2006.2a <- (9209)
+rotegru2006.3 <- ("Sugars,granulated")
+rotegru2006.3a <- (5776)
+
+rotegru1936.1 <- ("Cereals,farina,unenriched,dry")
+rotegru1936.1a <- (8172)
+rotegru1936.2 <- ("Orange juice,chilled,includes from concentrate")
+rotegru1936.2a <- (9209)
+rotegru1936.3 <- ("Sugars,granulated")
+rotegru1936.3a <- (5776)
+
+tomatoas1936.1 <- ("Gelatins,dry powder,unsweetened")
+tomatoas1936.1a <- (19177)
+tomatoas1936.2 <- ("Tomato juice,canned,with salt added")
+tomatoas1936.2a <- (11540)
+
+tomatoas2006.1 <- ("Gelatins,dry powder,unsweetened")
+tomatoas2006.1a <- (19177)
+tomatoas2006.2 <- ("Gelatin desserts,dry mix")
+tomatoas2006.2a <- (19172)
+tomatoas2006.3 <- ("Tomato juice,canned,without salt added")
+tomatoas2006.3a <- (11886)
+tomatoas2006.4 <- ("Soup,tomato,canned,condensed")
+tomatoas2006.4a <- (6159)
+
+beefstrog1997.1 <- ("Beef,loin,tenderloin roast,boneless,separable lean only,trimmed to 0 fat,all grades,raw")
+beefstrog1997.1a <- (23366)
+beefstrog1997.2 <- ("Butter,salted")
+beefstrog1997.2a <- (1001)
+beefstrog1997.3 <- ("Wheat flour,white,all-purpose,self-rising,enriched")
+beefstrog1997.3a <- (20082)
+beefstrog1997.4 <- ("Soup,stock,beef,home-prepared")
+beefstrog1997.4a <- (6170)
+beefstrog1997.5 <- ("Cream,sour,cultured")
+beefstrog1997.5a <- (1056)
+beefstrog1997.6 <- ("Mustard,prepared,yellow")
+beefstrog1997.6a <- (2046)
+
+beefstrog2006.1 <- ("Beef,loin,tenderloin roast,boneless,separable lean only,trimmed to 0 fat,all grades,raw")
+beefstrog2006.1a <- (23366)
+beefstrog2006.2 <- ("Oil,canola")
+beefstrog2006.2a <- (4582)
+beefstrog2006.3 <- ("Butter,salted")
+beefstrog2006.3a <- (1001)
+beefstrog2006.4 <- ("Onions,yellow,sauteed")
+beefstrog2006.4a <- (11286)
+beefstrog2006.5 <- ("Mushrooms,white,raw")
+beefstrog2006.5a <- (11260)
+beefstrog2006.6 <- ("Soup,stock,beef,home-prepared")
+beefstrog2006.6a <- (6170)
+beefstrog2006.7 <- ("Cream,sour,cultured")
+beefstrog2006.7a <- (1056)
+beefstrog2006.8 <- ("Mustard,prepared,yellow")
+beefstrog2006.8a <- (2046)
+
+#combine ingredients for each recipe
+
+rotegru1936.ing <- rbind(rotegru1936.1, rotegru1936.2, rotegru1936.3)
+rotegru2006.ing <- rbind(rotegru2006.1, rotegru2006.2, rotegru2006.3)
+tomatoas1936.ing <- rbind(tomatoas1936.1, tomatoas1936.2)
+tomatoas2006.ing <- rbind(tomatoas2006.1, tomatoas2006.2, tomatoas2006.3, tomatoas2006.4)
+beefstrog1997.ing <- rbind(beefstrog1997.1, beefstrog1997.2, beefstrog1997.3, beefstrog1997.4,
+                          beefstrog1997.5, beefstrog1997.6)
+beefstrog2006.ing <- rbind(beefstrog2006.1, beefstrog2006.2, beefstrog2006.3, beefstrog2006.4,
+                          beefstrog2006.5, beefstrog2006.6, beefstrog2006.7, beefstrog2006.8)
+
+rotegru1936.No <- rbind(rotegru1936.1a, rotegru1936.2a, rotegru1936.3a)
+rotegru2006.No <- rbind(rotegru2006.1a, rotegru2006.2a, rotegru2006.3a)
+tomatoas1936.No <- rbind(tomatoas1936.1a, tomatoas1936.2a)
+tomatoas2006.No <- rbind(tomatoas2006.1a, tomatoas2006.2a, tomatoas2006.3a, tomatoas2006.4a)
+beefstrog1997.No <- rbind(beefstrog1997.1a, beefstrog1997.2a, beefstrog1997.3a, beefstrog1997.4a,
+                          beefstrog1997.5a, beefstrog1997.6a)
+beefstrog2006.No <- rbind(beefstrog2006.1a, beefstrog2006.2a, beefstrog2006.3a, beefstrog2006.4a,
+                          beefstrog2006.5a, beefstrog2006.6a, beefstrog2006.7a, beefstrog2006.8a)
+
+```
+
+
+```{r}
+RoteGru1936$Ingredient <- c() #empty column
+RoteGru1936$Ingredient <- rotegru1936.ing #replace old ingredients with new
+RoteGru1936$NDB_No <- c() #create empty column
+RoteGru1936$NDB_No <- rotegru1936.No #add NBD_No to table
+RoteGru1936
+
+RoteGru2006$Ingredient <- c() #empty column
+RoteGru2006$Ingredient <- rotegru2006.ing #replace old ingredients with new
+RoteGru2006$NDB_No <- c() #create empty column
+RoteGru2006$NDB_No <- rotegru2006.No #add NBD_No to table
+RoteGru2006
+
+TomatoAs1936$Ingredient <- c() #empty column
+TomatoAs1936$Ingredient <- tomatoas1936.ing #replace old ingredients with new
+TomatoAs1936$NDB_No <- c() #create empty column
+TomatoAs1936$NDB_No <- tomatoas1936.No #add NBD_No to table
+TomatoAs1936
+
+TomatoAs2006$Ingredient <- c() #empty column
+TomatoAs2006$Ingredient <- tomatoas2006.ing #replace old ingredients with new
+TomatoAs2006$NDB_No <- c() #create empty column
+TomatoAs2006$NDB_No <- tomatoas2006.No #add NBD_No to table
+TomatoAs2006
+
+BeefStrog1997$Ingredient <- c() #empty column
+BeefStrog1997$Ingredient <- beefstrog1997.ing #replace old ingredients with new
+BeefStrog1997$NDB_No <- c() #create empty column
+BeefStrog1997$NDB_No <- beefstrog1997.No #add NBD_No to table
+BeefStrog1997
+
+BeefStrog2006$Ingredient <- c() #empty column
+BeefStrog2006$Ingredient <- beefstrog2006.ing #replace old ingredients with new
+BeefStrog2006$NDB_No <- c() #create empty column
+BeefStrog2006$NDB_No <- beefstrog2006.No #add NBD_No to table
+BeefStrog2006
+```
+Bind the six recipes together after the ingredients have been replaces to check your recipes.
+```{r}
+AllRec <- rbind(BeefStrog1997, BeefStrog2006, RoteGru1936, RoteGru2006, TomatoAs1936, TomatoAs2006) #join all three different recipes for each year together
+AllRec #print table with all recipes
+```
+Write your new recipes to a new file each. You will read them back in in part d to check your files.
+```{r}
+write.table(RoteGru1936, "RoteGru1936.tab", sep = "\t", row.names = F)
+write.table(RoteGru2006, "RoteGru2006.tab", sep = "\t", row.names = F)
+write.table(TomatoAs1936, "TomatoAs1936.tab", sep = "\t", row.names = F)
+write.table(TomatoAs2006, "TomatoAs2006.tab", sep = "\t", row.names = F)
+```
+
+Create a new Recipe.csv file. To do this create a table with your given Recipes. This should include the same columns as the original Recipe file for Beef Stroganoff.
+```{r}
+Recipes <- data.frame(
+  Recipe = c("Rote Grutze","Rote Grutze","Tomato Aspic","Tomato Aspic"),
+  Year = c(1936,2006,1936,2006),
+  MinServings = c(4,4,8,8),
+  MaxServings = c(4,4,8,8)
+) #create min and max servings for two recipes
+Recipes
+
+```
+
+
+```{r}
+setwd("./")
+BeefStrogRecipe <- read.csv(file ="Recipes.csv", sep = ",") #get recipe csv with servings for beef strog
+BeefStrogRecipe #print csv
+```
+Join your table for the new Recipe file to the original to add your rows to the file. This should still include the rows from the beef stroganoff file.
+```{r}
+CRecipes <- rbind(BeefStrogRecipe, Recipes) #join all recipes together
+write.csv(CRecipes, "Recipes1.csv", row.names = F) #write to a new recipe csv
+
+Rec <- read.csv("Recipes1.csv", header = T) #check and read in new recipe csv
+Rec #print csv
+```
+#Part D
+Check your data and proofread for correctness. You should read in your new recipe file and your new files for each recipe and year. (with the replaced ingredients)
+
+```{r}
+setwd("./")
+RecipeFile <- read.csv("Recipes1.csv", header = T)
+RoteGrutze1936File <- read.table("RoteGru1936.tab", header = T, sep = "\t")
+RoteGrutze2006File <- read.table("RoteGru2006.tab", header = T, sep = "\t")
+TomatoAspic1936File <- read.table("TomatoAs1936.tab", header = T, sep = "\t")
+TomatoAspic2006File <- read.table("TomatoAs2006.tab", header = T, sep = "\t") #read in all files 
+
+
+RecipeFile
+RoteGrutze1936File
+RoteGrutze2006File
+TomatoAspic1936File
+TomatoAspic2006File #check files
+
+#checked all files and each file seems to consist of the correct information
+```
+# Part 2 - Check Nutrient Data.
+
+We will be using the USDA food nutrient database, found at https://www.ars.usda.gov/northeast-area/beltsville-md-bhnrc/beltsville-human-nutrition-research-center/nutrient-data-laboratory/docs/usda-national-nutrient-database-for-standard-reference/
+
+Run this to make sure your system can read the required nutrient database tables.
+```{r}
+weight.dat <- read.table("./WEIGHT.txt",header=FALSE,sep="^",quote="~")
+names(weight.dat) <- c("NDB_No","Seq","Amount","Msre_Desc","Gm_Wgt","Num_Data_Pts","Std_Dev")
+head(weight.dat)
+summary(weight.dat)
+```
+
+```{r}
+food_des.dat <- read.table("./FOOD_DES.txt",header=FALSE,sep="^",quote="~")
+names(food_des.dat) <- c("NDB_No","FdGrp_Cd","Long_Desc","Shrt_Desc",
+"ComName","ManufacName","Survey","Ref_desc","Refuse","SciName",
+"N_Factor","Pro_Factor","Fat_Factor","CHO_Factor")
+dim(food_des.dat)
+head(food_des.dat)
+summary(food_des.dat)
+```

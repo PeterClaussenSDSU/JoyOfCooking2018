@@ -1,0 +1,259 @@
+---
+word_document: default
+output:
+  pdf_document: default
+  html_notebook: default
+  word_document: default
+title: "Midterm - JaeYoung Sim"
+---
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+
+Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Ctrl+Shift+Enter*. 
+
+
+Exercise 1. Create data tables for your assigned recipes, with columns Amount, Unit and Ingredient.
+
+```{r}
+# Make a Data. frame by using data info.
+# I am goin gto work on Corn bread and Sprouts
+
+cornbread36 <- data.frame(Amount = c(5, 1, 1.5, 1, 4), Measure=c("oz", "cup", "cup", "cup", "cup"),
+               Ingredient=c("beef pot rost, slow cooked, choice", "gravy, beef, canned", "soup, tomato, canned, condendsed", "cornmeal, yellow, degerminated, enriched", "water, generic"))
+
+cornbread06 <- data.frame(Amount = c(1, 1, 1, 1, 1, 0.75, 1, 1, 1, 0.33, 1, 1), Measure=c("ib", "ea", "cup", "cup", "cup", "cup", "tbs", "tbs", "irg", "cup", "tbs", "cup"),
+            Ingredient=c("beef, ground, raw, 15% fat", "onion, yellow, fresh, medium, 2 1/2", "black beans, canned, low sodium", "corn, supersweet, yellow, Steamfresh, frozen kernels", "tomato sauce, canned", "cornmeal, yellow, degerminated, enriched", "flour, all purpose, self rising, enriched", "sugar, white, granulated, granulated", "egg, raw", "milk, whole, 3.25%", "oil, canola", "water, generic"))
+
+
+sprouts36 <- data.frame(Amount = c(2, 0.5, 3, 0.25), Measure=c("cup", "ib", "tbs", "cup"),
+                       Ingredient=c("brussels sprouts, cooked, drained", "chestnuts, european, cooked", "butter, salted", "water, generic"))
+
+sprouts06 <- data.frame(Amount = c(2, 8, 1, 1, 1), Measure=c("tbs", "tbs", "ib", "ib", "cup"), Ingredient=c("butter, salted", "shallots, fresh, chopped", "chestnuts, european, raw", "brussels sprouts, fresh", "water, generic"))
+
+```
+
+
+Exercise 2. Write each individual recipe to a tab delimited file. The name of the tab file should be comprised of the recipe file name and the year of the recipe (1936 or 2006, in most cases).
+
+```{r}
+# Create the Data.tab file and make a table from each data by using data.fram
+write.table(cornbread36,"cornbread36.tab", sep="\t")
+write.table(cornbread06,"cornbread06.tab", sep="\t")
+write.table(sprouts36,"sprouts36.tab", sep="\t")
+write.table(sprouts06,"sprouts06.tab", sep="\t")
+```
+
+
+Exercise 3. Read in each tab file, and merge the tables with the example Beef Stroganoff tables. 
+
+```{r}
+#After create the data. tab file, read the table and include Beef data
+beef97 <- read.table("BeefStroganoff.1997.tab",header=TRUE) 
+beef06 <- read.table("BeefStroganoff.2006.tab",header=TRUE)
+cornbread36 <- read.table("cornbread36.tab",header=TRUE) 
+cornbread06<- read.table("cornbread06.tab",header=TRUE) 
+sprouts36<- read.table("sprouts36.tab",header=TRUE)
+sprouts06 <- read.table("sprouts06.tab",header=TRUE) 
+
+
+```
+
+```{r}
+# In this case, I have  tow of beef data, two of corn bread, and two of sports data.
+# Merge this data by using merge funcion
+
+cbeef <- merge(beef97,beef06,by="Ingredient", all=TRUE)
+ccornbread <- merge(cornbread36,cornbread06,by="Ingredient", all=TRUE)
+csprouts <- merge(sprouts36,sprouts06,by="Ingredient",  all=TRUE)
+```
+
+
+Exercise 4. 
+part a. Proof the data to check for errors. Consider, for example, the error in the example Beef Stroganoff recipes, where the measures for sour cream are inconsistent. If we merge the two recipes by Ingredient, we can plot Measure.1997 vs Measure.2006 and see quickly where the measures are not consistent.
+```{r}
+# Create the contingency table and compare 1997 and 2000 measure.
+# This step is for tracking to check the how the recepe change frm 1936 to 2006.
+# When the value show not 0, the two data match, and the vlaue show 0, the two data dose not match.
+table(cbeef$Measure.x,cbeef$Measure.y)
+table(ccornbread$Measure.x,ccornbread$Measure.y)
+table(csprouts$Measure.x,csprouts$Measure.y)
+```
+
+
+Exercise 4.
+Part b. We could also create a contingency table comparing Measure.1997 and Measure.2006 to look for mismatches in measures between ingredients. We can plot Amount.1997 and Amount.2006 to look for unexpected changes in values.
+
+
+```{r}
+# Read the table for FOOD DES file and found te ingredient name which is not match.
+
+food_des.dat <- read.table("FOOD_DES.txt",header=FALSE,sep="^",quote="~")
+names(food_des.dat) <- c("NDB_No","FdGrp_Cd","Long_Desc","Shrt_Desc","ComName","ManufacName","Survey","Ref_desc",
+                         "Refuse","SciName","N_Factor","Pro_Factor","Fat_Factor","CHO_Factor")
+
+
+# use unique function to show unique ingredient which is not match
+a <- unique(c(as.vector(cbeef$Ingredient),as.vector(ccornbread$Ingredient),as.vector(csprouts$Ingredient)))
+print(a)
+
+
+```
+```{r}
+# Serch funtion
+match <- function(x){
+  food_des.dat[grep(x, food_des.dat$Long_Desc), c(1,3)]
+}
+match("Oil, canola")
+
+```
+
+
+
+
+```{r}
+
+# Create the new data frame that contain all of tables
+# Exercise 4, I got help from tutor and able to fix the error
+
+data <- data.frame() 
+files <- list.files(pattern="*.tab") # Read table by list
+
+# For loop fucion to read all tables and put in the data frame
+for (i in 1:length(files)){
+  file_name <- unlist(strsplit(files[i],".",fixed=TRUE)) # split the files name
+  tab <- read.table(files[i],header=TRUE) # read table
+  tab <- cbind(Recipe=c(rep(file_name[1],nrow(tab))),Year=c(rep(file_name[2],nrow(tab))),tab) 
+  data <- as.data.frame(rbind(data,tab)) # put append into data frame
+}
+
+# Fix unmathced ingredient by manually and put the NBD number
+
+Ingredient <- c("Beef, loin, tenderloin roast, boneless, separable lean and fat, trimmed to 0* fat, all grades, raw",
+"Butter, salted",
+                "Wheat flour, white, all-purpose, self-rising, bleached",
+                "Soup, stock, beef, home-prepared",
+                "Cream, sour, cultured",
+                "Mustard, prepared, yellow",
+                "Beef, loin, tenderloin roast, boneless, separable lean and fat, trimmed to 0* fat, all grades, raw",
+                "Oil, canola",
+                "Butter, salted",
+                "Onions, raw",
+                "Mushrooms, white, raw",
+                "Soup, stock, beef, home-prepared",
+                "Cream, sour, cultured",
+                "Mustard, prepared, yellow",
+
+                "Beef, ground, 85% lean meat / 15% fat, raw (Includes foods for USDA's Food  
+                 Distribution Program)",
+                "Onions, raw",
+"Soup, black bean, canned, prepared with equal volume water",
+"Corn, sweet, yellow, frozen, kernels cut off cob, boiled, drained, without salt",
+"	Tomato products, canned, sauce, with tomato tidbits",
+"Cornmeal, yellow, self-rising, degermed, enriched",
+"Wheat flour, white, all-purpose, self-rising, enriched",
+"Sugars, granulated",
+"	Egg, whole, raw, fresh",
+"	Milk, whole, 3.25% milkfat, with added vitamin D",
+"Oil, canola",
+"Water, bottled, generic",
+"Beef, chuck, arm pot roast, separable lean only, trimmed to 0*fat, choice, cooked, braised",
+"Gravy, beef, canned, ready-to-serve",
+"Soup, tomato, canned, condensed",
+"Cornmeal, yellow, self-rising, degermed, enriched",
+"Water, bottled, generic",
+"Butter, salted",
+"Shallots, raw",
+"Nuts, chestnuts, european, raw, unpeeled",
+"Brussels sprouts, raw",
+"Water, bottled, generic",
+"	Brussels sprouts, cooked, boiled, drained, without salt",
+"Nuts, chestnuts, european, roasted",
+"Butter, salted",
+"Water, bottled, generic")
+
+
+
+
+NDBCODE <- c('23336', 
+          '1001',
+         '20082',
+         '6170',
+         '1056',
+         '2046',
+         '23336',
+         '4582',
+         '1001',
+         '11282',
+         '11260',
+         '6170',
+         '1056',
+         '2046',
+         '23567',
+         '11282',
+         '6402',
+         '11181',
+         '11559',
+         '20025',
+         '20082',
+         '19335',
+         '1123',
+         '1077',
+         '4852',
+         '14555',
+         '13377',
+         '6116',
+         '6159',
+         '20025',
+         '14555',
+         '1001',
+         '11677',
+         '12097',
+         '11098',
+         '14555',
+         '11099',
+         '12167',
+         '1001',
+         '14555')
+
+```
+
+
+```{r}
+# Create the data frame with ingredient and number
+newdata <- data.frame(Ingredient=Ingredient,Number=NDBCODE)
+check_table <- cbind(data,newdata)
+print(check_table)
+
+# Combine data anc create the table
+table <- cbind(data[,1:4],newdata)
+
+write.table(table,"table.tab", sep="\t")
+
+```
+
+Exercise 5. Read the Recipes.csv, append rows for your recipes, then write the table back to Recipes.csv. We would be able to determine the file names for your recipes by concatentating Recipe and Year, removing white space if necessary.
+
+```{r}
+# Read the Recipes file
+cook1 <- read.csv("Recipes.csv",header=TRUE)
+
+# Error in rbind(deparse.level, ...) : numbers of columns of arguments do not match
+# To mathc with the colume, I add the value for g per serving but shows error
+#cook2<- data.frame(Recipe=c("cornbread","cornbread","sprouts","sprouts"),Year=c("1936","2006","1936","2006"),gperServings=c("308.62","283.9","106.77","208.76"),numberofServings=c("6","6","6","6"))
+
+
+# Error in match.names(clabs, names(xi)) : names do not match previous names
+# To solve the error, my friend told me that use min and maz serving
+
+cook2<- data.frame(Recipe=c("cornbread","cornbread","sprouts","sprouts"),Year=c("1936","2006","1936","2006"),MinServings=c("6","6","6","6"),MaxServings=c("6","6","6","6"))
+# Combine raw cook 1 and cook 2
+combine <- rbind(cook1, cook2)
+
+
+# Result for CSV file
+write.csv(combine,"Recipe.csv")
+
+
+
+```
+

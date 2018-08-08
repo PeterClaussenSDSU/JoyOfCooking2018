@@ -1,0 +1,431 @@
+---
+title: "Joy Of Cooking Midterm Project Prep"
+author: "Set 56"
+date: "7/21/2018"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+# Part 1 - Assign Recipes
+
+## Part 1.1
+ Create data tables for your assigned recipes, with columns Amount, Unit and Ingredient.  
+
+```{r}
+# A data frame for TomatoJuice_1936 is created
+TomatoJuice_1936 <- data.frame(
+# Amount, Measure and Ingredients are defined 
+Amount = c(28.0,0.50,1.00,1.00),
+Measure = c("oz","cup","thick slc", "ea"),
+Ingredient = c("juice,tomato,canned,unsalted","water,generic","onion,yellow,fresh,chopped","celery stalk,fresh,medium,7.5 to 8"))
+```
+
+
+```{r}
+# A data frame for TomatoJuice_2006 is created
+TomatoJuice_2006 <- data.frame(
+# Amount, Measure and Ingredients are defined
+Amount = c(2.50,1.50,1.00,1.00,0.50,0.25),
+Measure = c("cup","Tbs", "tsp", "tsp", "tsp","tsp"),
+Ingredient = c("juice,tomato,canned,unsalted","juice,lemon,fresh","onion,yellow,fresh,chopped","celery,fresh,diced","horseradish,prepared","sugar,white,granulated,granulated"))
+```
+
+
+```{r}
+# A data frame for BraisedRedCabbage_1936 is created
+BraisedRedCabbage_1936 <- data.frame(
+# Amount, Measure and Ingredients are defined
+Amount = c(1.00,3.00,2.00,2.00,0.33,1.00,0.27),
+Measure = c("ea","slice", "ea", "Tbs", "cup","Tbs","cup"),
+Ingredient = c("cabbage,fresh,common,head","bacon,raw,cured","apple,fresh,large,3 1/4","flour,all purpose,self rising,enriched","vinegar,distilled","sugar,white,granulated,granulated","water,generic"))
+```
+
+```{r}
+# A data frame for BraisedRedCabbage_2006 is created
+BraisedRedCabbage_2006 <- data.frame(
+# Amount, Measure and Ingredients are defined
+Amount = c(2.00,2.00,0.25,1.00,0.25,2.00),
+Measure = c("lb","slice", "cup", "ea", "cup","Tbs"),
+Ingredient = c("cabbage,fresh,common,head","bacon,raw,cured","onion,yellow,fresh,chopped","apple,fresh,large,3 1/4","vinegar,red wine","sugar,white,granulated,granulated"))
+```
+
+#comment:
+We have created data tables for recipes Tomato Juice and Braised Red Cabbage for the Year 1936 and 2006, with columns Amount, Unit and Ingredients.
+
+## Part 1.2
+Writing each individual recipe to a tab delimited file 
+
+```{r}
+# creating .tab for recipe TomatoJuice_1936
+write.table(TomatoJuice_1936,"TomatoJuice_1936.tab",row.names = FALSE)
+# creating .tab for recipe TomatoJuice_2006
+write.table(TomatoJuice_2006,"TomatoJuice_2006.tab",row.names = FALSE)
+# creating .tab for recipe BraisedRedCabbag_1936
+write.table(BraisedRedCabbage_1936,"BraisedRedCabbage_1936.tab",row.names = FALSE)
+# creating .tab for recipe BraisedRedCabbag_2006
+write.table(BraisedRedCabbage_2006, "BraisedRedCabbage_2006.tab",row.names = FALSE)
+```
+
+#comment:
+Each individual recipe is wrtten to a tab delimited file using write.table.
+
+## Part 1.3
+Read in each tab file, and merge the tables with the example Beef Stroganoff tables.
+
+```{r}
+# read table for the recipe BeefStroganoff 1997
+BeefStroganoff.1997 = read.table("BeefStroganoff.1997.tab",header = TRUE,stringsAsFactors = FALSE)
+# read table for the recipe BeefStroganoff 2006
+BeefStroganoff.2006 = read.table("BeefStroganoff.2006.tab",header = TRUE,stringsAsFactors = FALSE)
+# combining both the recipes TomatoJuice and BraisedRedCabbage of 1936
+Recipe1936 = rbind(TomatoJuice_1936,BraisedRedCabbage_1936)
+# combining both the recipes TomatoJuice and BraisedRedCabbage of 2006
+Recipe2006 = rbind(TomatoJuice_2006,BraisedRedCabbage_2006)
+# Merging (1936 and 1997) to BeefStroganoff_1936_1997 and (2006) to BeefStroganoff_2006
+MergwithBSO_1936_1997 = rbind(Recipe1936,BeefStroganoff.1997)
+MergwithBSO_2006 = rbind(Recipe2006,BeefStroganoff.2006)
+```
+
+#comment:
+We have read in each tab file and merged the tables with the example BeefStroganoff table using rbind, first to merge each recipe then with BeefStroganoff.
+
+## Part 1.4
+Proof the data to check for errors.
+
+
+```{r}
+# TomatoJuice and BraisedRedCabbage merged by ingredient
+TomatoJuiceIng <- merge(TomatoJuice_1936,TomatoJuice_2006, by = "Ingredient")
+BraisedRedCabbageIng <- merge(BraisedRedCabbage_1936,BraisedRedCabbage_2006, by = "Ingredient")
+#Measure.x and Measure.y is plotted and checked 
+plot(TomatoJuiceIng$Measure.x,TomatoJuiceIng$Measure.y, col = "blue")
+plot(BraisedRedCabbageIng$Measure.x,BraisedRedCabbageIng$Measure.y, col = "orange")
+table(TomatoJuiceIng$Measure.x,TomatoJuiceIng$Measure.y)
+table(BraisedRedCabbageIng$Measure.x,BraisedRedCabbageIng$Measure.y)
+# Amount.x and Amount.y is plotted and checked
+plot(TomatoJuiceIng$Amount.x,TomatoJuiceIng$Amount.y,col = "blue")
+plot(BraisedRedCabbageIng$Amount.x,BraisedRedCabbageIng$Amount.y,col = "orange")
+```
+
+```{r}
+food_des.dat <- read.table("FOOD_DES.txt",header=FALSE,sep="^",quote="~")
+names(food_des.dat) <- c("NDB_No","FdGrp_Cd","Long_Desc","Shrt_Desc",
+"ComName","ManufacName","Survey","Ref_desc","Refuse","SciName",
+"N_Factor","Pro_Factor","Fat_Factor","CHO_Factor")
+
+# BeefStroganoff year 1997
+
+# Matched "Beef, loin, tenderloin roast, boneless, separable lean only, trimmed to 0" fat, select, raw"
+BS_97_1 <- food_des.dat[grep('^beef[[:punct:]].loin[[:punct:]].tenderloin.roast[[:punct:]].boneless[[:punct:]].separable.lean.only[[:punct:]].trimmed.to.0".fat[[:punct:]].select',food_des.dat$Long_Desc, ignore.case = TRUE, fixed = FALSE),c(1,3)]
+
+# Original Ingredients "butter,salad"
+# Matched "Butter, salted"
+BS_97_2 <- food_des.dat[grep('^butter[[:punct:]].salted',food_des.dat$Long_Desc,ignore.case = TRUE,fixed = FALSE), c(1,3)]
+
+# Original Ingredients "flour,all purpose,self rising,enriched"
+# Matched "Wheat flour, white, all-purpose, self-rising, enriched"
+BS_97_3 <- food_des.dat[grep('^wheat.flour[[:punct:]].white[[:punct:]].all-purpose[[:punct:]].self-rising',food_des.dat$Long_Desc,ignore.case = TRUE,fixed = FALSE), c(1,3)]
+
+# Original Ingredients "stock, beef, prepared from recipe"
+# Matched "Soup, stock, beef, home-prepared"
+BS_97_4 <- food_des.dat[grep("^soup[[:punct:]].stock[[:punct:]].beef", food_des.dat$Long_Desc, ignore.case = TRUE),c(1,3)]
+
+# Original Ingredients "sour cream, cultured"
+# Matched "Cream, sour, cultured"
+BS_97_5 <- food_des.dat[grep("^cream[[:punct:]].sour[[:punct:]].cultured",food_des.dat$Long_Desc, ignore.case = TRUE, fixed = FALSE),c(1,3)]
+
+# Original Ingredients "mustard, dijon"
+# Matched "Mustard, prepared, yellow"
+BS_97_6 <- food_des.dat[grep("^mustard[[:punct:]]|.(D|d)ijon",food_des.dat$Long_Desc, ignore.case = TRUE, fixed = FALSE),c(1,3)]
+
+BSO_1997 <- rbind(BS_97_1,BS_97_2,BS_97_3,BS_97_4,BS_97_5,BS_97_6)
+
+# BeefStroganoff year 2006
+
+# Original Ingredients "beef roast, tenderloin, raw, 0" trim"
+# Matched "Beef, loin, tenderloin roast, boneless, separable lean only, trimmed to 0" fat, select, raw"
+BS_06_1 <- food_des.dat[grep('^beef[[:punct:]].loin[[:punct:]].tenderloin.roast[[:punct:]].boneless[[:punct:]].separable.lean.only[[:punct:]].trimmed.to.0".fat[[:punct:]].select',food_des.dat$Long_Desc, ignore.case = TRUE, fixed = FALSE),c(1,3)]
+
+# Original Ingredients "oil, canola"
+# Matched "Oil, canola"
+BS_06_2 <-food_des.dat[grep("^oil[[:punct:]].canola", food_des.dat$Long_Desc, ignore.case = TRUE),c(1,3)]
+
+# Original Ingredients "butter,salad"
+# Matched "Butter, salted"
+BS_06_3 <-food_des.dat[grep('^butter[[:punct:]].salted',food_des.dat$Long_Desc,ignore.case = TRUE,fixed = FALSE), c(1,3)]
+
+# Original Ingredients "onion, yellow, fresh, medium, 2 1/2\"
+# Matched "Onions, yellow, sauteed"
+BS_06_4 <-food_des.dat[grep("^onions[[:punct:]].yellow", food_des.dat$Long_Desc, ignore.case = TRUE),c(1,3)]
+
+# Original Ingredients "mushrooms, fresh"
+# Matched "Mushrooms, white, raw"
+BS_06_5 <-food_des.dat[grep("^mushrooms[[:punct:]].white[[:punct:]].raw", food_des.dat$Long_Desc, ignore.case = TRUE),c(1,3)]
+
+# Original Ingredients "stock, beef, prepared from recipe"
+# Matched "Soup, stock, beef, home-prepared"
+BS_06_6 <-food_des.dat[grep("^soup[[:punct:]].stock[[:punct:]].beef", food_des.dat$Long_Desc, ignore.case = TRUE),c(1,3)]
+
+# Original Ingredients "sour cream, cultured"
+# Matched "Cream, sour, cultured"
+BS_06_7 <-food_des.dat[grep("^cream[[:punct:]].sour[[:punct:]].cultured",food_des.dat$Long_Desc, ignore.case = TRUE, fixed = FALSE),c(1,3)]
+
+# Original Ingredients "mustard, dijon"
+# Matched "Mustard, prepared, yellow"
+BS_06_8 <-food_des.dat[grep("^mustard[[:punct:]]|.(D|d)ijon",food_des.dat$Long_Desc, ignore.case = TRUE, fixed = FALSE),c(1,3)]
+
+BSO_2006 <- rbind(BS_06_1,BS_06_2,BS_06_3,BS_06_4,BS_06_5,BS_06_6,BS_06_7,BS_06_8)
+
+# An empty column c() is assigned to BeefStroganoff.1997
+BeefStroganoff.1997$Ingredient <- c()
+# Food description is tabulated
+BeefStroganoff.1997$Ingredient <- BSO_1997$Long_Desc
+# NDB_NO is assigned 
+BeefStroganoff.1997$NDB_NO <- BSO_1997$NDB_NO
+# An empty column c() is assigned to BeefStroganoff.2006
+BeefStroganoff.2006$Ingredient <- c()
+# Food description is tabulated
+BeefStroganoff.2006$Ingredient <- BSO_2006$Long_Desc
+# NDB_NO is assigned 
+BeefStroganoff.2006$NDB_NO <- BSO_2006$NDB_NO
+# Print BeefStroganoff.1997
+BeefStroganoff.1997
+# Print BeefStroganoff.2006
+BeefStroganoff.2006
+```
+
+```{r}
+
+# TomatoJuice year 1936
+
+# Original ingredients are "juice,tomato,canned,unsalted"
+# Matched "Tomato juice, canned, without salt added"
+TJ_1936_1 <- food_des.dat[grep("^tomato.juice[[:punct:]].canned[[:punct:]].without.salt",food_des.dat$Long_Desc,ignore.case = TRUE), c(1,3)]
+
+# Original ingredients are "water,generic"
+# Matched "Water, bottled, generic"
+TJ_1936_2 <- food_des.dat[grep('^water[[:punct:]].bottled[[:punct:]].generic', food_des.dat$Long_Desc,ignore.case = TRUE,fixed = FALSE), c(1,3)]
+
+# Original ingredients are "onion,yellow,fresh,chopped"
+# Matched "Onions, yellow, sauteed"
+TJ_1936_3 <- food_des.dat[grep('^onions[[:punct:]].yellow',food_des.dat$Long_Desc,ignore.case = TRUE,fixed = FALSE), c(1,3)]
+
+# Original ingredients are "celery stalk,fresh,medium"
+# Matched ingredient "Celery, raw"
+TJ_1936_4 <- food_des.dat[grep('^celery[[:punct:]].raw',food_des.dat$Long_Desc,ignore.case = TRUE,fixed = FALSE), c(1,3)]
+
+# Combining all of them with rbind
+TJ_1936 <- rbind(TJ_1936_1,TJ_1936_2,TJ_1936_3,TJ_1936_4)
+
+#TomatoJuice year 2006
+
+# Original Ingredients "juice,tomato,canned,unsalted"
+# Matched "Tomato juice, canned, without salt added"
+TJ_2006_1 <- food_des.dat[grep("^tomato.juice[[:punct:]].canned[[:punct:]].without.salt",food_des.dat$Long_Desc,ignore.case = TRUE,fixed = FALSE), c(1,3)]
+
+# Original Ingredients "juice,lemon,fresh"
+# Matched "Lemon juice, raw"
+TJ_2006_2 <- food_des.dat[grep('^lemon.juice[[:punct:]].raw',food_des.dat$Long_Desc,ignore.case = TRUE,fixed = FALSE), c(1,3)]
+
+# Original Ingredients "onion,yellow,fresh,chopped"
+# Matched "Onions, yellow, sauteed"
+TJ_2006_3 <- food_des.dat[grep('^onions[[:punct:]].yellow',food_des.dat$Long_Desc,ignore.case = TRUE,fixed = FALSE), c(1,3)]
+
+# Original Ingredients "celery,fresh,diced"
+# Matched "Celery, raw"
+TJ_2006_4 <- food_des.dat[grep('^celery[[:punct:]].raw',food_des.dat$Long_Desc,ignore.case = TRUE,fixed = FALSE), c(1,3)]
+
+# Original Ingredients " horseradish, prepared"
+# Matched " Horseradish, prepared"
+TJ_2006_5 <- food_des.dat[grep('^horseradish[[:punct:]].prepared',food_des.dat$Long_Desc,ignore.case = TRUE,fixed = FALSE), c(1,3)]
+
+# Original Ingredients "sugar,white,granulated"
+# Matched "Sugars, granulated"
+TJ_2006_6 <- food_des.dat[grep('^sugars[[:punct:]].granulated',food_des.dat$Long_Desc,ignore.case = TRUE,fixed = FALSE), c(1,3)]
+
+# Combining all of them with rbind
+TJ_2006 <- rbind(TJ_2006_1,TJ_2006_2,TJ_2006_3,TJ_2006_4,TJ_2006_5,TJ_2006_6)
+
+# An empty column c() is assigned to TomatoJuice_1936
+TomatoJuice_1936$Ingredient <- c()
+# Food description is tabulated
+TomatoJuice_1936$Ingredient <- TJ_1936$Long_Desc
+# NDB_NO is assigned 
+TomatoJuice_1936$NDB_NO <- TJ_1936$NDB_NO
+# An empty column c() is assigned to TomatoJuice_2006
+TomatoJuice_2006$Ingredient <- c()
+# Food description is tabulated
+TomatoJuice_2006$Ingredient <- TJ_2006$Long_Desc
+# NDB_NO is assigned
+TomatoJuice_2006$NDB_NO <- TJ_2006$NDB_NO
+#Print TomatoJuice_1936
+TomatoJuice_1936
+#Print TomatoJuice_2006
+TomatoJuice_2006
+
+```
+
+```{r}
+# BraisedRedCabbage year 1936
+
+# Original ingredients are "cabbage,fresh,common,head"
+# Matched "Cabbage, common (danish, domestic, and pointed types), freshly harvest, raw"
+BRC_1936_1 <- food_des.dat[grep("11749",food_des.dat$NDB_No,ignore.case = TRUE,fixed = FALSE), c(1,3)]
+
+# Original ingredients are "bacon,raw,cured"
+# Matched "Pork, cured, bacon, unprepared"
+BRC_1936_2 <- food_des.dat[grep('^pork[[:punct:]].cured[[:punct:]].bacon[[:punct:]].unprepared', food_des.dat$Long_Desc,ignore.case = TRUE,fixed = FALSE), c(1,3)]
+
+# Original ingredients are "apple,fresh,large,3 1/4"
+# Matched "Apples, raw, with skin (Includes foods for USDA's Food Distribution Program)"
+BRC_1936_3 <- food_des.dat[grep('^apples[[:punct:]].raw[[:punct:]].with.skin',food_des.dat$Long_Desc,ignore.case = TRUE,fixed = FALSE), c(1,3)]
+
+# Original ingredients are "flour,all purpose,self rising,enriched"
+# Matched ingredient "Wheat flour, white, all-purpose, self-rising, enriched"
+BRC_1936_4 <- food_des.dat[grep('flour[[:punct:]].white[[:punct:]].all-purpose[[:punct:]].self-rising',food_des.dat$Long_Desc,ignore.case = TRUE,fixed = FALSE), c(1,3)]
+
+# Original ingredients are "vinegar,distilled"
+# Matched ingredient "Vinegar, distilled"
+BRC_1936_5 <- food_des.dat[grep('vinegar[[:punct:]].distilled',food_des.dat$Long_Desc,ignore.case = TRUE,fixed = FALSE), c(1,3)]
+
+# Original Ingredients "sugar,white,granulated"
+# Matched "Sugars, granulated"
+BRC_1936_6 <- food_des.dat[grep('sugars[[:punct:]].granulated',food_des.dat$Long_Desc,ignore.case = TRUE,fixed = FALSE), c(1,3)]
+
+# Original ingredients are "water,generic"
+# Matched "Water, bottled, generic"
+BRC_1936_7 <- food_des.dat[grep('water[[:punct:]].bottled[[:punct:]].generic',food_des.dat$Long_Desc,ignore.case = TRUE,fixed = FALSE), c(1,3)]
+
+# Combining all of them with rbind
+BRC_1936 <- rbind(BRC_1936_1,BRC_1936_2,BRC_1936_3,BRC_1936_4,BRC_1936_5,BRC_1936_6,BRC_1936_7)
+
+
+# BraisedRedCabbage year 2006
+
+# Original ingredients are "cabbage,fresh,common,head"
+# Matched "Cabbage, common (danish, domestic, and pointed types), freshly harvest, raw"
+BRC_2006_1 <- food_des.dat[grep("11749",food_des.dat$NDB_No,ignore.case = TRUE,fixed = FALSE), c(1,3)]
+
+# Original ingredients are "bacon,raw,cured"
+# Matched "Pork, cured, bacon, unprepared"
+BRC_2006_2 <- food_des.dat[grep('^pork[[:punct:]].cured[[:punct:]].bacon[[:punct:]].unprepared',food_des.dat$Long_Desc,ignore.case = TRUE,fixed = FALSE), c(1,3)]
+
+# Original Ingredients "onion,yellow,fresh,chopped"
+# Matched "Onions, yellow, sauteed"
+BRC_2006_3 <- food_des.dat[grep('^onions[[:punct:]].yellow',food_des.dat$Long_Desc,ignore.case = TRUE,fixed = FALSE), c(1,3)]
+
+# Original ingredients are "apple,fresh,large,3 1/4"
+# Matched "Apples, raw, with skin (Includes foods for USDA's Food Distribution Program)"
+BRC_2006_4 <- food_des.dat[grep('^apples[[:punct:]].raw[[:punct:]].with.skin',food_des.dat$Long_Desc,ignore.case = TRUE,fixed = FALSE), c(1,3)]
+
+# Original ingredients are "vinegar,red wine"
+# Matched ingredient "Vinegar, red wine"
+BRC_2006_5 <- food_des.dat[grep('^vinegar[[:punct:]].red.wine',food_des.dat$Long_Desc,ignore.case = TRUE,fixed = FALSE), c(1,3)]
+
+# Original Ingredients "sugar,white,granulated"
+# Matched "Sugars, granulated"
+BRC_2006_6 <- food_des.dat[grep('^sugars[[:punct:]].granulated',food_des.dat$Long_Desc,ignore.case = TRUE,fixed = FALSE), c(1,3)]
+
+# Combining all of them with rbind
+BRC_2006 <- rbind(BRC_2006_1,BRC_2006_2,BRC_2006_3,BRC_2006_4,BRC_2006_5,BRC_2006_6)
+
+# An empty column c() is assigned to BraisedRedCabbage_1936
+BraisedRedCabbage_1936$Ingredient <- c()
+# Food description is tabulated
+BraisedRedCabbage_1936$Ingredient <- BRC_1936$Long_Desc
+# A new variable NDB_NO is assigned here
+BraisedRedCabbage_1936$NDB_NO <- BRC_1936$NDB_NO
+# An empty column c() is assigned to BraisedRedCabbage_2006
+BraisedRedCabbage_2006$Ingredient <- c()
+# Food description is tabulated
+BraisedRedCabbage_2006$Ingredient <- BRC_2006$Long_Desc
+# NDB_NO is assigned 
+BraisedRedCabbage_2006$NDB_NO <- BRC_2006$NDB_NO
+#Print BraisedRedCabbage_1936
+BraisedRedCabbage_1936
+#Print BraisedRedCabbage_2006
+BraisedRedCabbage_2006
+
+
+```
+
+```{r}
+table_All <- rbind(TomatoJuice_1936,TomatoJuice_2006,BraisedRedCabbage_1936,BraisedRedCabbage_2006,BeefStroganoff.1997,BeefStroganoff.2006)
+table_All
+# creates tab file
+write.table(TomatoJuice_1936,"TomatoJuice_1936.tab", sep="\t", row.names = FALSE)
+# creates tab file
+write.table(TomatoJuice_2006,"TomatoJuice_2006.tab", sep="\t", row.names = FALSE)
+# creates tab file
+write.table(BraisedRedCabbage_1936,"TapiocaCustard_1936.tab", sep="\t", row.names = FALSE)
+# creates tab file
+write.table(BraisedRedCabbage_2006,"TapiocaCustard_2006.tab", sep="\t", row.names = FALSE)
+```
+
+#comment:
+The recipes Tomato Juice and Braised Red Cabbage are merged by
+ingredient and Measure.x and Measure.y is plotted and checked. Then, a contingency table is created comparing Measure.x and Measure.y to look for mismatches in measure is created. Finally, Amount.x and Amount.y is plotted to look for unxpected changes in values.
+
+## Part 1.5
+Read the Recipes.csv, append rows for your recipes, then write the table back to Recipes.csv.
+
+
+```{r}
+Recipe <- data.frame(
+Recipe=c("Tomato Juice","Tomato Juice","Braised Red Cabbage","Braised Red Cabbage"),
+# Years with Minimum and Maximum Servings 
+Year=c(1936,2006,1936,2006),
+MinServings=c(6,4,4,4),
+MaxServings=c(6,4,4,4))
+# Recipe is printed
+print(Recipe)
+
+# Recipes.csv file is read 
+BeefStroganoffRecipe <- read.csv("Recipes.csv",header=TRUE)
+# BeefStroganoff_Recipe is printed 
+print(BeefStroganoffRecipe)
+
+# Combining BeefStroganoff_Recipe and Recipe
+Combo <- rbind(BeefStroganoffRecipe,Recipe)
+# creates csv file
+write.csv(Combo, file="Recipes.csv",row.names = FALSE)
+# reads csv file
+Recipe.Table <- read.csv("Recipes.csv",header=TRUE)
+# Recipe.Table is printed 
+print(Recipe.Table)
+```
+
+#comment:
+We have created a data table with Minimum and Maximum Servings of Tomato Juice and Braised Red Cabbage. The Recipes.csv file is read and assigned to BeefStronganoff_Recipe. Then, we combine Recipe and BeefStroganoff_Recipe using rbind and then write the csv file, read it as Recipe.Table and print the values.
+
+# Part 2 - Check Nutrient Data.
+
+We will be using the USDA food nutrient database, found at https://www.ars.usda.gov/northeast-area/beltsville-md-bhnrc/beltsville-human-nutrition-research-center/nutrient-data-laboratory/docs/usda-national-nutrient-database-for-standard-reference/
+
+Run this to make sure your system can read the required nutrient database tables.
+```{r}
+weight.dat <- read.table("WEIGHT.txt",header=FALSE,sep="^",quote="~")
+names(weight.dat) <- c("NDB_No","Seq","Amount","Msre_Desc","Gm_Wgt","Num_Data_Pts","Std_Dev")
+head(weight.dat)
+summary(weight.dat)
+```
+
+```{r}
+food_des.dat <- read.table("FOOD_DES.txt",header=FALSE,sep="^",quote="~")
+names(food_des.dat) <- c("NDB_No","FdGrp_Cd","Long_Desc","Shrt_Desc",
+"ComName","ManufacName","Survey","Ref_desc","Refuse","SciName",
+"N_Factor","Pro_Factor","Fat_Factor","CHO_Factor")
+dim(food_des.dat)
+head(food_des.dat)
+summary(food_des.dat)
+```
+
+```{r}
+nut_data.dat <- read.table("NUT_DATA.txt",header=FALSE,sep="^",quote="~")
+names(nut_data.dat) <- c("NDB_No","Nutr_No","Nutr_Val","Num_Data_Pts","Std_Error",
+"Src_Cd","Deriv_Cd","Ref_NDB_No","Add_Nutr_Mark","Num_Studies",
+"Min","Max","DF","Low_EB","Up_EB","Stat_cmt","AddMod_Date")
+head(nut_data.dat)
+summary(nut_data.dat)
+```

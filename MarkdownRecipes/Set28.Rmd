@@ -1,0 +1,280 @@
+---
+title: "Joy Of Cooking Midterm Project Prep"
+author: "Set 28"
+date: ''
+output:
+  pdf_document: default
+  html_document: default
+---
+
+# Part 1 - Assign Recipes
+
+First, generate a list of all files in the Recipes folder.
+
+### This list has all the names of the recipes provided.
+
+```{r,eval=FALSE}
+recipes <- list.files(path = "./", pattern = '*.pdf')
+head(recipes)
+length(recipes)
+```
+
+Make this reproducible.
+```{r,eval=FALSE}
+set.seed(10010)
+```
+
+Create two randomly sampled list of recipe files and cycle this list through 80 rows
+
+### The data length for this part is project is 107, not 80. The nrow in code had to be changed to reflect the correct number.
+
+```{r,eval=FALSE}
+recipe.pairs <- matrix(c(sample(recipes),sample(recipes)),ncol=2,nrow=107)
+head(recipe.pairs)
+```
+
+Are there any pairs across rows?
+
+```{r,eval=FALSE}
+sum(recipe.pairs[,1]==recipe.pairs[,2])
+```
+
+Write to a table
+
+```{r,eval=FALSE}
+write.csv(recipe.pairs, file="Recipe.Table.csv",row.names = FALSE)
+
+```
+
+Read the table in and print:
+
+### Created a Recipe.Table as instructed. And then imported its content to this Markdown.
+
+```{r,eval=FALSE}
+Recipe.Table <- read.csv("Recipe.Table.csv",header=FALSE,skip=1)
+head(Recipe.Table, 5)
+```
+
+# Part 2 - Check Nutrient Data.
+
+We will be using the USDA food nutrient database, found at https://www.ars.usda.gov/northeast-area/beltsville-md-bhnrc/beltsville-human-nutrition-research-center/nutrient-data-laboratory/docs/usda-national-nutrient-database-for-standard-reference/
+
+Run this to make sure your system can read the required nutrient database tables.
+
+### The code below was able to read the data witout any errors.
+```{r}
+weight.dat <- read.table("WEIGHT.txt",header=FALSE,sep="^",quote="~")
+names(weight.dat) <- c("NDB_No","Seq","Amount","Msre_Desc","Gm_Wgt","Num_Data_Pts","Std_Dev")
+#View(weight.dat)
+summary(weight.dat)
+
+```
+
+```{r}
+food_des.dat <- read.table("FOOD_DES.txt",header=FALSE,sep="^",quote="~")
+#write.table(food_des.dat,"food_dest.csv", sep = ",")
+names(food_des.dat) <- c("NDB_No","FdGrp_Cd","Long_Desc","Shrt_Desc",
+"ComName","ManufacName","Survey","Ref_desc","Refuse","SciName",
+"N_Factor","Pro_Factor","Fat_Factor","CHO_Factor")
+
+```
+### I created an object to test the grep function below. The function can read through the vector and find the variable being queried. 
+
+```{r}
+Ingredient=c("Lobster meat, can or cooked","oil, olive","vinegar", "celery, fresth,diced", "Mayonnaise")
+if(length(i <- grep("coo", Ingredient)))
+  cat("'coo' appears at least once in\n\t", Ingredient, "\n")
+i 
+Ingredient[i]
+```
+
+### The above function did not work very well to identify the recipe's name. The end goal was to find a recipe name and find the `NDB_No`.
+
+```{r}
+
+Ingredient=food_des.dat$Long_Desc
+if(length(i <- grep("Mayonnaise", Ingredient)))
+  cat("Mayonnaise' appears at least once in\n\t", Ingredient, "\n")
+i # 2 and 4
+Ingredient[807]
+
+
+
+#summary(food_des.dat)
+APPNAPPTART <- grepl("^celery, fresth,diced", food_des.dat$Long_Desc)
+
+#PMC too many row to print (~8000)
+#food_des.dat[1:13]
+
+```
+### I tried using the function above to get a recipe name connected to the `NDB_No`, instead of doing it manually. Failed.
+```{R}
+Ingredient=food_des.dat$Long_Desc
+if(length(i <- grep("lobster", Ingredient)))
+  cat("Ingredient' appears at least once in\n\t", Ingredient, "\n")
+i 
+Ingredient[i]
+Ingredient[4232 ]
+Ingredient[4311 ]
+
+
+#summary(food_des.dat)
+APPNAPPTART <- grep("^celery, fresth,diced", food_des.dat$Long_Desc, value = T)
+APPNAPPTART
+#PMC - too many rows to print
+#food_des.dat[1:13]
+```
+
+```{r}
+nut_data.dat <- read.table("NUT_DATA.txt",header=FALSE,sep="^",quote="~")
+names(nut_data.dat) <- c("NDB_No","Nutr_No","Nutr_Val","Num_Data_Pts","Std_Error",
+"Src_Cd","Deriv_Cd","Ref_NDB_No","Add_Nutr_Mark","Num_Studies",
+"Min","Max","DF","Low_EB","Up_EB","Stat_cmt","AddMod_Date")
+head(nut_data.dat)
+#summary(nut_data.dat)
+```
+## 1. Create data tables for your assigned recipes, with columns Amount, Unit and Ingredient.
+
+### Lobster Salad or Shrimp 1936
+
+```{r}
+lobsterSaladorShrimp.1936<-data.frame(Recipe=c("Lobster Salad or Shrimp","Lobster Salad or Shrimp", "Lobster Salad or Shrimp","Lobster Salad or Shrimp","Lobster Salad or Shrimp"),Year=c(1936, 1936, 1936, 1936,1936),
+Amount=c(4,1,1,1,0.5),
+Measure=c("oz", "tbs", "tbs", "cup", "cup"),
+Ingredient=c("Lobster meat, can or cooked","oil, olive","vinegar", "celery, fresth,diced", "Mayonnaise"))#, NDB_No=c("NA","NA", "NA","NA","NA"))
+lobsterSaladorShrimp.1936$NDB_No<-NA
+
+write.table(lobsterSaladorShrimp.1936, "lobsterSaladorShrimp.1936.tab", sep = "\t", row.names = FALSE)
+lobsterSaladorShrimp.1936<- as.data.frame(read.table("lobsterSaladorShrimp.1936.tab", header = T, sep = "", fill = TRUE))
+lobsterSaladorShrimp.1936
+```
+
+### Created a data frame for Lobster Salad or Shrimp 1936
+
+```{r}
+lobsterSaladorShrimp.2006<-data.frame(Recipe=c("Lobster Salad or Shrimp","Lobster Salad or Shrimp","Lobster Salad or Shrimp"),Year=c(2006, 2006, 2006),
+Amount=c(8, .25, 1),
+Measure=c("oz", "cup", "tsp"),
+Ingredient=c("Lobster, cooked","sour cream, cultured", "juice, lemeon, fresh"))
+lobsterSaladorShrimp.2006$NDB_No<-NA
+lobsterSaladorShrimp.2006
+write.table(lobsterSaladorShrimp.2006, "lobsterSaladorShrimp.2006.tab", sep = "\t")
+lobsterSaladorShrimp.2006
+lobsterSaladorShrimp.2006 <- as.data.frame(read.table("lobsterSaladorShrimp.2006.tab", header = T, sep = "", fill = TRUE))
+lobsterSaladorShrimp.2006
+```
+
+### Created a data frame for LemonSouffle 1936
+```{r}
+lemonSouffle.1936<-data.frame(Recipe=c("Lemon Souffle", "Lemon Souffle","Lemon Souffle"),Year=c(1936,1936,1936),Amount=c(.75, 5, 3), Measure=c("cup", "lrg", "tbs"),Ingredients=c("sugar, white, granulated,granulated", "egg, raw", "juice,lemon,fresh") )
+
+lemonSouffle.1936$NDB_No<-NA
+write.table(lemonSouffle.1936, "lemonSouffle.1936.tab", sep = "\t")
+
+lemonSouffle.1936
+```
+###  Write each individual recipe to a tab delimited file. The name of the tab file should be comprised of the recipe file name and the year of the recipe (1936 or 2006, in most cases).
+
+Read in each tab file, and merge the tables with the example Beef Stroganoff tables. 
+```{r}
+lemonSouffle.1936 <- as.data.frame(read.table("lemonSouffle.1936.tab", header = T, sep = "", fill = TRUE))
+lemonSouffle.1936
+```
+
+###LemonSouffle 2006
+```{r}
+lemonSouffle.2006<-data.frame(Recipe=c("Lemon Souffle", "Lemon Souffle","Lemon Souffle","Lemon Souffle", "Lemon Souffle","Lemon Souffle","Lemon Souffle", "Lemon Souffle"),Year=c(2006, 2006,2006,2006,2006,2006,2006,2006),
+Amount=c(3,.25,5,1,.5,.5,.5,.33), 
+Measure=c("tbs", "cup", "lrg","ea","cup","cup","cup","cup"), Ingredient=c("butter,salted", "flour, all purpose,self rising","egg, raw", "egg white, raw, large","milk, whole, 3.25%", "cream, whipping, heavy", "sugar, white, granulated, granulated", "juice, lemon, fresh"))
+lemonSouffle.2006$NDB_No<-NA
+```
+###  Write each individual recipe to a tab delimited file. The name of the tab file should be comprised of the recipe file name and the year of the recipe (1936 or 2006, in most cases).
+
+ Read in each tab file, and merge the tables with the example Beef Stroganoff tables. 
+```{r}
+write.table(lemonSouffle.2006, "lemonSouffle2006.tab", sep = "\t")
+lemonSouffle.2006
+lemonSouffle.2006 <- as.data.frame(read.table("lemonSouffle2006.tab", header = T, sep = "", fill = TRUE))
+lemonSouffle.2006
+```
+### Recipe table for Min and Max Servings
+```{r}
+recipe<-data.frame(Recipe=c("Lobster Salad or Shrimp","Lobster Salad or Shrimp", "Lemon Souffle", "Lemon Souffle"), Year=c(1936,2006,1936,2006), MinServings=c(4,2,4,8), MaxServings =c(4,2,4,8))
+recipe
+```
+
+
+### Merging all recipes. The idea is to create a large data set that could be split into subsection and using to mine the assignment objectives. 
+- merge.recipe5 has data frames:
+BeefStroganoff.1997
+BeefStroganoff.2006
+lobsterSaladorShrimp.1936
+lobsterSaladorShrimp.2006
+lemonSouffle.1936
+lemonSouffle.2006
+
+
+```{r}
+BeefStroganoff.1997 <- as.data.frame(read.table("BeefStroganoff.1997.tab", header = T, sep = "", fill = TRUE))
+BeefStroganoff.1997$YEAR<-c(1997, 1997, 1997,1997, 1997, 1997)
+#PMC View shouldn't be used in typeset code
+#View(BeefStroganoff.1997)
+BeefStroganoff.2006 <- as.data.frame(read.table("BeefStroganoff.2006.tab", header = T, sep = "", fill = TRUE))
+BeefStroganoff.2006$YEAR<-c(2006, 2006,2006, 2006,2006, 2006,2006, 2006)
+#View(BeefStroganoff.2006)
+merge.recipe<-merge(BeefStroganoff.1997, BeefStroganoff.2006, all = T)
+#View(merge.recipe)
+merge.recipe2<-merge(merge.recipe, lobsterSaladorShrimp.1936, all = T)
+#View(merge.recipe2)
+merge.recipe3<-merge(merge.recipe2, lemonSouffle.1936, all = T)
+merge.recipe4<-merge(merge.recipe3  , lobsterSaladorShrimp.2006, all = T)
+merge.recipe5<-merge(merge.recipe4, lemonSouffle.2006, all= T)
+#View(merge.recipe5)
+
+
+```
+
+### Graph and Contingecy table for Beefstroganoff
+```{r}
+Beef.Merge<-merge(BeefStroganoff.1997, BeefStroganoff.2006, by="Ingredient", all.x  = T, all.y = T)
+#View(Beef.Merge)
+plot(Beef.Merge$Amount.x, Beef.Merge$Amount.y, type = "l", col="red")
+table(Beef.Merge$Measure.x, Beef.Merge$Measure.y)
+
+
+```
+### This is function that list 4 data frames into one, then it merges the tables provided for this exercise.
+
+- nut_data.dat
+
+- food_des.dat
+
+- weight.dat
+
+# Again, the idea is to combined the NDB_No to the ingredients. In the end, it managed to merge all the data frames but I do not know with NDB_no's are assigned to the correct ingredient.
+```{r}
+Combine.Recipes<- function(x, y){
+  df <- merge(x, y, by= "Ingredient", all.x=T, all.y=T )
+  return(df)
+}
+new.df <-Reduce(Combine.Recipes, list(BeefStroganoff.1997,lobsterSaladorShrimp.1936, BeefStroganoff.2006, lemonSouffle.2006))
+
+
+
+table(new.df$Amount.x, new.df$Amount.x)
+table.1<-merge(new.df, weight.dat, all = T)
+
+#this line crashes my system; it's far too large a file for all.x=T
+#table.2<-merge(table.1, nut_data.dat, by="NDB_No", all.x=T )
+
+#head(table.2)
+#dim(table.2)
+
+
+
+
+
+
+
+```
+

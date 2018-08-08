@@ -1,0 +1,295 @@
+---
+title: "Joy Of Cooking Midterm Project"
+author: "Set 55"
+date: "7/20/2018"
+output:
+  word_document: default
+  html_document: default
+---
+
+# Step 1 - Create data tables for your assigned recipes, with columns Amount, Measure and Ingredient.
+
+I enterd data from my assigned recipes ("Farina Pudding.pdf", and "Leftover Potatoes O'Brien.pdf"), and created data frames for 1936 and 2006, with columns "Amount"", "Measure"", and "Ingredient". So, on this stage, I have created four data frames with names "FarinaPudding1936", "FarinaPudding2006", "LeftoverPotatoesOBrien1936", "LeftoverPotatoesOBrien2006". The code chunk below is used to create the four data frames.
+
+```{r}
+FarinaPudding1936 <- data.frame(
+  Amount = c(2.00, 0.25, 0.50, 1.00, 2.00, 1.00),
+  Measure = c("cup", "cup", "cup", "Tbs", "Irg", "tsp"),
+  Ingredient = c("milk, whole, 3.25%", "sugar, white, granulated, granulated", "hot cereal, farina, dry, unenriched", "butter, salted", "egg, raw", "extract, vanilla")
+)
+print(FarinaPudding1936, right = FALSE)
+
+FarinaPudding2006 <- data.frame(
+  Amount = c(2.00, 0.25, 0.25, 1.00, 2.00, 1.00),
+  Measure = c("cup", "cup", "cup", "Tbs", "ea", "tsp"),
+  Ingredient = c("milk, whole, 3.25%", "sugar, white, granulated, granulated", "hot cereal, farina, dry, unenriched", "butter, salted", "egg yolk, raw, large", "extract, vanilla")
+)
+print(FarinaPudding2006, right = FALSE)
+
+LeftoverPotatoesOBrien1936 <- data.frame(
+  Amount = c(6.00, 1.00, 1.00, 1.00, 1.00, 0.25, 2.00),
+  Measure = c("ea", "ea", "ea", "Tbs", "cup", "cup", "Tbs"),
+  Ingredient = c('potato, cooked, peeled, medium, 2 1/4" to 3 1/4"', 'bell pepper, green, fresh, medium, 2 1/2"', 'onion, yellow, fresh, medium, 2 1/2"', "flour, all purpose, self rising, enriched", "milk, whole, 3.25%", "bread crumbs, plain, dry, grated", "butter, salted")
+)
+print(LeftoverPotatoesOBrien1936, right = FALSE)
+
+LeftoverPotatoesOBrien2006 <- data.frame(
+  Amount = c(6.00, 1.00, 1.00, 1.00, 1.00, 0.25, 2.00),
+  Measure = c("ea", "ea", "ea", "Tbs", "cup", "cup", "Tbs"),
+  Ingredient = c('potato, cooked, peeled, medium, 2 1/4" to 3 1/4"', 'bell pepper, green, fresh, medium, 2 1/2"', 'onion, yellow, fresh, medium, 2 1/2"', "flour, all purpose, self rising, enriched", "milk, whole, 3.25%", "bread crumbs, plain, dry, grated", "butter, salted")
+  
+)
+print(LeftoverPotatoesOBrien2006, right = FALSE)
+
+```
+
+
+# Step 2 - Cross-reference the data to the 'WEIGHT.txt' and 'FOOD_DES.txt' data.
+
+I used the codes below to write the 'weight', 'food_des', and 'nut_data' data into my computer, and manually looked for the "Msre_Desc", "NDB_No", and "Long_Desc" from the excel files. I wrote the codes in the literate portion to avoid generating these files again when others use my code for the final project. The Ingredient and Measure for my recipes were matched to the 'weight', 'food_des' data, and the corresponding amount was adjusted using conversion factors. 
+
+write.csv(weight.dat, file = "weight.csv")
+write.csv(food_des.dat, file = "food_des.csv")
+write.csv(nut_data.dat, file = "nut_data.csv")
+
+
+```{r}
+weight.dat <- read.table("WEIGHT.txt",header=FALSE,sep="^",quote="~")
+names(weight.dat) <- c("NDB_No","Seq","Amount","Msre_Desc","Gm_Wgt","Num_Data_Pts","Std_Dev")
+
+food_des.dat <- read.table("FOOD_DES.txt",header=FALSE,sep="^",quote="~")
+names(food_des.dat) <- c("NDB_No","FdGrp_Cd","Long_Desc","Shrt_Desc",
+"ComName","ManufacName","Survey","Ref_desc","Refuse","SciName",
+"N_Factor","Pro_Factor","Fat_Factor","CHO_Factor")
+
+nut_data.dat <- read.table("NUT_DATA.txt",header=FALSE,sep="^",quote="~")
+names(nut_data.dat) <- c("NDB_No","Nutr_No","Nutr_Val","Num_Data_Pts","Std_Error",
+"Src_Cd","Deriv_Cd","Ref_NDB_No","Add_Nutr_Mark","Num_Studies",
+"Min","Max","DF","Low_EB","Up_EB","Stat_cmt","AddMod_Date")
+
+```
+
+I had to change the unit for 'Butter, salted' from Tbs to tbsp, which is the unit description in the 'weight' table. I had to use a conversion factor of 3 to convert the amount from Tbs to tbsp for 'FarinaPudding'. The Ingredient column was matched with the L'ong desc' from the 'food_des' data, and the corresponding 'NDB_No' were recorded. The code chunck below was used to regenerate the data frame 'FarinaPudding1936' with the values cross-references with the USDA.
+
+```{r}
+FarinaPudding1936.NDB_No <- c(1211, 19335, 8172, 1001, 1123, 2050)
+FarinaPudding1936.Amount <- c(2, 0.25, 0.5, 3, 2, 1)
+FarinaPudding1936.Msre_Desc <- c("cup", "cup", "cup", "tbsp", "large", "tsp")
+FarinaPudding1936.Long_Desc <- c("Milk, whole, 3.25% milkfat, without added vitamin A and vitamin D",
+                                 "Sugars, granulated",
+                                 "Cereals, farina, unenriched, dry",
+                                 "Butter, salted",
+                                 "Egg, whole, raw, fresh",
+                                 "Vanilla extract"
+                                 )
+
+FarinaPudding1936[["Measure"]] <- FarinaPudding1936.Msre_Desc
+FarinaPudding1936[["Amount"]] <- FarinaPudding1936.Amount
+FarinaPudding1936[["Ingredient"]] <- FarinaPudding1936.Long_Desc
+FarinaPudding1936 <- cbind(FarinaPudding1936.NDB_No, FarinaPudding1936)
+colnames(FarinaPudding1936) <- c("NDB_No", "Amount", "Measure", "Ingredient")
+print(FarinaPudding1936, right = FALSE)
+
+```
+
+Similar to the 'FarinaPudding1936' data frame above, the 'FarinaPudding2006' data was cross-referenced to the USDA data and regenerated and printed below.
+
+```{r}
+FarinaPudding2006.NDB_No <- c(1211, 19335, 8172, 1001, 1125, 2050)
+FarinaPudding2006.Amount <- c(2, 0.25, 0.25, 3, 2, 1)
+FarinaPudding2006.Msre_Desc <- c("cup", "cup", "cup", "tbsp", "large", "tsp")
+FarinaPudding2006.Long_Desc <- c("Milk, whole, 3.25% milkfat, without added vitamin A and vitamin D",
+                                 "Sugars, granulated",
+                                 "Cereals, farina, unenriched, dry",
+                                 "Butter, salted",
+                                 "Egg, yolk, raw, fresh",
+                                 "Vanilla extract"
+                                 )
+
+FarinaPudding2006[["Measure"]] <- FarinaPudding2006.Msre_Desc
+FarinaPudding2006[["Amount"]] <- FarinaPudding2006.Amount
+FarinaPudding2006[["Ingredient"]] <- FarinaPudding2006.Long_Desc
+FarinaPudding2006 <- cbind(FarinaPudding2006.NDB_No, FarinaPudding2006)
+colnames(FarinaPudding2006) <- c("NDB_No", "Amount", "Measure", "Ingredient")
+print(FarinaPudding2006, right = FALSE)
+
+```
+
+
+I had to change the unit for "Wheat flour, white, all-purpose, self-rising, enriched" from Tbs to cup, which is the unit description in the 'weight' table. I had to use a conversion factor of 0.0625 to convert the amount from Tbs to cup for 'LeftoverPotatoesOBrien'. I also used a conversion factor of 3 to convert the unit Tbs to tbsp. The values for the columns were cross-referenced to the USDA data and regenerated again.
+
+```{r}
+LeftoverPotatoesOBrien1936.NDB_No <- c(11367, 11333, 11282, 20082, 1211, 18079, 1001)
+LeftoverPotatoesOBrien1936.Amount <- c(6, 1, 1, 0.0625, 1, 0.25, 6)
+LeftoverPotatoesOBrien1936.Msre_Desc <- c('medium (2-1/4" to 3-1/4" dia.)',
+                                          'medium (approx 2-3/4" long, 2-1/2" dia)',
+                                          'medium (2-1/2" dia)',
+                                          "cup", "cup", "cup", "tbsp")
+LeftoverPotatoesOBrien1936.Long_Desc <- c("Potatoes, boiled, cooked without skin, flesh, without salt",
+                                          "Peppers, sweet, green, raw",
+                                          "Onions, raw",
+                                          "Wheat flour, white, all-purpose, self-rising, enriched",
+                                          "Milk, whole, 3.25% milkfat, without added vitamin A and vitamin D",
+                                          "Bread, crumbs, dry, grated, plain",
+                                          "Butter, salted")
+
+LeftoverPotatoesOBrien1936[["Amount"]] <- LeftoverPotatoesOBrien1936.Amount
+LeftoverPotatoesOBrien1936[["Measure"]] <- LeftoverPotatoesOBrien1936.Msre_Desc
+LeftoverPotatoesOBrien1936[["Ingredient"]] <- LeftoverPotatoesOBrien1936.Long_Desc
+LeftoverPotatoesOBrien1936 <- cbind(LeftoverPotatoesOBrien1936.NDB_No, LeftoverPotatoesOBrien1936)
+colnames(LeftoverPotatoesOBrien1936) <- c("NDB_No", "Amount", "Measure", "Ingredient")
+print(LeftoverPotatoesOBrien1936, right = FALSE)
+
+```
+
+The same procedure as above were performed for the 'LeftoverPotatoesOBrien2006' to regenerate the data frame with the values cross-referenced to the USDA data.
+
+```{r}
+LeftoverPotatoesOBrien2006.NDB_No <- c(11367, 11333, 11282, 20082, 1211, 18079, 1001)
+LeftoverPotatoesOBrien2006.Amount <- c(6, 1, 1, 0.0625, 1, 0.25, 6)
+LeftoverPotatoesOBrien2006.Msre_Desc <- c('medium (2-1/4" to 3-1/4" dia.)',
+                                          'medium (approx 2-3/4" long, 2-1/2" dia)',
+                                          'medium (2-1/2" dia)',
+                                          "cup", "cup", "cup", "tbsp")
+LeftoverPotatoesOBrien2006.Long_Desc <- c("Potatoes, boiled, cooked without skin, flesh, without salt",
+                                          "Peppers, sweet, green, raw",
+                                          "Onions, raw",
+                                          "Wheat flour, white, all-purpose, self-rising, enriched",
+                                          "Milk, whole, 3.25% milkfat, without added vitamin A and vitamin D",
+                                          "Bread, crumbs, dry, grated, plain",
+                                          "Butter, salted")
+
+LeftoverPotatoesOBrien2006[["Amount"]] <- LeftoverPotatoesOBrien2006.Amount
+LeftoverPotatoesOBrien2006[["Measure"]] <- LeftoverPotatoesOBrien2006.Msre_Desc
+LeftoverPotatoesOBrien2006[["Ingredient"]] <- LeftoverPotatoesOBrien2006.Long_Desc
+LeftoverPotatoesOBrien2006 <- cbind(LeftoverPotatoesOBrien2006.NDB_No, LeftoverPotatoesOBrien2006)
+colnames(LeftoverPotatoesOBrien2006) <- c("NDB_No", "Amount", "Measure", "Ingredient")
+print(LeftoverPotatoesOBrien2006, right = FALSE)
+
+```
+
+
+# Step 3 - Write each individual recipe to a tab delimited file. The name of the tab file should be comprised of the recipe file name and the year of the recipe (1936 or 2006, in most cases).
+
+I wrote each of the four data frames created in step 2, with the values cross-referenced to the USDA data, to a tab delimited file. The names of the tab files consist of the recipe file name and the year of the recipe. These are the names of the tab delimited files created: "FarinaPudding.1936.tab", "FarinaPudding.2006.tab", "LeftoverPotatoesOBrien.1936.tab", and "LeftoverPotatoesOBrien.2006.tab". 
+
+```{r}
+write.table(FarinaPudding1936, "FarinaPudding.1936.tab", sep = "\t")
+write.table(FarinaPudding2006, "FarinaPudding.2006.tab", sep = "\t")
+write.table(LeftoverPotatoesOBrien1936, "LeftoverPotatoesO'Brien.1936.tab", sep = "\t")
+write.table(LeftoverPotatoesOBrien2006, "LeftoverPotatoesO'Brien.2006.tab", sep = "\t")
+
+```
+
+# Step 4 - Read in each tab file, and merge the tables with the example Beef Stroganoff tables.
+
+I read the four tab files created in step 3, and the example Beef Stroganoff tables provided into R. The 'Beef Stroganoff 1997' data has "Butter, salted" written twice. However, the data in 2006 has "Oil, canola", and "Butter, salted" ingriedients. I assumed that the data for 1997 has "Butter, salted" entered twice by error. However, the data table provided added the amount for duplicate for "Butter, salted". I think this is a mistake but I kept it as is. I have also matched the units to match with the'food_des' data table for the BeefStroganoff. As I change the units, I have also used conversion factors to change the amount to fit with the unit in the 'food_des' data.
+
+The tables were then merged together by row using the function "rbind". The merged table is named "Merged.Table", and is printed below.
+
+```{r}
+BeefStroganoff1997 <- read.table("BeefStroganoff.1997.tab", header=TRUE, sep = "")
+BeefStroganoff1997.Amount <- c(1, 10.5, 3, 1, 0.1875, 1)
+BeefStroganoff1997.NDB_No <- c(23336, 1001, 20082, 6170, 1074, 2046)
+BeefStroganoff1997.Msre_Desc <- c("roast", "tbsp", "cup", "cup", "cup", "tsp")
+BeefStroganoff1997.Long_Desc <- c('Beef, loin, tenderloin roast, boneless, separable lean and fat, trimmed to 0" fat, all grades, raw',
+                                  "Butter, salted",
+                                  "Wheat flour, white, all-purpose, self-rising, enriched",
+                                  "Soup, stock, beef, home-prepared",
+                                  "Sour cream, imitation, cultured",
+                                  "Mustard, prepared, yellow")
+
+BeefStroganoff1997[["Amount"]] <- BeefStroganoff1997.Amount
+BeefStroganoff1997[["Measure"]] <- BeefStroganoff1997.Msre_Desc
+BeefStroganoff1997[["Ingredient"]] <- BeefStroganoff1997.Long_Desc
+BeefStroganoff1997 <- cbind(BeefStroganoff1997.NDB_No, BeefStroganoff1997)
+colnames(BeefStroganoff1997) <- c("NDB_No", "Amount", "Measure", "Ingredient")
+print(BeefStroganoff1997, right = FALSE)
+
+BeefStroganoff2006 <- read.table("BeefStroganoff.2006.tab", header=TRUE, sep = "")
+BeefStroganoff2006.NDB_No <- c(23336, 4582, 1001, 11282, 11238, 6170, 1074, 2046)
+BeefStroganoff2006.Amount <- c(1, 6, 9, 1, 1, 1, 0.0625, 3)
+BeefStroganoff2006.Msre_Desc <- c("roast", "tbsp", "tbsp", 'medium (2-1/2" dia)', "piece whole", "cup", "cup", "tsp")
+BeefStroganoff2006.Long_Desc <- c('Beef, loin, tenderloin roast, boneless, separable lean and fat, trimmed to 0" fat, all grades, raw',
+                                  "Oil, canola",
+                                  "Butter, salted",
+                                  "Onions, raw",
+                                  "Mushrooms, shiitake, raw",
+                                  "Soup, stock, beef, home-prepared",
+                                  "Sour cream, imitation, cultured",
+                                  "Mustard, prepared, yellow")
+
+BeefStroganoff2006[["Amount"]] <- BeefStroganoff2006.Amount
+BeefStroganoff2006[["Measure"]] <- BeefStroganoff2006.Msre_Desc
+BeefStroganoff2006[["Ingredient"]] <- BeefStroganoff2006.Long_Desc
+BeefStroganoff2006 <- cbind(BeefStroganoff2006.NDB_No, BeefStroganoff2006)
+colnames(BeefStroganoff2006) <- c("NDB_No", "Amount", "Measure", "Ingredient")
+
+FarinaPudding1936 <- read.table("FarinaPudding.1936.tab")
+FarinaPudding2006 <- read.table("FarinaPudding.2006.tab")
+LeftoverPotatoesOBrien1936 <- read.table("LeftoverPotatoesO'Brien.1936.tab")
+LeftoverPotatoesOBrien2006 <- read.table("LeftoverPotatoesO'Brien.2006.tab")
+
+Merged.Table <- rbind(BeefStroganoff1997, BeefStroganoff2006, FarinaPudding1936, FarinaPudding2006, LeftoverPotatoesOBrien1936, LeftoverPotatoesOBrien2006)
+print(Merged.Table, right = FALSE)
+```
+
+#Step 5 - Proof the data to check for errors.
+
+The two tables for each of the recipes, FarinaPudding (1936 and 2006), LeftoverPotatoesOBrien (1936 and 2006), and BeefStroganoff (1997 and 2006), were merged together by Ingredient. The continuous data, Amount, and the categorical data, Measure, were plotted against each other for the two years to identify possible errors in the data. The code chunk below is used to generate the graphs.
+
+plots for the FarinaPudding (1936 and 2006) data. The linear relationship between the amount in 1936 and the amount in 2006 for this recipe demonstrate that the amount between 1936 and 2006 is consistent. The categorical graph also indicate that the units are consistent between the two years.
+```{r}
+FarinaPudding <- as.data.frame(merge(FarinaPudding1936, FarinaPudding2006, by = "Ingredient"))
+Linear.Regression <- lm(Amount.x~Amount.y, data = FarinaPudding)
+plot(Amount.x~Amount.y, data = FarinaPudding, main = "Amount in 1936 Vs Amount in 2006 for the Farina Pudding recipes.")
+abline(reg = Linear.Regression, col = "blue")
+
+plot(Measure.x~Measure.y, data = FarinaPudding, main = "Measure in 1936 Vs Measure in 2006 for the Farina Pudding recipes.")
+```
+
+
+Plots for the LeftoverPotatoesOBrien (1936 and 2006) data. The linear relationship between the amount in 1936 and the amount in 2006 for this recipe demonstrate that the amount between 1936 and 2006 is consistent. The line is also at the line of equality indicating that the amount for this data didn't change between 1936 and 2006. The categorical graph also indicate that the units are consistent between the two years.
+
+```{r}
+LeftoverPotatoesOBrien <- as.data.frame(merge(LeftoverPotatoesOBrien1936, LeftoverPotatoesOBrien2006, by = "Ingredient"))
+Linear_regression <- lm(Amount.x~Amount.y, data = LeftoverPotatoesOBrien)
+plot(Amount.x~Amount.y, data = LeftoverPotatoesOBrien, main = "Amount in 1936 Vs Amount in 2006 for the Leftover Potatoes OBrien recipes.")
+abline(reg = Linear_regression, col = "blue")
+
+plot(Measure.x~Measure.y, data = LeftoverPotatoesOBrien, main = "Measure in 1936 Vs Measure in 2006 for the Leftover Potatoes OBrien recipes.")
+```
+
+Plots for the BeefStroganoff (1997 and 2006) data. The linear relationship between the amount in 1997 and the amount in 2006 for this recipe demonstrate that the amount between 1936 and 2006 is  not consistent. One of the possible reasons for the inconsistency is that there is a duplicate of 'Butter, salted' for the 1997 data, and the 2006 data has 'Oil, canola'. I believe that 'Oil, canola' should be part of the 1997 data, instead of combining the amount for the duplicate sfor 'Butter, salted'. The categorical graph also generated errors, and excluded from this output.
+
+```{r}
+BeefStroganoff <- as.data.frame(merge(BeefStroganoff1997, BeefStroganoff2006, by = "Ingredient"))
+Linear_regression <- lm(Amount.x~Amount.y, data = BeefStroganoff)
+plot(Amount.x~Amount.y, data = BeefStroganoff, main = "Amount in 1997 Vs Amount in 2006 for the Beef Stroganoff recipes.")
+abline(reg = Linear_regression, col = "blue")
+
+```
+
+
+
+# Step 6 - Read the Recipes.csv, append rows for your recipes, then write the table back to Recipes.csv.
+
+First, I read the recipes.csv file provided for this project from my working directory. Secod, I created a data frame called 'My.Recipes' using the years, min.servings, and max.serving from the recipe files assigned to me. The combined the two data together and wrote the table back to 'Recipes.csv' file. I developed the code chunck below for this purpose.
+
+```{r}
+Recipes <- read.csv("Recipes.csv")
+
+My.Recipes <- data.frame(
+  Recipe = c("Farina Pudding", "Farina Pudding", "Leftover Potatoes O'Brien", "Leftover Potatoes O'Brien"),
+  Year = c(1936, 2006, 1936, 2006),
+  MinServings = c(6, 6, 6, 6),
+  MaxServings = c(6, 6, 6, 6)
+)
+
+Recipes <- rbind(Recipes, My.Recipes)
+
+write.csv(Recipes, file="Recipes.csv",row.names = FALSE)
+Recipes <- read.csv("Recipes.csv")
+print(Recipes, right = FALSE)
+
+```

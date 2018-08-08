@@ -1,0 +1,168 @@
+---
+title: "midterm"
+author: "Set X"
+date: "August 3, 2018"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+setwd("./")
+#Comment: I technically didn't get assigned two recipes or couldn't find where they were in my email or the dropbox so I just picked the first two recipes that were on the list.
+Chantilly1936 <- data.frame(
+  Amount=c(0.5,0.5,6,3,1,0.33),
+  Measure = c("cup", "cup", "ea", "Tbs", "tsp", "cup"),
+  Ingredient = c("cream","grated cheese","potatoes","butter","salt","milk or cream")
+)
+
+#Comment: I reused the recipe from the 1936 mashed potatoes because I couldnt find that section in the 2006 recipe. I think this is what we were supposed to do. It makes sense because mashed potatoes are pretty simple.
+
+
+Chantilly2006 <- data.frame( #creating data frame
+  Amount=c(0.5,0.5,6,3,1,0.33), #creating amounts col
+  Measure=c("cup", "cup", "ea", "Tbs", "tsp", "cup"), #creating measure col
+  Ingredient=c("heavy cream","grated parmesan","potatoes","butter","salt","milk or cream") #creating ingredient col
+)
+
+
+Chocolate1936<- data.frame( #creating data frame
+  Amount=c(2,5,1.5,0.5,4,1.75,4,0.5,1,4,0.125), #creating amounts col
+  Measure = c("oz","Tbs","cup","cup","ea","cup","tsp","cup","tsp","ea","tsp"), #creating measure col
+  Ingredient = c("chocolate","boiling water","sugar","butter","egg yolks","cake flour","tartrate","milk","vanilla","egg whites","salt") #creating ingredient col 
+)
+
+
+Chocolate2006 <- data.frame( #creating data frame
+  Amount=c(1.75,1,0.25,1,0.25,1,2,0.33,0.5,1.5,4,0.5,1,4), #creating amounts col
+  Measure = c("cup", "Tbs","tsp","tsp","tsp","cup","oz","cup","cup", "cup","ea","cup","tsp","ea"), #creating measure col
+  Ingredient = c("sifted cake flour","baking powder","salt","ground cinnamon","ground cloves","coarsely chopped walnuts or pecans","unsweetened chocolate","boiling water","unsalted butter","sugar","egg yolks","milk","vanilla","egg whites") #creating ingredient col
+)
+
+combo <- data.frame(Recipe=c("Chantilly1936","Chantilly2006","Chocolate1936","Chocolate2006"), #creating data frame
+                        Year=c(1936, 2006, 1936, 2006), #creating year col
+                        MaxServings = c(1,1,1,1),  #creating max servings col
+                    MinServings = c(1,1,1,1))  #creating min servings col
+
+
+BeefStroganoff1997 <- read.table("BeefStroganoff.1997.tab",header=TRUE, sep = "") #reading in beef 1997
+BeefStroganoff2006 <- read.table("BeefStroganoff.2006.tab",header=TRUE, sep = "") #reading in beef 2006
+BeefStroganoff1997 <- cbind(BeefStroganoff1997, Recipe = "Beef Stroganoff", Year = 1997) #adding title and year
+BeefStroganoff2006 <- cbind(BeefStroganoff2006, Recipe = "Beef Stroganoff", Year = 2006) #adding title and year
+
+
+recipes <- read.table("Recipes.csv",header = TRUE, sep = ",") #Reads in the provided recipes table and prints
+
+chantilly36 <- cbind(Chantilly1936,Recipe = "Chantilly1936", Year = 1936) #adding year and name
+chantilly06 <- cbind(Chantilly2006,Recipe = "Chantilly2006", Year = 2006)#adding year and name
+chocolate36 <- cbind(Chocolate1936, Recipe = "Chocolate1936", Year = 1936) #adding year and name
+chocolate06 <- cbind(Chocolate2006, Recipe = "Chocolate2006", Year = 2006) #adding year and name
+
+
+potato <- merge.data.frame(chantilly36, chantilly06, all = TRUE) #merging together two at a time
+cake <- merge.data.frame(chocolate36, chocolate06, all = TRUE) #merging together two at a time
+strog <- merge.data.frame(BeefStroganoff1997, BeefStroganoff2006, all = TRUE) #merging together two at a time
+potatocake <- merge.data.frame(potato,cake, all = TRUE) #merging together two at a time
+allr <- merge.data.frame(potatocake,strog, all = TRUE) #all columns together
+
+print (allr) #printing to verify
+
+as.numeric(allr$Measure) #creating new column called measure
+serv <- merge.data.frame(recipes, combo, all = TRUE) #combining relevant servings cols
+
+
+
+weight.dat <-read.table("WEIGHT.txt",header=FALSE,sep="^",quote="~") #addding weight .txt to ref
+names(weight.dat) <-c("NDB_No","Seq","Amount","Msre_Desc","Gm_Wgt","Num_Data_Pts","Std_Dev") #adding in col names
+head(weight.dat) # checking to make sure read
+
+
+food_des.dat <-read.table("FOOD_DES.txt",header=FALSE,sep="^",quote="~") #addding food .txt to ref
+names(food_des.dat) <-c("NDB_No","FdGrp_Cd","Long_Desc","Shrt_Desc","ComName","ManufacName","Survey","Ref_desc","Refuse","SciName","N_Factor","Pro_Factor","Fat_Factor","CHO_Factor") #adding in col names
+head(food_des.dat) # checking to make sure read
+dim(food_des.dat) #code provided
+
+refined <- aggregate(Amount~Ingredient, data=allr, FUN = mean, na.rm=TRUE) #refining data to relevant cols
+print(refined) #printing refined data
+
+
+longd <- c('Butter, without salt',
+           'Cream, fluid, heavy whipping',
+           'Cheese, parmesan, dry grated, reduced fat', 
+           "Milk, whole, 3.25% milkfat, without added vitamin A and vitamin D", 
+           "Potatoes, raw, skin", 
+           "Salt, table",
+           'Cheese, parmesan, dry grated, reduced fat', 
+           "Milk, whole, 3.25% milkfat, without added vitamin A and vitamin D", 
+           "Beverages, water, tap, drinking", "Wheat flour, white, cake, enriched",
+           "Sweeteners, for baking, brown, contains sugar and sucralose", 
+           "Egg, white, raw, fresh",
+           "Egg, yolk, raw, fresh", 
+           "Milk, whole, 3.25% milkfat, without added vitamin A and vitamin D",
+           "Sugar, turbinado",
+           "Salt, table", 
+           "Vanilla extract, imitation, alcohol",
+           "Leavening agents, baking powder, double-acting, sodium aluminum sulfate",
+           "walnuts, english",
+           "Spices, cinnamon, ground",
+           "Spices, cloves, ground",
+           "Wheat flour, white, cake, enriched",
+           'Butter, without salt', 
+           "Sweeteners, for baking, brown, contains sugar and sucralose",
+           "Beef, tenderloin, roast, separable lean and fat,trimmed to 1/8\" fat, select, cooked, roasted",
+           'Butter, without salt', 
+           "Wheat flour, white, cake, enriched", 
+           "Mustard, prepared, yellow",
+           "Cream, sour, cultured", 
+           "Soup, stock, beef, home-prepared", 
+           "Mushroom, white, exposed to ultraviolet light, raw",
+           "Oil, vegetable, Natreon canola, high stability, non trans, high oleic (70%)",
+           "Onions, raw") #adding ingredient names
+list <- c("1100",
+          "0200", 
+          "0100",
+          "0100",
+          "0100",
+          "1100",
+          "0200",
+          "0100",
+          "0100",
+          "1400",
+          "2000",  
+          "1900",
+          "0100",
+          "0100",
+          "0100",
+          "1900",
+          "0247",
+          "0200",
+          "1800",
+          "1200",
+          "0200",
+          "0200",
+          "2000",
+          "0100",
+          "1900",
+          "1300",
+          "2000",
+          "0200",
+          "0100",
+          "0600",
+          "1100",
+          "0400",
+          "1100") #adding in ndb no
+desc <- as.vector(longd) #setting vector
+
+vlook <- cbind(refined, NDB_No = list, Long_Desc = desc) #combinbing all columns
+finaldata <- merge(vlook, allr, by = 'Ingredient') #indredient, and ndb no
+print(finaldata) #Prints the finaldata
+print(serv) #Prints the serv
+
+
+write.csv(serv, file ='servingsdata.csv') #Writes to csv
+write.csv(finaldata, file ='finaldata.csv') #write to csv
+```
+

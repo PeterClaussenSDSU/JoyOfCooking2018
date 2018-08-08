@@ -1,0 +1,333 @@
+---
+title: " Midterm Project "
+author: "Set 17"
+date: "07/21/2018"
+output:
+  word_document: default
+  html_document: default
+---
+
+# 1. Create data table by the assigned recipes
+```{r}
+# clearing the memory
+rm(list=ls());
+
+# defining the function to get index 
+get.index <- function(value){
+  if (value == 1936){
+    return(1);
+  }else if (value == 2006){
+    return(2)
+  }else{
+    stop('Number don\'t Match');
+  }
+}
+
+idx.1936 <- 1;
+idx.2006 <- 2;
+numberOfRecipes <- 2;
+numberOfYearEvaluation <- 2;
+BeefStroganoff1936.name <- 'BeefStroganoff.1997.tab';
+BeefStroganoff2006.name <- 'BeefStroganoff.2006.tab';
+
+# Create data table for the assigned recipes (Baked macaroni and cheese, Sour Cream Apple Cake Souffle Cockaigne)
+
+# set the directory name where the files will be saved
+directory.name <- './'
+setwd (directory.name)
+
+
+# data table create for Sour Cream Apple Cake Souffle Cockaigne in 1936
+SourCreamAppleCakeSouffleCockaigne.1936 <- data.frame (
+        Amount = c (5.00,0.50,2.50,1.00,8.00,0.25,2.00,4.00),
+        Measure = c ('cup','cup','Tbs','cup','Irg','cup','Tbs','Tbs'),
+        Ingredient = c ('apple,fresh,sliced','sour cream,cultured','juice,lemon,fresh','sugar, white, granulated, granulated','egg, raw','almonds, balanced, silvered','flour,bread, white,enriched','butter,salted')
+)
+
+# data table create for Sour Cream Apple Cake Souffle Cockaigne in 2006
+SourCreamAppleCakeSouffleCockaigne.2006 <- data.frame (
+        Amount = c (4.00,4.00,8.00,1.00,0.50,2.00,2.00,2.00),
+        Measure = c ('ea','Tbs','Irg','cup','cup','Tbs','Tbs','Tbs'),
+        Ingredient = c ('apple,fresh,medium,3"','butter,salted','egg, raw','sugar, white, granulated, granulated','sour cream,cultured','flour,all purpose, self rising, enriched','juice,lemon,fresh','almonds, balanced, silvered')
+)
+
+# Sour Cream Apple Cake Souffle Cockaigne recipe for year 1936 and 2006
+SourCreamAppleCakeSouffleCockaigne.dat = data.frame(
+  year = c (1936, 2006),
+  caloriesPerServings = c(205.7, 308.8),
+  caloriesPerGram = c(1.78, 1.6),
+  numberOfServings = c(12, 8),
+  gramsPerServing = c(115.39, 192.94),
+ingredients = c('SourCreamAppleCakeSouffleCockaigne.1936','SourCreamAppleCakeSouffleCockaigne.2006')
+)
+
+# data table create for Baked macaroni and cheese in 1936
+BakedMacaroniandCheese.1936 <- data.frame (
+  Amount = c(4.00,1.00,2.00,0.67,0.25,5.44),
+  Measure = c('oz','cup','Irg','cup','cup','oz'),
+  Ingredient = c ('pasta,macaroni,dry, enriched','cheese,cheddar,shreded','egg, raw','milk, whole, 3.25 %','bread crumbs,plain,dry, grated','water,generic')
+)
+
+
+# data table create for Baked macaroni and cheese in 2006
+BakedMacaroniandCheese.2006 <- data.frame (
+  Amount = c(4.00,4.00,2.00,0.50,9.00,8.00,0.50,0.25,10.88),
+  Measure = c('Tbs','Tbs','cup','ea','oz','oz','cup','tsp','oz'),
+  Ingredient = c ('butter,salted','flour,all purpose, self rising, enriched','milk, whole, 3.25 %','onion, yellow, fresh,medium, 2 1/2"','cheese,cheddar,shreded','pasta,macaroni,dry, enriched','bread crumbs,plain,dry, grated','butter,salted','water,generic')
+)
+
+# Baked macaroni and cheese Information for 1936 and 2006
+BakedMacaroniandCheese.dat <- data.frame(
+  year = c(1936,2006),
+  caloriesPerServings = c(204.7,293.7),
+  caloriesPerGram = c(1.83, 1.99),
+  numberOfServings = c(6, 10),
+  gramsPerServing = c(111.69, 147.66),
+  ingredients = c('BakedMacaroniandCheese.1936', 'BakedMacaroniandCheese.2006')
+)
+
+```
+# Comments on 1
+*Two recipes Baked Macaroni and Cheese ,and Sour Cream Apple Cake Souffle Cockaigne have been provided to work with.In the first task, data table have been created by the two years of similar recipe. Each data table has thre columns Amount, Measure and Ingredient.Initially the directory name and all the required parameters will be used next are speciofied here.*
+*BakedMacaroniandCheese.dat file has 5 columns named year,caloriesPerServings, caloriesPerGram, numberOfServings, gramsPerServing and ingredients for the two corresponding years 1936 and 2006.SourCreamAppleCakeSouffleCockaigne.dat has also similar named columns which represent all the information for two years 1936 and 2006.*
+
+# 2.Save the individual recipe in a tab delimited file
+
+```{r}
+# saving the lab delimited file for indgredients of Boiled custard(1936)
+# get() the variable defined by the variable string store in dat file
+# paste() function concatenates the two string objects
+
+filename <- paste(SourCreamAppleCakeSouffleCockaigne.dat$ingredients[idx.1936],'.tab',sep = '')
+data <- get(as.character(SourCreamAppleCakeSouffleCockaigne.dat$ingredients[idx.1936]));
+write.table(data, file =filename, sep = '\t', dec='.', row.names = FALSE)
+
+# saving the lab delimited file for indgredients of Sour Cream Apple Cake Souffle Cockaigne (2006)
+filename <- paste(SourCreamAppleCakeSouffleCockaigne.dat$ingredients[idx.2006],'.tab',sep = '')
+data <- get(as.character(SourCreamAppleCakeSouffleCockaigne.dat$ingredients[idx.2006]));
+write.table(data, file = filename, sep = '\t', dec = '.', row.names = FALSE)
+
+# saving the lab delimited file for indgredients of Baked macaroni and cheese(1936)
+filename <- paste(BakedMacaroniandCheese.dat$ingredients[idx.1936],'.tab',sep = '')
+data <- get(as.character(BakedMacaroniandCheese.dat$ingredients[idx.1936]));
+write.table(data, file = filename, sep = '\t', dec = '.', row.names = FALSE)
+
+# saving the lab delimited file for indgredients of Baked macaroni and cheese(2006)
+filename <- paste(BakedMacaroniandCheese.dat$ingredients[idx.2006],'.tab',sep = '')
+data <- get(as.character(BakedMacaroniandCheese.dat$ingredients[idx.2006]));
+write.table(data, file = filename, sep = '\t', dec = '.', row.names = FALSE)
+```
+# Comments on 2nd task
+*The recipe files which are created in the previous section for 2 years, now have been written in a tab delimated file. As the directory name is already specified. The tab delimated files for 2 recipes and 2 years for each are saved in that directory by executing these command lines.*
+
+# 3.Read in each tab file, and merge the tables with the example Beef Stroganoff tables
+```{r}
+# give the directory name for all the tab delimated files
+fileLocation <- setwd (directory.name)
+
+# setting the directory to read file
+fileLocation <- setwd(directory.name);
+
+# reading all the tab file in the diectory
+ingredientFiles1936 <- list.files(path =fileLocation, pattern = "*1936.tab");
+ingredientFiles1936 <- setdiff ( ingredientFiles1936, BeefStroganoff1936.name);
+
+
+# reading all the tab file in the diectory
+ingredientFiles2006 <- list.files(path =fileLocation, pattern = "*2006.tab");
+ingredientFiles2006 <- setdiff( ingredientFiles2006, BeefStroganoff2006.name);
+
+# reading the file strongoff beef 1936 ingredients tab file from the same directory
+BeefStroganoff1936.data <- read.table(file.path(fileLocation,BeefStroganoff1936.name), header = TRUE, sep='', dec='.')
+
+
+# reading the file strongoff beef  2006 ingredients tab file from the same directory
+BeefStroganoff2006.data <- read.table(file.path(fileLocation,BeefStroganoff2006.name),header = TRUE, sep='', dec='.')
+
+# merging the ingredients information to the strongoffBeff 1936
+for (i in 1:length(ingredientFiles1936)){
+  fileDir = file.path(fileLocation,ingredientFiles1936[i]);
+  tempName <- paste('merge.',ingredientFiles1936[i], sep='');
+  tempRead <- read.table(fileDir, header = TRUE, sep='\t', dec ='.');
+  assign(tempName,merge(BeefStroganoff1936.data,tempRead,all.x = TRUE,all.y = TRUE));
+}
+merge.BakedMacaroniandCheese.1936.tab
+merge.SourCreamAppleCakeSouffleCockaigne.1936.tab
+
+
+# merging the ingredients information to the strongoffBeff 1936
+for (i in 1:length(ingredientFiles2006)){
+  fileDir = file.path(fileLocation,ingredientFiles2006[i]);
+  tempRead <- read.table(fileDir, header = TRUE, sep='\t', dec ='.');
+  tempName <- paste('merge.',ingredientFiles2006[i], sep = '');
+  assign(tempName,merge(BeefStroganoff2006.data  ,tempRead, all.x = TRUE, all.y = TRUE));
+}
+merge.BakedMacaroniandCheese.2006.tab
+merge.SourCreamAppleCakeSouffleCockaigne.2006.tab
+```
+# Comments on task 3
+*In this section, the tab delimated files are being read. At first from the specified directory all the files for 1936 year have been read in 'ingredientFiles1936'. Similarly for 2006 tab delimated files, they are kept in 'ingredientFiles1936'. In 'BeefStroganoff2006.data' and 'BeefStroganoff1936.data' the data for 2 years of Beef StroganOff have been kept.Finally after reading all the files in R, the merging operation is done. For merging purpose each of the recipes for year 1936 and 2006 is merged individually with the Beef StroganOff recipe for 1936 and 2006 years respectively.*
+
+# 4.Check for errors by plotting the measures of recipe
+
+```{r}
+# mering the two recipes by the ingredients to find the consistency in the data
+mergeSourCreamAppleCakeSouffleCockaigne <- merge(SourCreamAppleCakeSouffleCockaigne.1936,SourCreamAppleCakeSouffleCockaigne.2006 ,by.x = 'Ingredient',by.y = 'Ingredient',all = TRUE)
+mergeSourCreamAppleCakeSouffleCockaigne
+plot(mergeSourCreamAppleCakeSouffleCockaigne$Measure.x,mergeSourCreamAppleCakeSouffleCockaigne$Measure.y)
+
+#merging the two recipes BroccoliTimbales by the ingredients to find the consistency in the data
+mergeBakedMacaroniandCheese <- merge(BakedMacaroniandCheese.1936,BakedMacaroniandCheese.2006, by.x = 'Ingredient', by.y = 'Ingredient',all = TRUE)
+mergeBakedMacaroniandCheese 
+plot(mergeBakedMacaroniandCheese$Measure.x,mergeBakedMacaroniandCheese$Measure.y)
+
+#merging the two recipes of Beef stranganoff by the ingredients to find the consistency in the data
+mergeBeefStroganoff <-merge(BeefStroganoff1936.data ,BeefStroganoff2006.data ,by.x='Ingredient', by.y = 'Ingredient', all = TRUE)
+mergeBeefStroganoff
+plot(mergeBeefStroganoff$Measure.x,mergeBeefStroganoff$Measure.y)
+```
+# Comments
+*By merging the recipes for two years and then plotting them by .1936 measure and .2006 measure, we found the figures for the two recipes and given BeefStroganoff. From the 1st plot of the measures of two years of Sour Cream Apple Cake Souffle Cockaigne , it is noticeable that there is inconsistency in the ingredients.*
+*From the 2nd plot where the measures of two years of Baked Macaroni and Cheese, the inconsistency in the measures of ingredient is also visible.*
+*Again for the given recipe BeefStroganoff, the two years measures are not consistent.*
+
+# 5.reading the recipe.csv 
+```{r}
+
+fileDir <- file.path(fileLocation,'Recipes.csv');
+recipes.csv <- read.csv(file =fileDir, header = TRUE, sep = ',', dec = '.', stringsAsFactors = FALSE);
+recipes.csv
+
+
+# data that must be removed from the directory read
+removeRecipes <- c(BeefStroganoff1936.name,BeefStroganoff2006.name)
+
+recipes <- list.files(path =fileLocation, pattern = "*.tab");
+
+#removing the strongoff data as they are alreay present in the  Recipes.csv
+recipes <- setdiff(recipes,removeRecipes)
+
+
+for(recipe in recipes){
+  # splitting the variable at . point
+  temp <- strsplit(recipe,split = '.',fixed = TRUE);
+  # camelcase Name of recipe
+  recipeCamelCase <- temp[[1]][1];
+  # splitting the string at capital letters
+  temp2 <- strsplit(recipeCamelCase, "(?<=[a-z])(?=[A-Z])", perl = TRUE)
+  # assigning the  recipe name
+  recipe.name <- paste(temp2[[1]][1],temp2[[1]][2]);
+  # assigning the second array element as year
+  year.name <- strtoi(temp[[1]][2]);
+  # calling function to get the index of the year
+  year.index <- get.index(year.name);
+  # concatenating the two variables to get the name of the object
+  tempCon = paste(recipeCamelCase,'.dat', sep = '');
+  # accessing the object with recipe name and year
+  tempObject <-get(tempCon);
+  # accessing the data frame  to get the value of minimum servings
+  MinServings <- tempObject$numberOfServings[year.index];
+  # creating the temporary array to add information in recipe dataframe
+  temp.array <- c(recipe.name, year.name,MinServings,MinServings);
+  temp.array
+  recipes.csv <- rbind(recipes.csv, temp.array)
+}
+# saving the details in the file
+#PMC - dont' write row names.
+write.csv(recipes.csv,file=fileDir,row.names = FALSE)
+
+```
+# Comments on task 5
+*At first 'Recipes.csv' file is read and then append rows for the two recipes, then write the table back to Recipes.csv.* 
+
+# 6.enter ingredients using the text listed in FOOD_DES.txt
+```{r}
+# read the FOOD_DES.txt file
+FOOD_DES <-read.table("FOOD_DES.txt",header=FALSE,sep="^",quote="~")
+# selecting the ingredients Name and performing lowering 
+food_desIngredient <- tolower(FOOD_DES$V3);
+# Concatenating all the recipes
+ingredient.array <- c(as.character(SourCreamAppleCakeSouffleCockaigne.dat$ingredients),as.character(BakedMacaroniandCheese.dat$ingredients));
+
+#looping through to list
+for(i in 1:(numberOfRecipes*numberOfYearEvaluation)){
+#for(i in 1:(1)){
+  # accessing the object by the string name
+  object.access <- get(as.character(ingredient.array[i]))
+  # iterating through each year recipe
+ for (j in 1:length(object.access$Ingredient)){
+  #for (j in 1:1){
+    # converting all the ingredients string to the lowercase
+    ingredient.details <- tolower(as.character(object.access$Ingredient[j]));
+    
+    # splitting the ingredient details
+    ingredient.details <- unlist(lapply(strsplit(ingredient.details,split = ','),trimws));
+    
+    # checking for space in the vectors and removing it 
+    spaceDetect <- grepl(' ', ingredient.details);
+    ingredient.details <-unlist(c(lapply(strsplit(ingredient.details[spaceDetect],split=' '),trimws),ingredient.details[!spaceDetect]))
+    
+    # taking the no of information in ingredients
+    lengthOfDetails <- length(ingredient.details);
+    
+    # initializing the empty string for the concatenation
+    ingredient.regex ="";
+    
+    # iterating through each ingredients 
+    for(k in 1:lengthOfDetails){
+      # generating the name according to the index k "match_1""
+      varname = paste('match',k,sep='_')
+      # if k == 1, finding the string in main ingredient file
+      if(k == 1){
+        assign(varname,(food_desIngredient[grep(ingredient.details[k],food_desIngredient)]))
+        # else to the ealier selected ingredients
+      }else{
+        assign(varname,get(temp_varname)[grep(ingredient.details[k],get(temp_varname))])
+      }
+      if (length(get(varname)) == 0 && k != lengthOfDetails){
+        next;
+      }
+      if( k == lengthOfDetails){
+        bestmatch <- paste(ingredient.array[i],'best_match_',j,sep="");
+        if (length(get(varname))==0){
+          assign(bestmatch,get(temp_varname))
+          break();
+        }
+        assign(bestmatch,get(varname));
+        break();
+      }
+      temp_varname <- varname;
+    }
+  }
+}
+
+# selecting the first element of the Match as the best match of the ingredients
+SourCreamAppleCakeSouffleCockaigne.1936Match <- c(SourCreamAppleCakeSouffleCockaigne.1936best_match_1[1],SourCreamAppleCakeSouffleCockaigne.1936best_match_2[1],SourCreamAppleCakeSouffleCockaigne.1936best_match_3[1],SourCreamAppleCakeSouffleCockaigne.1936best_match_4[1]);
+
+# selecting the first element of the Match as the best match of the ingredients
+SourCreamAppleCakeSouffleCockaigne.2006Match <- c(SourCreamAppleCakeSouffleCockaigne.2006best_match_1[1],SourCreamAppleCakeSouffleCockaigne.2006best_match_2[1],SourCreamAppleCakeSouffleCockaigne.2006best_match_3[1],SourCreamAppleCakeSouffleCockaigne.2006best_match_4[1]);
+
+# selecting the first element of the Match as the best match of the ingredients
+BakedMacaroniandCheese.1936Match <-c(BakedMacaroniandCheese.1936best_match_1[1],BakedMacaroniandCheese.1936best_match_2[1],BakedMacaroniandCheese.1936best_match_3[1]);
+
+# selecting the first element of the Match as the best match of the ingredients
+BakedMacaroniandCheese.2006Match <-c(BakedMacaroniandCheese.2006best_match_1[1],BakedMacaroniandCheese.2006best_match_2[1],BakedMacaroniandCheese.2006best_match_3[1],BakedMacaroniandCheese.2006best_match_4[1]);
+
+
+# Assiginig this variables as the next column in ingredient tables
+BakedMacaroniandCheese.1936$Matched_Ingredient <- BakedMacaroniandCheese.1936Match
+BakedMacaroniandCheese.1936
+
+# Assiginig this variables as the next column in ingredient tables
+SourCreamAppleCakeSouffleCockaigne.1936$Matched_Ingredient<- SourCreamAppleCakeSouffleCockaigne.1936Match
+SourCreamAppleCakeSouffleCockaigne.1936
+
+# Assiginig this variables as the next column in ingredient tables
+SourCreamAppleCakeSouffleCockaigne.2006$Matched_Ingredient<- SourCreamAppleCakeSouffleCockaigne.2006Match
+SourCreamAppleCakeSouffleCockaigne.2006
+
+
+
+```
+# Comments of task 6
+*In this task, the ingredients from the text files are being checked if they are matching with the ingredients in the pdf files of the recipes. And then after matching out the best, another columns are assigned in the recipe files as the matched ingredients. This is performed for each recipe and each year. Though the code looks like complicated but it pewrforms the operation properly for this purpose.*

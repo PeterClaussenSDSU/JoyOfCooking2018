@@ -1,0 +1,267 @@
+---
+title: "Joy Of Cooking Midterm Project"
+author: "Set 23"
+date: "7/21/2018"
+output:
+  word_document: default
+  html_document: default
+---
+
+# Part 1 - Assign Recipes
+
+First, generate a list of all files in the Recipes folder.
+```{r,eval=FALSE}
+setwd("./Recipes")
+recipes <- list.files(pattern = '*.pdf')
+```
+
+Make this reproducible.
+```{r,eval=FALSE}
+set.seed(10010)
+
+```
+
+Create two randomly sampled list of recipe files and cycle this list through 80 rows
+
+```{r,eval=FALSE}
+recipe.pairs <- matrix(c(sample(recipes),sample(recipes)),ncol=2,nrow=80)
+```
+
+Are there any pairs across rows?
+
+```{r,eval=FALSE}
+sum(recipe.pairs[,1]==recipe.pairs[,2])
+```
+
+Write to a table
+
+```{r,eval=FALSE}
+setwd("./")
+write.csv(recipe.pairs, file="Recipe.Table.csv",row.names = FALSE)
+```  
+
+Read the table in and print:
+
+```{r,eval=FALSE}
+setwd("./")
+Recipe.Table <- read.csv("Recipe.Table.csv",header=FALSE,skip=1)
+print(Recipe.Table)
+```
+
+# Part 2 - Check Nutrient Data.
+setwd("C:/Users/kamat/OneDrive/DSU/STAT-700-S01D-2018SU Statistical Programming/mid term/Nutrition Database")
+We will be using the USDA food nutrient database, found at https://www.ars.usda.gov/northeast-area/beltsville-md-bhnrc/beltsville-human-nutrition-research-center/nutrient-data-laboratory/docs/usda-national-nutrient-database-for-standard-reference/
+
+Run this to make sure your system can read the required nutrient database tables.
+```{r}
+setwd("./")
+
+weight.dat <- read.table("WEIGHT.txt",header=FALSE,sep="^",quote="~")
+names(weight.dat) <- c("NDB_No","Seq","Amount","Msre_Desc","Gm_Wgt","Num_Data_Pts","Std_Dev")
+
+#weight.csv file is already present and is not used in the further processing hence commented
+
+#write.csv(weight.dat, file="weight.csv",row.names = FALSE)
+
+#head(weight.dat)
+#summary(weight.dat)
+```
+
+```{r}
+setwd("./")
+
+food_des.dat <- read.table("FOOD_DES.txt",header=FALSE,sep="^",quote="~")
+names(food_des.dat) <- c("NDB_No","FdGrp_Cd","Long_Desc","Shrt_Desc",
+"ComName","ManufacName","Survey","Ref_desc","Refuse","SciName",
+"N_Factor","Pro_Factor","Fat_Factor","CHO_Factor")
+
+#food_des.csv file is already present and is not used in the further processing hence commented
+
+#write.csv(food_des.dat, file="food_des.csv",row.names = FALSE)
+
+#dim(food_des.dat)
+#head(food_des.dat)
+#summary(food_des.dat)
+```
+
+```{r}
+setwd("./")
+nut_data.dat <- read.table("NUT_DATA.txt",header=FALSE,sep="^",quote="~")
+names(nut_data.dat) <- c("NDB_No","Nutr_No","Nutr_Val","Num_Data_Pts","Std_Error",
+"Src_Cd","Deriv_Cd","Ref_NDB_No","Add_Nutr_Mark","Num_Studies",
+"Min","Max","DF","Low_EB","Up_EB","Stat_cmt","AddMod_Date")
+
+#nut_data.csv file is already present and is not used in the further processing hence commented
+
+#Write to a table
+#write.csv(nut_data.dat, file="nut_data.csv",row.names = FALSE)
+
+#head(nut_data.dat)
+#summary(nut_data.dat)
+```  
+
+```
+
+# Create data table from Creamed Chicken 36 & 06
+
+```{r}
+
+CreamedChicken.1936.dat <- data.frame(
+  Amount=c("2","1.5","1","1","1"),
+  Measure=c("tbsp","cup","cup","oz crumbled","wedge yields"),
+  Ingredient = c("Butter, salted", "Wheat flour, white, all-purpose, self-rising, enriched","Milk, whole, 3.25% milkfat, with added vitamin D", "Chicken, ground, raw", "Lemon juice, raw")
+)
+
+
+CreamedChicken.2006.dat <- data.frame(
+  Amount=c("3.5","4","0.33","1.5"),
+  Measure=c("package","tbsp","cup","cup"),
+  Ingredient = c("Chicken, broiler or fryers, breast, skinless, boneless, meat only, raw","Butter, salted", "Wheat flour, white, all-purpose, self-rising, enriched","Milk, whole, 3.25% milkfat, with added vitamin D")
+)
+
+```
+# Create data table from Herring Salad 36 & 06
+
+```{r}
+
+HerringSalad.1936.dat <- data.frame(
+  Amount=c("12","1","6","2","1.5","0.5","0.5","2","0.5","3","1","1","2"),
+  Measure=c("oz","fl oz","oz","large","cup slices" ,"package (10 oz)" ,"slice","cup chopped","cup","medium","cup whole kernels","cup","tbsp"),
+  Ingredient = c('Fish, herring, Atlantic, raw', 'Alcoholic beverage, wine, table, red','Veal, ground, cooked, broiled', 'Egg, whole, raw, fresh', 'Beets, pickled, canned, solids and liquids','Onions, frozen, chopped, unprepared','Pickles, cucumber, dill or kosher dill','Celery, raw','Potatoes, boiled, cooked in skin, flesh, with salt','Apples, raw, golden delicious, with skin', 'Nuts, almonds, dry roasted, without salt added','Sugars, granulated','Horseradish, prepared'))
+
+ 
+
+HerringSalad.2006.dat <- data.frame(
+  
+  Amount=c("36","3","1.5","1","0.5","0.5","0.5","2","2","1","1","2"),
+  Measure=c("cup","medium","cup, diced"  ,"cup whole kernels" ,"package (10 oz)" , "slice","cup","large","cup chopped","cup","cup","tbsp"),
+  Ingredient = c('Fish, herring, Atlantic, pickled','Apples, raw, golden delicious, with skin', 'Beets, canned, drained solids', 'Nuts, almonds, blanched','Onions, frozen, chopped, unprepared', 'Pickles, cucumber, dill or kosher dill', 'Potatoes, boiled, cooked in skin, flesh, with salt', 'Egg, whole, raw, fresh', 'Celery, raw', 'Vinegar, red wine', 'Sugars, granulated','Horseradish, prepared')
+)
+
+
+```
+```{r}
+#this recipe is commented out because the ingredients / measures are not matching with Nutrition Database
+#setwd("./")
+#BeefStroganoff.1997.tab <- read.table("BeefStroganoff.1997.tab")
+#BeefStroganoff.1997.tab
+```
+#Write the data tables to file
+
+```{r}
+setwd("./")
+write.table(CreamedChicken.1936.dat, file="CreamedChicken.1936.tab",row.names = FALSE)
+write.table(CreamedChicken.2006.dat, file="CreamedChicken.2006.tab",row.names = FALSE)
+
+write.table(HerringSalad.1936.dat, file="HerringSalad.1936.tab",row.names = FALSE)
+write.table(HerringSalad.2006.dat, file="HerringSalad.2006.tab",row.names = FALSE)
+
+
+#reading the created files back into an array (not being used in further processing)
+CC.1936.dat <- read.table("CreamedChicken.1936.tab",header = TRUE,colClasses = c("character", "character","character"))
+CC.2006.dat <- read.table("CreamedChicken.2006.tab",header = TRUE,colClasses = c("character", "character","character"))
+HS.1936.dat <- read.table("HerringSalad.1936.tab",header = TRUE,colClasses = c("character", "character","character"))
+HS.2006.dat <- read.table("HerringSalad.2006.tab",header = TRUE,colClasses = c("character", "character","character"))
+
+
+```
+
+
+```{r}
+# read the recipe .tab files, combine and print
+
+setwd("./")
+rcps <- list.files(pattern = '*.tab')
+rcps_count <- 1
+file.dat <- 0
+while(rcps_count <= length(rcps)){
+    filename <- unlist(strsplit(rcps[rcps_count], "[.]"))
+    nextfile.dat <- read.table(rcps[rcps_count],header = TRUE,colClasses = c("character", "character","character"))
+    nextfile.dat$Recipe <- filename[1]
+    nextfile.dat$Year <- filename[2]
+    nextfile.dat <- nextfile.dat[c(4,5,1,2,3)]
+    file.dat <- rbind(file.dat,nextfile.dat)
+    rcps_count <- rcps_count + 1
+}   
+
+file.dat <- subset(file.dat,Year != 0)
+row.names(file.dat) <- NULL
+print(file.dat) 
+
+# create the recipe nutrition file with serving information, this would be updated for the final output 
+
+recipe.nut.dat <- data.frame(
+  Recipe=c("CreamedChicken","CreamedChicken","HerringSalad","HerringSalad"),
+  Year=c("1936","2006","1936","2006"),
+  MinServ = c(6, 6,20, 24),
+  MaxServ = c(6, 6,20, 24))
+  
+  
+# initialize the counters
+
+file_row <- 1
+recipe_count <- 1
+weight <- 0
+calorie <- 0
+recipe_yr <- paste(recipe.nut.dat$Recipe[recipe_count],recipe.nut.dat$Year[recipe_count])
+print(recipe_yr)
+
+# process the combined recipe file
+
+while(file_row <= nrow(file.dat)){
+
+ ndb_no <- food_des.dat$NDB_No[grep(file.dat$Ingredient[file_row],food_des.dat$Long_Desc)]
+ 
+ weight_variety <- subset(weight.dat, NDB_No == ndb_no & Msre_Desc == file.dat$Measure[file_row])
+ print(weight_variety)
+ 
+ nut_variety <- subset(nut_data.dat, NDB_No == ndb_no & Nutr_No == 208)
+ print(nut_variety)
+ 
+ print(recipe_yr)
+ print(paste(file.dat$Recipe[file_row],file.dat$Year[file_row]))
+ 
+ if(recipe_yr == paste(file.dat$Recipe[file_row],file.dat$Year[file_row])){
+ weight <- weight + (weight_variety$Gm_Wgt[1]/weight_variety$Amount[1])*as.numeric(file.dat$Amount[file_row])
+ print(weight)
+ 
+ calorie <- calorie + nut_variety$Nutr_Val[1]*(weight_variety$Gm_Wgt[1]/weight_variety$Amount[1])*as.numeric(file.dat$Amount[file_row])/100
+ print(calorie)
+ }
+ 
+ else
+ {
+ recipe.nut.dat[recipe_count,5] <- weight
+ recipe.nut.dat[recipe_count,6] <- calorie
+ print(recipe.nut.dat)
+ recipe_count <- recipe_count + 1 
+ weight <- 0
+ calorie <- 0
+ recipe_yr <- paste(recipe.nut.dat$Recipe[recipe_count],recipe.nut.dat$Year[recipe_count])
+ print(recipe_yr)
+ weight <- weight + (weight_variety$Gm_Wgt[1]/weight_variety$Amount[1])*as.numeric(file.dat$Amount[file_row])
+ print(weight)
+ 
+ calorie <- calorie + nut_variety$Nutr_Val[1]*(weight_variety$Gm_Wgt[1]/weight_variety$Amount[1])*as.numeric(file.dat$Amount[file_row])/100
+ print(calorie)
+ }
+ 
+file_row <- file_row + 1
+}
+
+recipe.nut.dat[recipe_count,5] <- weight
+recipe.nut.dat[recipe_count,6] <- calorie
+print(recipe.nut.dat)
+
+colnames(recipe.nut.dat)<- c("Recipe", "Year", "MinServ", "MaxServ","Weight","Calorie")
+
+# add calories per serving and calories per gram
+recipe.nut.dat$CalPerServ <- as.numeric(recipe.nut.dat$Calorie)/recipe.nut.dat$MinServ
+recipe.nut.dat$CalPerGrm <- as.numeric(recipe.nut.dat$Calorie)/recipe.nut.dat$Weight
+
+# Output table in required format
+print(recipe.nut.dat)
+ 
+```
+
+
